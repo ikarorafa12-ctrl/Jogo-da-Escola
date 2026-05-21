@@ -502,7 +502,7 @@
 </div>
 
 <script>
-    // ── CONFIGURAÇÃO DO FIREBASE (Atualizada e Ativada) ──
+    // ── CONFIGURAÇÃO DO FIREBASE (Ativada e Integrada) ──
     const firebaseConfig = {
         apiKey: "AIzaSyBV9d6TwfHYPl3bFszKgyj4oubrR2SlI1s",
         authDomain: "jogo-cp.firebaseapp.com",
@@ -513,12 +513,15 @@
         measurementId: "G-Y02WV5118B"
     };
     
-    // Inicializa o Firebase automaticamente
+    // Inicializa o Firebase
     firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
     let myRole = '';
     let myPlayerName = '';
     let isSolo = false;
+    let currentRoomName = '';
+    let roomRef = null;
     const TOTAL_MONTHS = 24;
 
     const PHASES = [
@@ -559,102 +562,150 @@
         return PHASE_OPTIONS.late;
     }
 
-    function getPhaseIndex(month) {
-        if (month <= 5) return 0;
-        if (month <= 10) return 5;
-        if (month <= 20) return 6;
-        return 7;
-    }
-
     function switchScreen(id) {
         document.querySelectorAll('[id^="screen-"]').forEach(s => s.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
     }
 
-    function getRoomState() {
-        return JSON.parse(localStorage.getItem('stop_financeiro_room')) || null;
-    }
-
-    function saveRoomState(state) {
-        localStorage.setItem('stop_financeiro_room', JSON.stringify(state));
-    }
-
+    // ── MODO JOGAR SOZINHO ──
     function actionStartSolo() {
         const name = document.getElementById('solo-player-name').value.trim();
         if (!name) return alert('Digite um codinome!');
         isSolo = true; myRole = 'leader'; myPlayerName = name;
-        let state = { name: 'Solo', status: 'game', currentMonth: 1, players: {}, count: 1 };
-        state.players[name] = { money: 1000, currentChoice: null, ready: false, history: [1000] };
-        saveRoomState(state);
+        
+        let state = { name: 'Solo', status: 'game', currentMonth: 1, players: {} };
+        state.players[name] = { money: 1000, currentChoice: '', ready: false, history: [1000] };
+        
         document.getElementById('game-player-identity').innerText = `Trader: ${name}`;
         renderGameScreen(state);
     }
 
+    // ── LÓGICA MULTIPLAYER COORDENADA COM FIREBASE ──
+    
     function actionCreateRoom() {
-        const name = document.getElementById('create-room-name').value.trim();
+        const name = document.getElementById('create-room-name').value.trim().replace(/[.#$\[\]]/g, "");
         if (!name) return alert('Dê nome à sala!');
+        
         myRole = 'leader';
-        let state = { name, status: 'lobby', currentMonth: 1, players: {}, count: 0 };
-        saveRoomState(state);
-        document.getElementById('lobby-room-title').innerText = name;
-        document.getElementById('lobby-leader-controls').classList.remove('hidden');
-        switchScreen('screen-lobby');
-        startPolling();
+        myPlayerName = 'Líder';
+        currentRoomName = name;
+        roomRef = database.ref('salas/' + name);
+
+        let initialState = {
+            name: name,
+            status: 'lobby',
+            currentMonth: 1,
+            players: {},
+            count: 0
+        };
+
+        roomRef.set(initialState).then(() => {
+            document.getElementById('lobby-room-title').innerText = name;
+            document.getElementById('lobby-leader-controls').classList.remove('hidden');
+            switchScreen('screen-lobby');
+            listenToRoomChanges();
+        });
     }
 
     function actionJoinRoom() {
-        const pName = document.getElementById('join-player-name').value.trim();
-        const rName = document.getElementById('join-room-name').value.trim();
+        const pName = document.getElementById('join-player-name').value.trim().replace(/[.#$\[\]]/g, "");
+        const rName = document.getElementById('join-room-name').value.trim().replace(/[.#$\[\]]/g, "");
+        
         if (!pName || !rName) return alert('Preencha os dados!');
-        let state = getRoomState();
-        myRole = 'player'; myPlayerName = pName;
-        state.players[pName] = { money: 1000, currentChoice: null, ready: false, history: [1000] };
-        state.count = Object.keys(state.players).length;
-        saveRoomState(state);
-        document.getElementById('lobby-room-title').innerText = rName;
-        document.getElementById('game-player-identity').innerText = `Trader: ${pName}`;
-        switchScreen('screen-lobby');
-        startPolling();
+        
+        myRole = 'player'; 
+        myPlayerName = pName;
+        currentRoomName = rName;
+        roomRef = database.ref('salas/' + rName);
+
+        roomRef.once('value', (snapshot) => {
+            if (!snapshot.exists()) {
+                return alert('Esta sala não existe! Certifique-se de que o líder já criou a sala no notebook.');
+            }
+            
+            roomRef.child('players/' + pName).set({
+                money: 1000,
+                currentChoice: '',
+                ready: false,
+                history: [1000]
+            }).then(() => {
+                document.getElementById('lobby-room-title').innerText = rName;
+                document.getElementById('game-player-identity').innerText = `Trader: ${pName}`;
+                switchScreen('screen-lobby');
+                listenToRoomChanges();
+            });
+        });
     }
 
-    function startPolling() {
-        setInterval(() => {
-            let state = getRoomState();
+    function listenToRoomChanges() {
+        roomRef.on('value', (snapshot) => {
+            const state = snapshot.val();
             if (!state) return;
+
+            const playerList = state.players ? Object.keys(state.players) : [];
+            
             if (state.status === 'lobby') {
-                document.getElementById('lobby-count').innerText = state.count;
-                document.getElementById('lobby-player-list').innerHTML = Object.keys(state.players).map(p => `<li>⚡ ${p}</li>`).join('');
+                document.getElementById('lobby-count').innerText = playerList.length;
+                document.getElementById('lobby-player-list').innerHTML = playerList.map(p => `<li>⚡ ${p}</li>`).join('');
             }
+            
             if (state.status === 'game') {
-                if (myRole === 'leader' && !isSolo) renderLeaderDashboard(state);
-                else renderGameScreen(state);
+                if (myRole === 'leader' && !isSolo) {
+                    switchScreen('screen-leader-dashboard');
+                    renderLeaderDashboard(state);
+                } else {
+                    switchScreen('screen-game');
+                    renderGameScreen(state);
+                }
             }
-            if (state.status === 'end') renderFinalPodium(state);
-        }, 1000);
+            
+            if (state.status === 'end') {
+                renderFinalPodium(state);
+            }
+        });
     }
 
     function actionStartGame() {
-        let state = getRoomState();
-        state.status = 'game';
-        saveRoomState(state);
-        switchScreen('screen-leader-dashboard');
+        if (roomRef) {
+            roomRef.update({ status: 'game' });
+        }
     }
 
     function renderLeaderDashboard(state) {
         document.getElementById('leader-month-display').innerText = state.currentMonth;
         const container = document.getElementById('leader-player-cards');
         container.innerHTML = '';
+        
         let allReady = true;
-        Object.keys(state.players).forEach(p => {
-            if (!state.players[p].ready) allReady = false;
-            container.innerHTML += `<div class="p-4 bg-slate-800 rounded text-white">${p}: R$ ${state.players[p].money.toFixed(2)} [${state.players[p].ready ? 'OK' : '...'}]</div>`;
+        const players = state.players || {};
+        const playerNames = Object.keys(players);
+
+        if (playerNames.length === 0) {
+            container.innerHTML = '<p class="text-white text-center col-span-2">Aguardando os celulares conectarem...</p>';
+            allReady = false;
+        }
+
+        playerNames.forEach(p => {
+            if (!players[p].ready) allReady = false;
+            container.innerHTML += `
+                <div class="p-4 bg-slate-800 rounded text-white flex justify-between items-center">
+                    <div>
+                        <span class="font-bold block">${p}</span>
+                        <span class="text-xs opacity-60">R$ ${players[p].money.toFixed(2)}</span>
+                    </div>
+                    <span class="px-2 py-1 rounded text-xs ${players[p].ready ? 'bg-green-600 text-white' : 'bg-amber-600 text-white'}">
+                        ${players[p].ready ? 'PRONTO' : 'ESCOLHENDO'}
+                    </span>
+                </div>`;
         });
-        document.getElementById('btn-next-month').style.display = allReady ? 'block' : 'none';
+        
+        document.getElementById('btn-next-month').style.display = allReady && playerNames.length > 0 ? 'block' : 'none';
     }
 
     function renderGameScreen(state) {
-        switchScreen('screen-game');
-        const me = state.players[myPlayerName];
+        const me = state.players ? state.players[myPlayerName] : null;
+        if (!me) return;
+
         const opts = getPhaseOptions(state.currentMonth);
         
         ['a','b','c','d'].forEach((l, i) => {
@@ -667,36 +718,88 @@
         document.getElementById('ui-current-money').innerText = `R$ ${me.money.toFixed(2)}`;
         
         document.getElementById('wait-message').classList.toggle('hidden', !me.ready);
-        if (me.ready && isSolo) setTimeout(actionProcessMonth, 500);
+        
+        ['a','b','c','d'].forEach(l => {
+            document.getElementById(`btn-opt-${l}`).disabled = me.ready;
+            document.getElementById(`btn-opt-${l}`).style.opacity = me.ready ? '0.5' : '1';
+        });
 
-        renderChart(me.history);
+        renderChart(me.history || [1000]);
     }
 
     function submitTurn(choice) {
-        let state = getRoomState();
-        state.players[myPlayerName].currentChoice = choice;
-        state.players[myPlayerName].ready = true;
-        saveRoomState(state);
-        renderGameScreen(state);
+        if (isSolo) {
+            let mockState = { currentMonth: parseInt(document.getElementById('game-month-ring').innerText), players: {} };
+            mockState.players[myPlayerName] = { money: parseFloat(document.getElementById('ui-current-money').innerText.replace("R$ ","")), ready: true, currentChoice: choice, history: [] };
+            actionProcessMonthSolo(mockState);
+        } else {
+            roomRef.child('players/' + myPlayerName).update({
+                currentChoice: choice,
+                ready: true
+            });
+        }
     }
 
     function actionProcessMonth() {
-        let state = getRoomState();
-        Object.keys(state.players).forEach(pName => {
-            let p = state.players[pName];
-            let capital = p.money + 100;
-            const opts = getPhaseOptions(state.currentMonth);
-            const chosen = opts.find(o => o.key === p.currentChoice);
-            if (chosen) capital = chosen.yield < 0 ? capital + (capital * chosen.yield) : capital * (1 + chosen.yield);
-            p.money = capital;
-            p.history.push(Math.round(capital));
-            p.ready = false; p.currentChoice = null;
-        });
+        roomRef.once('value', (snapshot) => {
+            let state = snapshot.val();
+            if (!state || !state.players) return;
 
-        if (state.currentMonth >= TOTAL_MONTHS) state.status = 'end';
-        else state.currentMonth += 1;
-        saveRoomState(state);
+            let updatedPlayers = { ...state.players };
+
+            Object.keys(updatedPlayers).forEach(pName => {
+                let p = updatedPlayers[pName];
+                let capital = p.money + 100; 
+                const opts = getPhaseOptions(state.currentMonth);
+                const chosen = opts.find(o => o.key === p.currentChoice);
+                
+                if (chosen) {
+                    capital = chosen.yield < 0 ? capital + (capital * chosen.yield) : capital * (1 + chosen.yield);
+                }
+                
+                p.money = capital;
+                if (!p.history) p.history = [1000];
+                p.history.push(Math.round(capital));
+                p.ready = false; 
+                p.currentChoice = '';
+            });
+
+            let nextMonth = state.currentMonth + 1;
+            let nextStatus = nextMonth > TOTAL_MONTHS ? 'end' : 'game';
+
+            roomRef.update({
+                players: updatedPlayers,
+                currentMonth: nextMonth > TOTAL_MONTHS ? TOTAL_MONTHS : nextMonth,
+                status: nextStatus
+            });
+        });
     }
+
+    function actionProcessMonthSolo(state) {
+        let p = state.players[myPlayerName];
+        let capital = p.money + 100;
+        const opts = getPhaseOptions(state.currentMonth);
+        const chosen = opts.find(o => o.key === p.currentChoice);
+        if (chosen) capital = chosen.yield < 0 ? capital + (capital * chosen.yield) : capital * (1 + chosen.yield);
+        
+        let localHistory = JSON.parse(sessionStorage.getItem('local_hist') || "[1000]");
+        localHistory.push(Math.round(capital));
+        sessionStorage.setItem('local_hist', JSON.stringify(localHistory));
+
+        let nextMonth = state.currentMonth + 1;
+        if (nextMonth > TOTAL_MONTHS) {
+            switchScreen('screen-podium');
+            document.getElementById('podium-container').innerHTML = `<div class="p-4 bg-slate-900 border border-amber-500 rounded text-white flex justify-between"><span>1º ${myPlayerName}</span><span>R$ ${capital.toFixed(2)}</span></div>`;
+        } else {
+            let newState = { name: 'Solo', status: 'game', currentMonth: nextMonth, players: {} };
+            newState.players[myPlayerName] = { money: capital, currentChoice: '', ready: false, history: localHistory };
+            renderGameScreen(newState);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        sessionStorage.removeItem('local_hist');
+    });
 
     function renderChart(history) {
         const chart = document.getElementById('crypto-chart');
