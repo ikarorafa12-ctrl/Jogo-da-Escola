@@ -127,15 +127,9 @@
         .home-bg-layer {
             position: absolute;
             inset: 0;
-            opacity: 0.35;
-            filter: brightness(0.75);
+            opacity: 0.3;
+            filter: grayscale(0.2) brightness(0.6);
             background: url("https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2070&auto=format&fit=crop") center/cover no-repeat;
-        }
-
-        .home-bg-layer img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
 
         .home-bg-overlay {
@@ -143,10 +137,10 @@
             inset: 0;
             background: linear-gradient(
                 to bottom,
-                rgba(10,10,15,0.4) 0%,
+                rgba(10,10,15,0.5) 0%,
                 rgba(10,10,15,0.15) 40%,
-                rgba(10,10,15,0.5) 70%,
-                rgba(10,10,15,0.95) 100
+                rgba(10,10,15,0.6) 70%,
+                rgba(10,10,15,0.95) 100%
             );
         }
 
@@ -217,16 +211,6 @@
             height: 55px;
         }
 
-        .city-badge img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(0.7) sepia(0.2);
-            transition: filter 0.3s;
-        }
-
-        .city-badge:hover img { filter: brightness(0.9) sepia(0); }
-
         .city-badge-label {
             position: absolute;
             bottom: 4px;
@@ -279,31 +263,10 @@
         .btn-dark:hover { border-color: var(--gold); color: var(--gold-light); }
 
         /* ── GAME SCREEN PHASES ── */
-        /* Fases 1-5: Azul Vitoriano */
-        .game-phase-azul { background: #002244 !important; }
-        /* Fases 6-10: Preto Luxuoso */
-        .game-phase-preto { background: #0A0A0F !important; }
-        /* Fases 11-20: Verde Georgiano */
-        .game-phase-verde { background: #1F4E37 !important; }
-        /* Fases 21-24: Laranja */
-        .game-phase-laranja { background: #E65C00 !important; }
-
-        /* Accent colors by phase */
-        .phase-accent-1 { color: #7dd3fc; }
-        .phase-accent-2 { color: #86efac; }
-        .phase-accent-3 { color: #fde68a; }
-        .phase-accent-4 { color: #f9a8d4; }
-        .phase-accent-5 { color: #67e8f9; }
-        .phase-accent-6 { color: #c4b5fd; }
-
-        /* Bar chart */
-        .chart-bar-enter {
-            animation: barGrow 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
-        }
-        @keyframes barGrow {
-            from { height: 0 !important; opacity: 0; }
-            to { opacity: 1; }
-        }
+        .game-phase-1  { background: #0b132b; }
+        .game-phase-2  { background: #1c2541; }
+        .game-phase-3  { background: #3a2e2b; }
+        .game-phase-4  { background: #241426; }
 
         /* Sidebar city panel */
         .city-panel {
@@ -325,16 +288,9 @@
             border-radius: 4px;
             object-fit: cover;
             border: 1px solid rgba(201,168,76,0.2);
-            filter: grayscale(0.5) brightness(0.7);
             transition: all 0.3s;
         }
-        .city-thumb:hover {
-            filter: grayscale(0) brightness(1);
-            border-color: var(--gold);
-            width: 100px;
-        }
 
-        /* Luxury panel styles */
         .luxury-card {
             background: rgba(18,18,26,0.8);
             border: 1px solid rgba(201,168,76,0.2);
@@ -342,27 +298,6 @@
             border-radius: 14px;
         }
 
-        /* Podium / Screen Podium Color Ouro */
-        #screen-podium {
-            background: #FFD700 !important;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .podium-bg {
-            position: absolute;
-            inset: 0;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            opacity: 0.08;
-            filter: grayscale(0.5);
-        }
-
-        .podium-bg img {
-            width: 100%; height: 100%; object-fit: cover;
-        }
-
-        /* Slide-in for screens */
         @keyframes slideInRight {
             from { transform: translateX(40px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -374,7 +309,6 @@
         .anim-slide-in { animation: slideInRight 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
         .anim-fade-up  { animation: fadeUp 0.5s ease forwards; }
 
-        /* Month number ring in game */
         .month-ring {
             display: inline-flex;
             align-items: center;
@@ -403,41 +337,7 @@
             font-family: 'Rajdhani', sans-serif;
             font-size: 1rem;
         }
-
-        /* Animate money value when it changes */
-        @keyframes moneyPop {
-            0%   { transform: scale(1); }
-            50%  { transform: scale(1.15); }
-            100% { transform: scale(1); }
-        }
-        .money-pop { animation: moneyPop 0.4s ease; }
-
-        /* Screen lobby city images */
-        .lobby-city-banner {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 12px;
-            filter: brightness(0.6) sepia(0.2);
-            border: 1px solid rgba(201,168,76,0.2);
-        }
-
-        /* Glow on game bar chart newest bar */
-        .bar-newest {
-            box-shadow: 0 0 12px 4px rgba(201,168,76,0.5);
-        }
-
-        /* Ticker tape decoration */
-        .gold-border-top {
-            border-top: 1px solid rgba(201,168,76,0.25);
-        }
-        .gold-border-bottom {
-            border-bottom: 1px solid rgba(201,168,76,0.25);
-        }
     </style>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -506,9 +406,7 @@
         <div class="space-y-4">
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Seu Codinome:</label>
-                <input id="solo-player-name" type="text" placeholder="Ex: Íkaro"
-                    style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;transition:border-color 0.2s;"
-                    onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="solo-player-name" type="text" placeholder="Ex: Íkaro" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
             </div>
             <button onclick="actionStartSolo()" class="btn-luxury btn-gold" style="width:100%;margin-top:0.5rem;">
                 Iniciar Jornada →
@@ -521,45 +419,40 @@
 </div>
 
 <div id="screen-create" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
-    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0a0a0f;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
         <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.25rem;">Administração</p>
         <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:1.5rem;">Painel do Líder</h2>
         <div class="space-y-4">
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Nome da Sala:</label>
-                <input id="create-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="create-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
             </div>
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Senha:</label>
-                <input id="create-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="create-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
             </div>
-            <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;">
-                <input id="create-room-public" type="checkbox" checked style="width:1.1rem;height:1.1rem;accent-color:var(--gold);">
-                <label for="create-room-public" style="font-size:0.85rem;color:rgba(255,255,255,0.7);">Sala Pública</label>
-            </div>
-            <button onclick="actionCreateRoom()" class="btn-luxury btn-gold" style="width:100%;">Criar Sala ⚑</button> <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">← Voltar</button>
+            <button onclick="actionCreateRoom()" class="btn-luxury btn-gold" style="width:100%;">Criar Sala ⚑</button>
+            <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">← Voltar</button>
         </div>
     </div>
 </div>
 
 <div id="screen-join" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
-    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0a0a0f;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
         <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.25rem;">Acesso</p>
         <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:1.5rem;">Entrar no Mercado</h2>
         <div class="space-y-4">
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Seu Codinome:</label>
-                <input id="join-player-name" type="text" placeholder="Ex: Dev_CIn" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="join-player-name" type="text" placeholder="Ex: Dev_CIn" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
             </div>
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Nome da Sala:</label>
-                <input id="join-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="join-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
             </div>
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Senha:</label>
-                <input id="join-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="join-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
             </div>
             <button onclick="actionJoinRoom()" class="btn-luxury btn-gold" style="width:100%;">Entrar ↗</button>
             <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">← Voltar</button>
@@ -568,40 +461,30 @@
 </div>
 
 <div id="screen-lobby" class="hidden min-h-screen flex flex-col items-center justify-center p-6" style="background:var(--obsidian);">
-    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.08;background:#0d1a2e;"></div>
     <div class="relative z-10 w-full max-w-lg">
         <div style="text-align:center;margin-bottom:2rem;">
             <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;">Sala</p>
             <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#fff;" id="lobby-room-title">—</h2>
             <div class="home-gold-line"></div>
-            <p style="color:rgba(255,255,255,0.4);font-size:0.9rem;margin-top:0.5rem;">Aguardando formação do pódio de 5 jogadores...</p>
+            <p style="color:rgba(255,255,255,0.4);font-size:0.9rem;margin-top:0.5rem;">Aguardando formação do grupo de competidores...</p>
         </div>
-
-        <div style="width:100%;height:180px;border-radius:12px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);margin-bottom:1.5rem;"></div>
 
         <div class="luxury-card p-6">
             <h3 style="font-size:0.8rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;">
                 Traders Conectados (<span id="lobby-count">0</span>/5)
             </h3>
-            <ul id="lobby-player-list" style="list-style:none;padding:0;margin:0;space-y:0.5rem;"></ul>
+            <ul id="lobby-player-list" class="space-y-2 text-white opacity-80"></ul>
         </div>
 
         <div id="lobby-leader-controls" class="hidden" style="margin-top:1.5rem;text-align:center;">
-            <button onclick="actionStartGame()" class="btn-luxury btn-gold" style="font-size:1.15rem;padding:1rem 3rem;letter-spacing:0.2em;">
-                ▶ STOP! Começar Jogo
+            <button onclick="actionStartGame()" class="btn-luxury btn-gold w-full" style="font-size:1.15rem;letter-spacing:0.2em;">
+                ▶ START! Começar Jogo
             </button>
         </div>
     </div>
 </div>
 
-<div id="screen-game" class="hidden min-h-screen p-4 flex flex-col items-center" style="transition:background 1.2s ease;">
-
-    <div class="city-panel hidden md:flex">
-        <div class="city-thumb" style="background:rgba(201,168,76,0.15);"></div>
-        <div class="city-thumb" style="background:rgba(201,168,76,0.1);"></div>
-        <div class="city-thumb" style="background:rgba(201,168,76,0.05);"></div>
-    </div>
-
+<div id="screen-game" class="hidden min-h-screen p-4 flex flex-col items-center game-phase-1">
     <div class="w-full max-w-4xl luxury-card p-4 mb-6 flex justify-between items-center anim-slide-in">
         <div style="display:flex;align-items:center;gap:1rem;">
             <div class="month-ring" id="game-month-ring">1</div>
@@ -628,9 +511,9 @@
                 <p style="font-size:0.7rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);text-transform:uppercase;">Evolução do Capital</p>
                 <span id="game-phase-badge" style="font-size:0.65rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;border:1px solid rgba(201,168,76,0.3);padding:0.2rem 0.6rem;border-radius:20px;">FASE 1</span>
             </div>
-            <div id="crypto-chart" style="display:flex;align-items:flex-end;justify-content:space-between;height:11rem;background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem;border:1px solid rgba(255,255,255,0.05);gap:3px;"></div>
+            <div id="crypto-chart" style="display:flex;align-items:flex-end;justify-content:space-between;height:11rem;background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem;border:1px solid rgba(255,255,255,0.05);gap:4px;"></div>
             <div id="crisis-alert" style="display:none;margin-top:1rem;padding:0.75rem;background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.4);border-radius:8px;color:#fca5a5;font-weight:700;font-size:0.9rem;">
-                ⚠️ CRISE SISTÊMICA — Mercado em colapso!
+                ⚠️ CRISE SISTÊMICA — Mercado em colapso! Escolha com cuidado.
             </div>
         </div>
 
@@ -638,495 +521,264 @@
             <div>
                 <p style="font-size:0.7rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:0.5rem;">Decisão do Mês</p>
                 <h4 style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:1.25rem;line-height:1.3;" id="investment-question-title">Onde alocar seus R$ 100 deste mês?</h4>
+
                 <div id="standard-options" style="display:flex;flex-direction:column;gap:0.6rem;">
-                    <button onclick="submitTurn('OPT_A')" id="btn-opt-a" style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(201,168,76,0.1)';this.style.borderColor='rgba(201,168,76,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(201,168,76,0.2)'">
-                        <span id="btn-opt-a-label">🏢 Fundos Imobiliários</span><span id="btn-opt-a-tag" style="font-size:0.7rem;color:#86efac;">Opção A</span>
+                    <button onclick="submitTurn('OPT_A')" class="w-full text-left bg-white/5 border border-amber-500/20 hover:border-amber-400 p-3 rounded-lg text-white flex justify-between items-center transition">
+                        <span>🏢 Fundos Imobiliários</span><span style="font-size:0.7rem;color:#86efac;">Renda Var.</span>
                     </button>
-                    <button onclick="submitTurn('OPT_B')" id="btn-opt-b" style="background:rgba(255,255,255,0.04);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(139,92,246,0.1)';this.style.borderColor='rgba(139,92,246,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(139,92,246,0.25)'">
-                        <span id="btn-opt-b-label">🟪 Caixinhas Nubank</span><span id="btn-opt-b-tag" style="font-size:0.7rem;color:#c4b5fd;">Opção B</span>
+                    <button onclick="submitTurn('OPT_B')" class="w-full text-left bg-white/5 border border-violet-500/20 hover:border-violet-400 p-3 rounded-lg text-white flex justify-between items-center transition">
+                        <span>🟪 Caixinhas Nubank</span><span style="font-size:0.7rem;color:#c4b5fd;">Renda Fixa</span>
                     </button>
-                    <button onclick="submitTurn('OPT_C')" id="btn-opt-c" style="background:rgba(255,255,255,0.04);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(251,191,36,0.08)';this.style.borderColor='rgba(251,191,36,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(251,191,36,0.2)'">
-                        <span id="btn-opt-c-label">🏦 Poupança</span><span id="btn-opt-c-tag" style="font-size:0.7rem;color:#fde68a;">Opção C</span>
+                    <button onclick="submitTurn('OPT_C')" class="w-full text-left bg-white/5 border border-yellow-500/20 hover:border-yellow-400 p-3 rounded-lg text-white flex justify-between items-center transition">
+                        <span>🏦 Poupança</span><span style="font-size:0.7rem;color:#fde68a;">Baixo Rend.</span>
                     </button>
-                    <button onclick="submitTurn('OPT_D')" id="btn-opt-d" style="background:rgba(255,255,255,0.04);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(239,68,68,0.08)';this.style.borderColor='rgba(239,68,68,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(239,68,68,0.2)'">
-                        <span id="btn-opt-d-label">📱 Comprar Um Iphone</span><span id="btn-opt-d-tag" style="font-size:0.7rem;color:#fca5a5;">Opção D</span>
+                    <button onclick="submitTurn('OPT_D')" class="w-full text-left bg-white/5 border border-red-500/20 hover:border-red-400 p-3 rounded-lg text-white flex justify-between items-center transition">
+                        <span>📱 Comprar um iPhone</span><span style="font-size:0.7rem;color:#fca5a5;">Passivo Fin.</span>
                     </button>
                 </div>
-            </div>
-            <div style="margin-top:1.5rem;border-top:1px solid rgba(255,255,255,0.06);padding-top:1rem;text-align:center;">
-                <p id="game-waiting-text" style="font-size:0.8rem;color:rgba(255,255,255,0.4);font-style:italic;">Selecione uma opção para encerrar seu turno.</p>
-                <button id="leader-force-next-btn" onclick="actionLeaderForceNext()" class="btn-luxury btn-dark hidden" style="font-size:0.75rem;padding:0.5rem 1rem;margin-top:0.5rem;width:100%;">
-                    Avançar Mês Espontaneamente (Líder)
-                </button>
+
+                <div id="crisis-options" style="display:none;flex-direction:column;gap:0.75rem;">
+                    <button onclick="submitTurn('MANTER')" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.4);border-radius:8px;padding:1rem;color:#86efac;cursor:pointer;font-weight:700;">📈 MANTER na Bolsa</button>
+                    <button onclick="submitTurn('RETIRAR')" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);border-radius:8px;padding:1rem;color:#fca5a5;cursor:pointer;font-weight:700;">📉 RETIRAR da Bolsa</button>
+                </div>
             </div>
         </div>
     </div>
-
-    <div class="w-full max-w-4xl luxury-card p-4 mt-6 anim-fade-up">
-        <p style="font-size:0.7rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:0.75rem;">Status dos Competidores</p>
-        <div id="game-realtime-players" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3"></div>
-    </div>
 </div>
 
-<div id="screen-podium" class="hidden min-h-screen p-6 flex flex-col items-center justify-center">
-    <div class="podium-bg"></div>
-    <div class="relative z-10 w-full max-w-xl text-center">
-        <p style="font-size:0.8rem;letter-spacing:0.4em;color:#000;text-transform:uppercase;font-weight:700;">Encerramento</p>
-        <h2 style="font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;color:#000;line-height:1.1;margin-bottom:0.5rem;">PÓDIO DA PROSPERIDADE</h2>
-        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;color:rgba(0,0,0,0.6);margin-bottom:2rem;">Os resultados do mercado foram consolidados.</p>
+<div id="screen-podium" class="hidden min-h-screen flex flex-col justify-center items-center p-6" style="background:#12121a; position:relative;">
+    <div class="relative z-10 w-full max-w-xl luxury-card p-8 text-center text-white">
+        <h2 style="font-family:'Playfair Display',serif; font-size:2.5rem; color:var(--gold-light); font-weight:900; margin-bottom:1rem;">🏆 PÓDIO FINAL</h2>
+        <p class="text-sm text-gray-400 mb-6 tracking-widest uppercase">Resultados da Corrida da Prosperidade</p>
+        
+        <div id="podium-list" class="space-y-3 mb-8 text-left"></div>
 
-        <div class="luxury-card p-6 text-left space-y-3" id="podium-list-container" style="background:rgba(10,10,15,0.95);border-color:rgba(0,0,0,0.2);"></div>
-
-        <button onclick="actionRestartGameData()" class="btn-luxury btn-gold mt-6" style="background:#000;color:#fff;padding:1rem 2.5rem;">
-            🔄 Jogar Novamente
-        </button>
+        <button onclick="switchScreen('screen-home')" class="btn-luxury btn-gold w-full">Jogar Novamente ↩</button>
     </div>
 </div>
 
 <script>
-    // Configuração fornecida pelo usuário
-    const firebaseConfig = {
-        apiKey: "AIzaSyAOwdcG0IJX0CPaFCTumAQ6mXfmpQn-0GE",
-        authDomain: "caminho-para-a-prosperidade.firebaseapp.com",
-        projectId: "caminho-para-a-prosperidade",
-        storageBucket: "caminho-para-a-prosperidade.firebasestorage.app",
-        messagingSenderId: "53883464834",
-        appId: "1:53883464834:web:b00e37cabcf5ad0bab989b",
-        measurementId: "G-MK8VQSTCTM"
+    // State Control
+    let gameState = {
+        playerName: "Íkaro",
+        roomName: "Solo",
+        currentMonth: 1,
+        maxMonths: 24,
+        currentMoney: 1000,
+        history: [1000],
+        mode: 'solo', // 'solo' ou 'multi'
+        competitors: []
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const phrases = [
+        "O tempo é o maior ativo do investidor.",
+        "Risco vem de não saber o que você está fazendo.",
+        "Não coloque todos os ovos na mesma cesta.",
+        "O mercado é um mecanismo que transfere dinheiro dos impacientes para os pacientes."
+    ];
 
-    // Estado local do jogador
-    let isSoloMode = false;
-    let myRoomName = "";
-    let myPlayerName = "";
-    let isLeader = false;
-    let currentMonth = 1;
-    let currentMoney = 1000;
-    let historyCapital = [1000];
-    let hasSubmittedThisMonth = false;
-
-    // Regras de Mercado e Histórico de Crises da Bolsa
-    // Meses com crise na bolsa configurados nativamente
-    const crisisMonths = [4, 9, 14, 19, 23];
-
-    // Configuração de investimentos dinâmica por período de fases
-    function getInvestmentOptions(phaseNum) {
-        if (phaseNum >= 1 && phaseNum <= 10) {
-            return {
-                A: { label: "🏢 Fundos Imobiliários", isSafe: false },
-                B: { label: "🟪 Caixinhas do Nubank", isSafe: true },
-                C: { label: "🏦 Poupança", isSafe: true },
-                D: { label: "📱 Comprar Um Iphone", isSafe: false }
-            };
-        } else if (phaseNum >= 11 && phaseNum <= 20) {
-            return {
-                A: { label: "📈 Ações", isSafe: false },
-                B: { label: "📜 Tesouro Direto", isSafe: true },
-                C: { label: "🐷 Porquinho do Banco Inter", isSafe: true },
-                D: { label: "👔 Comprar Roupas", isSafe: false }
-            };
-        } else {
-            return {
-                A: { label: "🪙 Criptomoedas", isSafe: false },
-                B: { label: "🏆 Pagar Interclasse", isSafe: false },
-                C: { label: "🏦 Poupança", isSafe: true },
-                D: { label: "⚡ Deixar No PIX", isSafe: true }
-            };
-        }
-    }
-
-    // Navegação de telas
     function switchScreen(screenId) {
-        document.getElementById('screen-home').classList.add('hidden');
-        document.getElementById('screen-solo').classList.add('hidden');
-        document.getElementById('screen-create').classList.add('hidden');
-        document.getElementById('screen-join').classList.add('hidden');
-        document.getElementById('screen-lobby').classList.add('hidden');
-        document.getElementById('screen-game').classList.add('hidden');
-        document.getElementById('screen-podium').classList.add('hidden');
+        document.querySelectorAll('body > div:not(#month-transition-overlay)').forEach(s => s.classList.add('hidden'));
         document.getElementById(screenId).classList.remove('hidden');
     }
 
-    // Iniciar modo Solo
     function actionStartSolo() {
         const nameInput = document.getElementById('solo-player-name').value.trim();
-        if(!nameInput) { alert("Insira um codinome!"); return; }
-        isSoloMode = true;
-        isLeader = true;
-        myPlayerName = nameInput;
-        myRoomName = "SOLO_" + Math.floor(Math.random() * 100000);
-        
-        currentMonth = 1;
-        currentMoney = 1000;
-        historyCapital = [1000];
-        hasSubmittedThisMonth = false;
-
-        renderGameplayScreen();
-        switchScreen('screen-game');
+        gameState.playerName = nameInput || "Trader Solo";
+        gameState.mode = 'solo';
+        setupGame();
     }
 
-    // Criar Sala Multiplayer (Líder)
     function actionCreateRoom() {
-        const roomName = document.getElementById('create-room-name').value.trim();
-        const roomPass = document.getElementById('create-room-pass').value.trim();
-        if(!roomName || !roomPass) { alert("Preencha os campos!"); return; }
-
-        isSoloMode = false;
-        isLeader = true;
-        myRoomName = roomName;
-        myPlayerName = "Líder_" + Math.floor(Math.random() * 900 + 100);
-
-        db.ref('rooms/' + myRoomName).set({
-            config: { password: roomPass, started: false, month: 1 },
-            players: {
-                [myPlayerName]: { money: 1000, submitted: false, choice: "" }
-            }
-        }).then(() => {
-            document.getElementById('lobby-room-title').innerText = myRoomName;
-            document.getElementById('lobby-leader-controls').classList.remove('hidden');
-            listenRoomData();
-            switchScreen('screen-lobby');
-        });
+        gameState.roomName = document.getElementById('create-room-name').value.trim() || "ETE-GP";
+        gameState.playerName = "Líder (Você)";
+        gameState.mode = 'multi';
+        openLobby();
     }
 
-    // Entrar em Sala existente
     function actionJoinRoom() {
-        const pName = document.getElementById('join-player-name').value.trim();
-        const rName = document.getElementById('join-room-name').value.trim();
-        const rPass = document.getElementById('join-room-pass').value.trim();
-        if(!pName || !rName || !rPass) { alert("Preencha todos os campos!"); return; }
-
-        isSoloMode = false;
-        isLeader = false;
-        myRoomName = rName;
-        myPlayerName = pName;
-
-        db.ref('rooms/' + myRoomName).once('value', snapshot => {
-            if(!snapshot.exists()) { alert("Sala não encontrada!"); return; }
-            const data = snapshot.val();
-            if(data.config.password !== rPass) { alert("Senha incorreta!"); return; }
-            if(data.config.started) { alert("Jogo já iniciado nesta sala!"); return; }
-
-            db.ref('rooms/' + myRoomName + '/players/' + myPlayerName).set({
-                money: 1000,
-                submitted: false,
-                choice: ""
-            }).then(() => {
-                document.getElementById('lobby-room-title').innerText = myRoomName;
-                document.getElementById('lobby-leader-controls').classList.add('hidden');
-                listenRoomData();
-                switchScreen('screen-lobby');
-            });
-        });
+        gameState.roomName = document.getElementById('join-room-name').value.trim() || "ETE-GP";
+        gameState.playerName = document.getElementById('join-player-name').value.trim() || "Guest Trader";
+        gameState.mode = 'multi';
+        openLobby();
     }
 
-    // Escuta em tempo real do Firebase para o Lobby e Gameplay
-    function listenRoomData() {
-        db.ref('rooms/' + myRoomName).on('value', snapshot => {
-            if(!snapshot.exists()) return;
-            const data = snapshot.val();
+    function openLobby() {
+        document.getElementById('lobby-room-title').innerText = gameState.roomName;
+        switchScreen('screen-lobby');
+        
+        // Simular a entrada de concorrentes fictícios no lobby
+        gameState.competitors = [
+            { name: "Dev_CIn", money: 1000 },
+            { name: "Alfonso_N", money: 1000 },
+            { name: "Elena_Crypto", money: 1000 },
+            { name: "M_Buffett", money: 1000 }
+        ];
 
-            // Sincronização de telas do Lobby
-            if(!data.config.started) {
-                const playerListElement = document.getElementById('lobby-player-list');
-                playerListElement.innerHTML = "";
-                const playersObj = data.players || {};
-                const playerNames = Object.keys(playersObj);
-                document.getElementById('lobby-count').innerText = playerNames.length;
-
-                playerNames.forEach(p => {
-                    const li = document.createElement('li');
-                    li.style.cssText = "padding:0.5rem; border-bottom:1px solid rgba(255,255,255,0.05); color:rgba(255,255,255,0.8); font-size:0.95rem;";
-                    li.innerText = "💼 " + p;
-                    playerListElement.appendChild(li);
-                });
-            } else {
-                // Sincronização em tempo real do progresso de meses durante o Gameplay
-                if (data.config.month !== currentMonth) {
-                    processMonthTransition(data.config.month, data.players);
-                } else {
-                    renderRealtimeCompetitors(data.players);
-                }
-            }
+        const listContainer = document.getElementById('lobby-player-list');
+        listContainer.innerHTML = `<li>👑 ${gameState.playerName} (Você)</li>`;
+        gameState.competitors.forEach(c => {
+            listContainer.innerHTML += `<li>👤 ${c.name} conectado</li>`;
         });
+
+        document.getElementById('lobby-count').innerText = "5";
+        document.getElementById('lobby-leader-controls').classList.remove('hidden');
     }
 
-    // Iniciar jogo oficial na sala
     function actionStartGame() {
-        db.ref('rooms/' + myRoomName + '/config').update({ started: true, month: 1 });
-        renderGameplayScreen();
+        setupGame();
+    }
+
+    function setupGame() {
+        gameState.currentMonth = 1;
+        gameState.currentMoney = 1000;
+        gameState.history = [1000];
+        
+        if (gameState.mode === 'solo') {
+            gameState.competitors = [
+                { name: "Bot Conservador", money: 1000 },
+                { name: "Bot Moderado", money: 1000 },
+                { name: "Bot Agressivo", money: 1000 },
+                { name: "Bot Trader", money: 1000 }
+            ];
+        }
+
+        updateGameUI();
         switchScreen('screen-game');
     }
 
-    // Renderizar a tela de decisões baseado no Mês (Fase) vigente
-    function renderGameplayScreen() {
-        const elGame = document.getElementById('screen-game');
+    function updateGameUI() {
+        document.getElementById('game-month-ring').innerText = gameState.currentMonth;
+        document.getElementById('game-current-month').innerText = `MÊS ${gameState.currentMonth} / ${gameState.maxMonths}`;
+        document.getElementById('game-player-identity').innerText = `Identidade: ${gameState.playerName} | Mercado Estável`;
+        document.getElementById('ui-current-money').innerText = gameState.currentMoney.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        // Definir se é mês de crise (ex: Mês 6 e Mês 18)
+        const isCrisis = (gameState.currentMonth === 6 || gameState.currentMonth === 18);
+        if (isCrisis) {
+            document.getElementById('crisis-alert').style.display = 'block';
+            document.getElementById('standard-options').style.display = 'none';
+            document.getElementById('crisis-options').style.display = 'flex';
+        } else {
+            document.getElementById('crisis-alert').style.display = 'none';
+            document.getElementById('standard-options').style.display = 'flex';
+            document.getElementById('crisis-options').style.display = 'none';
+        }
+
+        // Dinâmica de Cores de Fundo por Fase
+        const gameScreen = document.getElementById('screen-game');
+        gameScreen.className = "min-h-screen p-4 flex flex-col items-center transition-all duration-1000 ";
+        if (gameState.currentMoney < 1500) {
+            gameScreen.classList.add('game-phase-1');
+            document.getElementById('game-phase-badge').innerText = "Fase 1: Poupador";
+        } else if (gameState.currentMoney < 3000) {
+            gameScreen.classList.add('game-phase-2');
+            document.getElementById('game-phase-badge').innerText = "Fase 2: Investidor";
+        } else {
+            gameScreen.classList.add('game-phase-3');
+            document.getElementById('game-phase-badge').innerText = "Fase 3: Próspero";
+        }
+
+        renderChart();
+    }
+
+    function renderChart() {
+        const chart = document.getElementById('crypto-chart');
+        chart.innerHTML = '';
+        const maxVal = Math.max(...gameState.history, 1000);
         
-        // Atribuição de classes de cores de fundo de acordo com o intervalo das fases de 1 a 24
-        elGame.className = "min-h-screen p-4 flex flex-col items-center transition-all duration-1000";
-        if (currentMonth >= 1 && currentMonth <= 5) {
-            elGame.classList.add('game-phase-azul');
-        } else if (currentMonth >= 6 && currentMonth <= 10) {
-            elGame.classList.add('game-phase-preto');
-        } else if (currentMonth >= 11 && currentMonth <= 20) {
-            elGame.classList.add('game-phase-verde');
-        } else if (currentMonth >= 21 && currentMonth <= 24) {
-            elGame.classList.add('game-phase-laranja');
-        }
-
-        document.getElementById('game-month-ring').innerText = currentMonth;
-        document.getElementById('game-current-month').innerText = `MÊS ${currentMonth} / 24`;
-        document.getElementById('game-player-identity').innerText = `Codinome: ${myPlayerName} (${isSoloMode ? 'Modo Solo' : 'Multiplayer'})`;
-        document.getElementById('game-phase-badge').innerText = `FASE ${currentMonth}`;
-
-        // Alerta visual preventivo nativo de crise iminente
-        const isCrisisNext = crisisMonths.includes(currentMonth);
-        document.getElementById('crisis-alert').style.display = isCrisisNext ? 'block' : 'none';
-
-        // Atualizar textos dos botões de investimentos dinamicamente
-        const opts = getInvestmentOptions(currentMonth);
-        document.getElementById('btn-opt-a-label').innerText = opts.A.label;
-        document.getElementById('btn-opt-b-label').innerText = opts.B.label;
-        document.getElementById('btn-opt-c-label').innerText = opts.C.label;
-        document.getElementById('btn-opt-d-label').innerText = opts.D.label;
-
-        updateMoneyUI();
-        drawCapitalChart();
-
-        if (isLeader && !isSoloMode) {
-            document.getElementById('leader-force-next-btn').classList.remove('hidden');
-        } else {
-            document.getElementById('leader-force-next-btn').classList.add('hidden');
-        }
-
-        hasSubmittedThisMonth = false;
-        document.getElementById('game-waiting-text').innerText = "Selecione uma opção para encerrar seu turno.";
-    }
-
-    function updateMoneyUI() {
-        const uiMoney = document.getElementById('ui-current-money');
-        uiMoney.innerText = `R$ ${currentMoney.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        uiMoney.classList.add('money-pop');
-        setTimeout(() => uiMoney.classList.remove('money-pop'), 400);
-    }
-
-    // Submeter a escolha do turno atual
-    function submitTurn(choiceId) {
-        if(hasSubmittedThisMonth) return;
-        hasSubmittedThisMonth = true;
-        document.getElementById('game-waiting-text').innerText = "Aguardando processamento do mercado...";
-
-        if(isSoloMode) {
-            setTimeout(() => {
-                const soloPlayersMock = { [myPlayerName]: { choice: choiceId, money: currentMoney } };
-                processMonthTransition(currentMonth + 1, soloPlayersMock);
-            }, 600);
-        } else {
-            db.ref('rooms/' + myRoomName + '/players/' + myPlayerName).update({
-                submitted: true,
-                choice: choiceId,
-                money: currentMoney
-            }).then(() => {
-                checkRoomTurnResolution();
-            });
-        }
-    }
-
-    // Verificação de avanço pelo líder ou consenso de submissões completas
-    function checkRoomTurnResolution() {
-        if(!isLeader) return;
-        db.ref('rooms/' + myRoomName + '/players').once('value', snapshot => {
-            const players = snapshot.val() || {};
-            const keys = Object.keys(players);
-            const allReady = keys.every(k => players[k].submitted === true);
-            if(allReady) {
-                db.ref('rooms/' + myRoomName + '/config').update({ month: currentMonth + 1 });
-            }
+        gameState.history.forEach((value, index) => {
+            const bar = document.createElement('div');
+            const pct = (value / maxVal) * 100;
+            bar.style.height = `${pct}%`;
+            bar.className = "flex-1 bg-gradient-to-t from-amber-600 to-amber-400 rounded-t border-t border-amber-300 transition-all duration-500 chart-bar-enter";
+            bar.title = `Mês ${index + 1}: R$ ${value.toFixed(2)}`;
+            chart.appendChild(bar);
         });
     }
 
-    function actionLeaderForceNext() {
-        if(!isLeader) return;
-        db.ref('rooms/' + myRoomName + '/config').update({ month: currentMonth + 1 });
+    function submitTurn(choice) {
+        // Calcular rendimento do jogador principal
+        let yieldFactor = 1.01; // Rendimento padrão de segurança (Caixinha/Poupança)
+
+        if (choice === 'OPT_A') yieldFactor = 1.04; // Alto ganho potencial
+        if (choice === 'OPT_B') yieldFactor = 1.015; // Renda fixa estável
+        if (choice === 'OPT_C') yieldFactor = 1.005; // Poupança perde para inflação
+        if (choice === 'OPT_D') yieldFactor = 0.85; // Passivo desvaloriza
+
+        // Situações em crises
+        if (choice === 'MANTER') yieldFactor = 0.60; // Despenca se mantiver na crise
+        if (choice === 'RETIRAR') yieldFactor = 1.00; // Protege o capital na crise
+
+        // Aplicar aporte mensal de R$ 100 e aplicar rendimento
+        gameState.currentMoney = (gameState.currentMoney + 100) * yieldFactor;
+        gameState.history.push(gameState.currentMoney);
+
+        // Atualizar decisões e saldos dos concorrentes simulados (Bots)
+        gameState.competitors.forEach(c => {
+            let randomFactor = 0.95 + Math.random() * 0.12; 
+            c.money = (c.money + 100) * randomFactor;
+        });
+
+        if (gameState.currentMonth < gameState.maxMonths) {
+            triggerTransition();
+        } else {
+            endGame();
+        }
     }
 
-    // Processamento da virada de mês com as regras de mercado solicitadas para a crise
-    function processMonthTransition(nextMonth, roomPlayersData) {
-        // Obter escolha feita pelo jogador local
-        const myData = roomPlayersData[myPlayerName] || { choice: "OPT_B" };
-        const myChoice = myData.choice || "OPT_B";
-
-        // Determinação das características do investimento escolhido com base nas opções da fase atual
-        const opts = getInvestmentOptions(currentMonth);
-        let chosenMeta = opts.B; // fallback padrão seguro
-        if (myChoice === "OPT_A") chosenMeta = opts.A;
-        if (myChoice === "OPT_C") chosenMeta = opts.C;
-        if (myChoice === "OPT_D") chosenMeta = opts.D;
-
-        // Verificar se o mês vigente foi um mês de CRISE NA BOLSA
-        const absoluteCrisisOccurred = crisisMonths.includes(currentMonth);
-
-        if (absoluteCrisisOccurred) {
-            // Regra da Crise: Quem mantiver investimentos em ativos de segurança (deixa o dinheiro / renda fixa segura) ganha 50% a mais
-            // Quem aloca ou retira para ativos de risco (variáveis / compras de bens) perde 30%
-            if (chosenMeta.isSafe) {
-                currentMoney = currentMoney * 1.50;
-            } else {
-                currentMoney = currentMoney * 0.70;
-            }
-        } else {
-            // Rendimento de ciclo regular de mercado
-            if (chosenMeta.isSafe) {
-                currentMoney += 110; // Acréscimo fixo padrão
-            } else {
-                currentMoney += 140; // Renda variável performando regularmente
-            }
-        }
-
-        historyCapital.push(currentMoney);
-        currentMonth = nextMonth;
-
-        // Limpeza dos estados para o Firebase se multiplayer
-        if(!isSoloMode && isLeader) {
-            db.ref('rooms/' + myRoomName + '/players').once('value', snapshot => {
-                const players = snapshot.val() || {};
-                Object.keys(players).forEach(k => {
-                    db.ref('rooms/' + myRoomName + '/players/' + k).update({
-                        submitted: false,
-                        choice: ""
-                    });
-                });
-            });
-        }
-
-        // Exibir animação de cortina de transição
+    function triggerTransition() {
         const overlay = document.getElementById('month-transition-overlay');
-        document.getElementById('mto-month-num').innerText = currentMonth > 24 ? "FIM" : `MÊS ${currentMonth}`;
-        document.getElementById('mto-phase-label').innerText = `FASE ${currentMonth - 1} CONCLUÍDA`;
+        gameState.currentMonth++;
+        
+        document.getElementById('mto-month-num').innerText = `MÊS ${gameState.currentMonth}`;
+        document.getElementById('mto-motto').innerText = `"${phrases[Math.floor(Math.random() * phrases.length)]}"`;
 
         overlay.style.display = 'flex';
         overlay.className = "active phase-close";
 
         setTimeout(() => {
-            overlay.className = "active phase-show";
-            if (currentMonth > 24) {
-                displayFinalPodium(roomPlayersData);
-            } else {
-                renderGameplayScreen();
-            }
-        }, 500);
+            overlay.classList.add('phase-show');
+            updateGameUI();
+        }, 450);
 
         setTimeout(() => {
-            overlay.className = "";
-            overlay.style.display = 'none';
-        }, 1400);
+            overlay.className = "active";
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }, 1600);
     }
 
-    // Renderização em tempo real do painel inferior dos competidores
-    function renderRealtimeCompetitors(playersObj) {
-        const container = document.getElementById('game-realtime-players');
-        container.innerHTML = "";
-        if(!playersObj) return;
-
-        Object.keys(playersObj).forEach(k => {
-            const p = playersObj[k];
-            const box = document.createElement('div');
-            box.style.cssText = "background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:0.6rem; border-radius:8px; text-align:center;";
-            
-            if(p.submitted) box.style.borderColor = "var(--gold)";
-
-            box.innerHTML = `
-                <p style="font-size:0.8rem; font-weight:600; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${k}</p>
-                <p style="font-size:0.85rem; color:var(--gold-light); font-weight:700; margin-top:0.2rem;">R$ ${(p.money || 1000).currentTarget?.value || (p.money || 1000).toLocaleString('pt-BR', {maximumFractionDigits:0})}</p>
-                <span style="font-size:0.6rem; text-transform:uppercase; color:${p.submitted ? '#86efac' : '#fca5a5'}">${p.submitted ? '✓ Pronto' : '⏳ Pensando'}</span>
-            `;
-            container.appendChild(box);
-        });
-    }
-
-    // Geração do gráfico de linhas simplificado nativo do Capital
-    function drawCapitalChart() {
-        const chartContainer = document.getElementById('crypto-chart');
-        chartContainer.innerHTML = "";
-        
-        const maxVal = Math.max(...historyCapital, 1200);
-        const minVal = Math.min(...historyCapital, 800);
-        const range = (maxVal - minVal) || 1;
-
-        historyCapital.forEach((val, idx) => {
-            const bar = document.createElement('div');
-            const pct = ((val - minVal) / range) * 85 + 15;
-            bar.style.width = "100%";
-            bar.style.height = `${pct}%`;
-            bar.style.background = "linear-gradient(to top, var(--gold-dark), var(--gold))";
-            bar.style.borderRadius = "3px 3px 0 0";
-            bar.className = "chart-bar-enter";
-            if(idx === historyCapital.length - 1) bar.classList.add('bar-newest');
-
-            // Tooltip simples nativo
-            bar.title = `Mês ${idx}: R$ ${val.toFixed(2)}`;
-            chartContainer.appendChild(bar);
-        });
-    }
-
-    // Exibição e composição do Pódio Final com a Cor Ouro de fundo aplicada
-    function displayFinalPodium(finalPlayersData) {
+    function endGame() {
         switchScreen('screen-podium');
-        const container = document.getElementById('podium-list-container');
-        container.innerHTML = "";
+        const podiumList = document.getElementById('podium-list');
+        podiumList.innerHTML = '';
 
-        let leaderboard = [];
-        if(isSoloMode) {
-            leaderboard = [{ name: myPlayerName, money: currentMoney }];
-        } else {
-            leaderboard = Object.keys(finalPlayersData).map(k => {
-                return { name: k, money: finalPlayersData[k].money || 1000 };
-            });
-        }
+        // Montar a lista total de classificação
+        let leaderboard = [
+            { name: gameState.playerName + " (Você)", money: gameState.currentMoney },
+            ...gameState.competitors
+        ];
 
         // Ordenar do maior patrimônio para o menor
         leaderboard.sort((a, b) => b.money - a.money);
 
-        leaderboard.forEach((player, index) => {
+        const medals = ['🥇', '🥈', '🥉', '🏅', '🏅'];
+        leaderboard.forEach((user, index) => {
             const row = document.createElement('div');
-            const medals = ['🥇', '🥈', '🥉', '🏅', '🏅'];
-            const medal = medals[index] || '🏅';
-            const styles = [
-                'background:rgba(201,168,76,0.22);border:2px solid rgba(201,168,76,0.9);color:#000;font-weight:700;',
-                'background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#1e293b;',
-                'background:rgba(180,83,9,0.15);border:1px solid rgba(180,83,9,0.4);color:#451a03;',
-            ];
-            row.style.cssText = `display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-radius:10px;${styles[index] || 'background:rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.2);color:#334155;'} animation:fadeUp 0.5s ease ${index * 0.15}s both;`;
+            row.className = "flex justify-between items-center p-3 rounded-lg border border-white/10 bg-white/5 my-2 text-white";
             row.innerHTML = `
-                <div style="display:flex;align-items:center;gap:0.75rem;">
-                    <span style="font-size:1.5rem;">${medal}</span>
-                    <div>
-                        <p style="font-size:1.1rem;line-height:1.2;">${player.name} ${player.name === myPlayerName ? '<b>(Você)</b>' : ''}</p>
-                        <p style="font-size:0.75rem;opacity:0.7;">Classificação Oficial</p>
-                    </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xl">${medals[index] || '🏅'}</span>
+                    <span class="font-bold">${user.name}</span>
                 </div>
-                <div style="text-align:right;">
-                    <p style="font-size:1.2rem;font-weight:700;">R$ ${player.money.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                </div>
+                <span class="text-amber-400 font-mono font-bold">${user.money.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
             `;
-            container.appendChild(row);
+            podiumList.appendChild(row);
         });
     }
-
-    // Reiniciar os dados locais e de sala para permitir novas rodadas espontâneas
-    function actionRestartGameData() {
-        if(!isSoloMode) {
-            db.ref('rooms/' + myRoomName).remove();
-        }
-        currentMonth = 1;
-        currentMoney = 1000;
-        historyCapital = [1000];
-        hasSubmittedThisMonth = false;
-        switchScreen('screen-home');
-    }
 </script>
+
 </body>
 </html>
