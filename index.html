@@ -16,431 +16,79 @@
             --charcoal: #12121A;
             --ink: #1C1C28;
         }
-
         * { box-sizing: border-box; }
-
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background: var(--obsidian);
-            overflow-x: hidden;
-        }
+        body { font-family: 'Rajdhani', sans-serif; background: var(--obsidian); overflow-x: hidden; }
 
         /* ── MONTH TRANSITION OVERLAY ── */
-        #month-transition-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            pointer-events: none;
-            display: none;
-        }
-
-        #month-transition-overlay.active {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .mto-curtain-left, .mto-curtain-right {
-            position: absolute;
-            top: 0; bottom: 0;
-            width: 0;
-            background: var(--obsidian);
-            transition: width 0.45s cubic-bezier(0.77,0,0.18,1);
-        }
-        .mto-curtain-left { left: 0; }
-        .mto-curtain-right { right: 0; }
-
+        #month-transition-overlay { position:fixed;inset:0;z-index:9999;pointer-events:none;display:none; }
+        #month-transition-overlay.active { display:flex;flex-direction:column;align-items:center;justify-content:center; }
+        .mto-curtain-left,.mto-curtain-right { position:absolute;top:0;bottom:0;width:0;background:var(--obsidian);transition:width 0.45s cubic-bezier(0.77,0,0.18,1); }
+        .mto-curtain-left { left:0; }
+        .mto-curtain-right { right:0; }
         #month-transition-overlay.phase-close .mto-curtain-left,
-        #month-transition-overlay.phase-close .mto-curtain-right {
-            width: 52%;
-        }
-
-        .mto-content {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            opacity: 0;
-            transform: scale(0.8);
-            transition: opacity 0.3s ease 0.45s, transform 0.3s ease 0.45s;
-        }
-        #month-transition-overlay.phase-show .mto-content {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .mto-month-label {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(3rem, 10vw, 7rem);
-            font-weight: 900;
-            letter-spacing: 0.05em;
-            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
-        }
-
-        .mto-city-strip {
-            display: none !important;
-            display: flex;
-            gap: 8px;
-            margin-top: 1.5rem;
-            overflow: hidden;
-            border-radius: 8px;
-        }
-
-        .mto-city-strip img {
-            width: 120px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 6px;
-            filter: sepia(0.3) brightness(0.85);
-        }
-
-        .mto-divider {
-            width: 180px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            margin: 1rem auto;
-        }
-
-        .mto-tagline {
-            font-family: 'Cormorant Garamond', serif;
-            font-style: italic;
-            font-size: 1.1rem;
-            color: rgba(201,168,76,0.7);
-            letter-spacing: 0.15em;
-        }
-
-        /* Phase color shift on game screen */
-        #screen-game { transition: background 1.2s ease; }
+        #month-transition-overlay.phase-close .mto-curtain-right { width:52%; }
+        .mto-content { position:relative;z-index:10;text-align:center;opacity:0;transform:scale(0.8);transition:opacity 0.3s ease 0.45s,transform 0.3s ease 0.45s; }
+        #month-transition-overlay.phase-show .mto-content { opacity:1;transform:scale(1); }
+        .mto-month-label { font-family:'Playfair Display',serif;font-size:clamp(3rem,10vw,7rem);font-weight:900;letter-spacing:0.05em;background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1; }
+        .mto-city-strip { display:none !important; }
+        .mto-divider { width:180px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1rem auto; }
+        .mto-tagline { font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:rgba(201,168,76,0.7);letter-spacing:0.15em; }
 
         /* ── HOME SCREEN ── */
-        #screen-home {
-            position: relative;
-            overflow: hidden;
-            min-height: 100vh;
-            background: var(--obsidian);
-        }
+        #screen-game { transition:background 1.2s ease; }
+        #screen-home { position:relative;overflow:hidden;min-height:100vh;background:var(--obsidian); }
 
+        /* Fundo Nova York — Estátua da Liberdade e Manhattan */
         .home-bg-layer {
-            position: absolute;
-            inset: 0;
-            opacity: 0.35;
-            filter: brightness(0.75);
-            background: url("https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2070&auto=format&fit=crop") center/cover no-repeat;
+            position:absolute;inset:0;opacity:0.45;
+            filter:grayscale(0.1) brightness(0.65);
+            background:url("https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?q=80&w=2070&auto=format&fit=crop") center/cover no-repeat;
         }
+        .home-bg-overlay { position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,10,15,0.4) 0%,rgba(10,10,15,0.1) 40%,rgba(10,10,15,0.6) 70%,rgba(10,10,15,0.95) 100%); }
+        .home-gold-line { width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1rem auto; }
+        .home-content { position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem; }
+        .home-eyebrow { font-family:'Rajdhani',sans-serif;font-size:0.8rem;letter-spacing:0.4em;color:var(--gold);text-transform:uppercase;margin-bottom:0.5rem; }
+        .home-title { font-family:'Playfair Display',serif;font-size:clamp(2rem,8vw,4.5rem);font-weight:900;line-height:1.1;text-align:center;background:linear-gradient(135deg,#fff 0%,var(--gold-light) 50%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+        .home-subtitle { font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:rgba(240,208,128,0.7);letter-spacing:0.1em;text-align:center;margin-bottom:0.5rem; }
 
-        .home-bg-layer img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .home-bg-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(
-                to bottom,
-                rgba(10,10,15,0.4) 0%,
-                rgba(10,10,15,0.15) 40%,
-                rgba(10,10,15,0.5) 70%,
-                rgba(10,10,15,0.95) 100
-            );
-        }
-
-        .home-gold-line {
-            width: 120px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            margin: 1rem auto;
-        }
-
-        .home-content {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 2rem;
-        }
-
-        .home-eyebrow {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.8rem;
-            letter-spacing: 0.4em;
-            color: var(--gold);
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-
-        .home-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 8vw, 4.5rem);
-            font-weight: 900;
-            line-height: 1.1;
-            text-align: center;
-            background: linear-gradient(135deg, #fff 0%, var(--gold-light) 50%, var(--gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-
-        .home-subtitle {
-            font-family: 'Cormorant Garamond', serif;
-            font-style: italic;
-            font-size: 1.1rem;
-            color: rgba(240,208,128,0.7);
-            letter-spacing: 0.1em;
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-
-        /* City badges on home */
-        .city-badge-row {
-            display: flex;
-            gap: 1rem;
-            margin: 1.5rem 0;
-            align-items: center;
-        }
-
-        .city-badge {
-            position: relative;
-            overflow: hidden;
-            border-radius: 8px;
-            border: 1px solid rgba(201,168,76,0.3);
-            width: 90px;
-            height: 55px;
-        }
-
-        .city-badge img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(0.7) sepia(0.2);
-            transition: filter 0.3s;
-        }
-
-        .city-badge:hover img { filter: brightness(0.9) sepia(0); }
-
-        .city-badge-label {
-            position: absolute;
-            bottom: 4px;
-            left: 0; right: 0;
-            text-align: center;
-            font-size: 0.55rem;
-            letter-spacing: 0.15em;
-            color: var(--gold-light);
-            text-transform: uppercase;
-        }
+        /* City badges */
+        .city-badge-row { display:flex;gap:1rem;margin:1.5rem 0;align-items:center; }
+        .city-badge { position:relative;overflow:hidden;border-radius:8px;border:1px solid rgba(201,168,76,0.3);width:90px;height:55px; }
+        .city-badge-label { position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:0.55rem;letter-spacing:0.15em;color:var(--gold-light);text-transform:uppercase; }
 
         /* Buttons */
-        .btn-luxury {
-            position: relative;
-            overflow: hidden;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            padding: 0.85rem 1.5rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
+        .btn-luxury { position:relative;overflow:hidden;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.85rem 1.5rem;border-radius:6px;cursor:pointer;transition:all 0.25s ease; }
+        .btn-luxury::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.12),transparent);opacity:0;transition:opacity 0.25s; }
+        .btn-luxury:hover::before { opacity:1; }
+        .btn-luxury:hover { transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.4); }
+        .btn-gold { background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));color:var(--obsidian);border:none; }
+        .btn-dark { background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,0.2); }
+        .btn-dark:hover { border-color:var(--gold);color:var(--gold-light); }
 
-        .btn-luxury::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
-            opacity: 0;
-            transition: opacity 0.25s;
-        }
-        .btn-luxury:hover::before { opacity: 1; }
-        .btn-luxury:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
-
-        .btn-gold {
-            background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
-            color: var(--obsidian);
-            border: none;
-        }
-
-        .btn-dark {
-            background: rgba(255,255,255,0.05);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .btn-dark:hover { border-color: var(--gold); color: var(--gold-light); }
-
-        /* ── GAME SCREEN PHASES ── */
+        /* ── CORES DE FUNDO POR FASE ── */
         /* Fases 1-5: Azul Vitoriano */
-        .game-phase-azul { background: #002244 !important; }
+        .game-phase-victorian { background: #0d1a2e !important; }
         /* Fases 6-10: Preto Luxuoso */
-        .game-phase-preto { background: #0A0A0F !important; }
+        .game-phase-black     { background: #0a0a0f !important; }
         /* Fases 11-20: Verde Georgiano */
-        .game-phase-verde { background: #1F4E37 !important; }
+        .game-phase-georgian  { background: #0a1f0d !important; }
         /* Fases 21-24: Laranja */
-        .game-phase-laranja { background: #E65C00 !important; }
+        .game-phase-orange    { background: #1f0e00 !important; }
+        /* Pódio: Ouro */
+        .game-phase-gold      { background: #2a1f00 !important; }
 
-        /* Accent colors by phase */
-        .phase-accent-1 { color: #7dd3fc; }
-        .phase-accent-2 { color: #86efac; }
-        .phase-accent-3 { color: #fde68a; }
-        .phase-accent-4 { color: #f9a8d4; }
-        .phase-accent-5 { color: #67e8f9; }
-        .phase-accent-6 { color: #c4b5fd; }
-
-        /* Bar chart */
-        .chart-bar-enter {
-            animation: barGrow 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
-        }
-        @keyframes barGrow {
-            from { height: 0 !important; opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Sidebar city panel */
-        .city-panel {
-            position: fixed;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            padding: 8px;
-            z-index: 100;
-            opacity: 0.7;
-        }
-
-        .city-thumb {
-            width: 44px;
-            height: 44px;
-            border-radius: 4px;
-            object-fit: cover;
-            border: 1px solid rgba(201,168,76,0.2);
-            filter: grayscale(0.5) brightness(0.7);
-            transition: all 0.3s;
-        }
-        .city-thumb:hover {
-            filter: grayscale(0) brightness(1);
-            border-color: var(--gold);
-            width: 100px;
-        }
-
-        /* Luxury panel styles */
-        .luxury-card {
-            background: rgba(18,18,26,0.8);
-            border: 1px solid rgba(201,168,76,0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 14px;
-        }
-
-        /* Podium / Screen Podium Color Ouro */
-        #screen-podium {
-            background: #FFD700 !important;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .podium-bg {
-            position: absolute;
-            inset: 0;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            opacity: 0.08;
-            filter: grayscale(0.5);
-        }
-
-        .podium-bg img {
-            width: 100%; height: 100%; object-fit: cover;
-        }
-
-        /* Slide-in for screens */
-        @keyframes slideInRight {
-            from { transform: translateX(40px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes fadeUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .anim-slide-in { animation: slideInRight 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
-        .anim-fade-up  { animation: fadeUp 0.5s ease forwards; }
-
-        /* Month number ring in game */
-        .month-ring {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            border: 2px solid var(--gold);
-            background: rgba(201,168,76,0.08);
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 900;
-            color: var(--gold-light);
-            box-shadow: 0 0 20px rgba(201,168,76,0.2);
-            flex-shrink: 0;
-        }
-
-        .gold-text {
-            background: linear-gradient(135deg, var(--gold-light), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        input {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1rem;
-        }
-
-        /* Animate money value when it changes */
-        @keyframes moneyPop {
-            0%   { transform: scale(1); }
-            50%  { transform: scale(1.15); }
-            100% { transform: scale(1); }
-        }
-        .money-pop { animation: moneyPop 0.4s ease; }
-
-        /* Screen lobby city images */
-        .lobby-city-banner {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 12px;
-            filter: brightness(0.6) sepia(0.2);
-            border: 1px solid rgba(201,168,76,0.2);
-        }
-
-        /* Glow on game bar chart newest bar */
-        .bar-newest {
-            box-shadow: 0 0 12px 4px rgba(201,168,76,0.5);
-        }
-
-        /* Ticker tape decoration */
-        .gold-border-top {
-            border-top: 1px solid rgba(201,168,76,0.25);
-        }
-        .gold-border-bottom {
-            border-bottom: 1px solid rgba(201,168,76,0.25);
-        }
+        .luxury-card { background:rgba(18,18,26,0.8);border:1px solid rgba(201,168,76,0.2);backdrop-filter:blur(10px);border-radius:14px; }
+        @keyframes slideInRight { from{transform:translateX(40px);opacity:0} to{transform:translateX(0);opacity:1} }
+        @keyframes fadeUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+        .anim-slide-in { animation:slideInRight 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
+        .month-ring { display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:2px solid var(--gold);background:rgba(201,168,76,0.08);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--gold-light);box-shadow:0 0 20px rgba(201,168,76,0.2);flex-shrink:0; }
+        .gold-text { background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+        input { font-family:'Rajdhani',sans-serif;font-size:1rem; }
     </style>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
+<!-- TRANSIÇÃO DE MÊS -->
 <div id="month-transition-overlay">
     <div class="mto-curtain-left"></div>
     <div class="mto-curtain-right"></div>
@@ -450,54 +98,35 @@
         <div class="mto-month-label" id="mto-month-num">MÊS 2</div>
         <div class="mto-divider"></div>
         <div class="mto-city-strip" id="mto-city-strip"></div>
-        <p class="mto-tagline" style="margin-top:1rem; font-size:0.85rem;" id="mto-motto">"O tempo é o maior ativo do investidor."</p>
+        <p class="mto-tagline" style="margin-top:1rem;font-size:0.85rem;" id="mto-motto">"O tempo é o maior ativo do investidor."</p>
     </div>
 </div>
 
+<!-- TELA INICIAL -->
 <div id="screen-home" class="min-h-screen">
     <div class="home-bg-layer"></div>
     <div class="home-bg-overlay"></div>
-
     <div class="home-content">
         <p class="home-eyebrow">Jogo de Educação Financeira</p>
         <div class="home-gold-line"></div>
         <h1 class="home-title">CAMINHO PARA<br>A PROSPERIDADE</h1>
         <div class="home-gold-line"></div>
         <p class="home-subtitle">O mercado não espera. Nem você deveria.</p>
-
         <div class="city-badge-row">
-            <div class="city-badge">
-                <div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div>
-                <span class="city-badge-label">New York</span>
-            </div>
-            <div class="city-badge">
-                <div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div>
-                <span class="city-badge-label">Manhattan</span>
-            </div>
-            <div class="city-badge">
-                <div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div>
-                <span class="city-badge-label">Liberty</span>
-            </div>
+            <div class="city-badge"><div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div><span class="city-badge-label">New York</span></div>
+            <div class="city-badge"><div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div><span class="city-badge-label">Manhattan</span></div>
+            <div class="city-badge"><div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div><span class="city-badge-label">Liberty</span></div>
         </div>
-
         <div class="flex flex-col sm:flex-row gap-4 w-full max-w-xl mt-2">
-            <button onclick="switchScreen('screen-solo')" class="btn-luxury btn-gold flex-1">
-                ▶ Jogar Sozinho
-            </button>
-            <button onclick="switchScreen('screen-create')" class="btn-luxury btn-dark flex-1">
-                ⚑ Criar Sala (Líder)
-            </button>
-            <button onclick="switchScreen('screen-join')" class="btn-luxury btn-dark flex-1">
-                ↗ Entrar na Sala
-            </button>
+            <button onclick="switchScreen('screen-solo')" class="btn-luxury btn-gold flex-1">▶ Jogar Sozinho</button>
+            <button onclick="switchScreen('screen-create')" class="btn-luxury btn-dark flex-1">⚑ Criar Sala (Líder)</button>
+            <button onclick="switchScreen('screen-join')" class="btn-luxury btn-dark flex-1">↗ Entrar na Sala</button>
         </div>
-
-        <p style="margin-top:2.5rem; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:0.85rem; color:rgba(201,168,76,0.45); letter-spacing:0.12em; text-align:center;">
-            "Invista em conhecimento. O retorno é sempre o melhor." — Benjamin Franklin
-        </p>
+        <p style="margin-top:2.5rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.85rem;color:rgba(201,168,76,0.45);letter-spacing:0.12em;text-align:center;">"Invista em conhecimento. O retorno é sempre o melhor." — Benjamin Franklin</p>
     </div>
 </div>
 
+<!-- SOLO -->
 <div id="screen-solo" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
     <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0d1a2e;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
@@ -506,60 +135,51 @@
         <div class="space-y-4">
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Seu Codinome:</label>
-                <input id="solo-player-name" type="text" placeholder="Ex: Íkaro"
-                    style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;transition:border-color 0.2s;"
-                    onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="solo-player-name" type="text" placeholder="Ex: Íkaro" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
             </div>
-            <button onclick="actionStartSolo()" class="btn-luxury btn-gold" style="width:100%;margin-top:0.5rem;">
-                Iniciar Jornada →
-            </button>
-            <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">
-                ← Voltar
-            </button>
+            <button onclick="actionStartSolo()" class="btn-luxury btn-gold" style="width:100%;margin-top:0.5rem;">Iniciar Jornada →</button>
+            <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">← Voltar</button>
         </div>
     </div>
 </div>
 
+<!-- CRIAR SALA -->
 <div id="screen-create" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
-    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0a0a0f;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
         <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.25rem;">Administração</p>
         <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:1.5rem;">Painel do Líder</h2>
         <div class="space-y-4">
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Nome da Sala:</label>
-                <input id="create-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="create-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
             </div>
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Senha:</label>
-                <input id="create-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="create-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
             </div>
-            <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;">
-                <input id="create-room-public" type="checkbox" checked style="width:1.1rem;height:1.1rem;accent-color:var(--gold);">
-                <label for="create-room-public" style="font-size:0.85rem;color:rgba(255,255,255,0.7);">Sala Pública</label>
-            </div>
-            <button onclick="actionCreateRoom()" class="btn-luxury btn-gold" style="width:100%;">Criar Sala ⚑</button> <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">← Voltar</button>
+            <button onclick="actionCreateRoom()" class="btn-luxury btn-gold" style="width:100%;">Criar Sala ⚑</button>
+            <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">← Voltar</button>
         </div>
     </div>
 </div>
 
+<!-- ENTRAR NA SALA -->
 <div id="screen-join" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
-    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0a0a0f;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
         <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.25rem;">Acesso</p>
         <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:1.5rem;">Entrar no Mercado</h2>
         <div class="space-y-4">
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Seu Codinome:</label>
-                <input id="join-player-name" type="text" placeholder="Ex: Dev_CIn" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="join-player-name" type="text" placeholder="Ex: Dev_CIn" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
             </div>
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Nome da Sala:</label>
-                <input id="join-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="join-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
             </div>
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Senha:</label>
-                <input id="join-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="join-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
             </div>
             <button onclick="actionJoinRoom()" class="btn-luxury btn-gold" style="width:100%;">Entrar ↗</button>
             <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">← Voltar</button>
@@ -567,41 +187,27 @@
     </div>
 </div>
 
+<!-- LOBBY -->
 <div id="screen-lobby" class="hidden min-h-screen flex flex-col items-center justify-center p-6" style="background:var(--obsidian);">
-    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.08;background:#0d1a2e;"></div>
     <div class="relative z-10 w-full max-w-lg">
         <div style="text-align:center;margin-bottom:2rem;">
             <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;">Sala</p>
             <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#fff;" id="lobby-room-title">—</h2>
             <div class="home-gold-line"></div>
-            <p style="color:rgba(255,255,255,0.4);font-size:0.9rem;margin-top:0.5rem;">Aguardando formação do pódio de 5 jogadores...</p>
+            <p style="color:rgba(255,255,255,0.4);font-size:0.9rem;margin-top:0.5rem;">Aguardando formação do grupo de competidores...</p>
         </div>
-
-        <div style="width:100%;height:180px;border-radius:12px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);margin-bottom:1.5rem;"></div>
-
         <div class="luxury-card p-6">
-            <h3 style="font-size:0.8rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;">
-                Traders Conectados (<span id="lobby-count">0</span>/5)
-            </h3>
-            <ul id="lobby-player-list" style="list-style:none;padding:0;margin:0;space-y:0.5rem;"></ul>
+            <h3 style="font-size:0.8rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;">Traders Conectados (<span id="lobby-count">0</span>/5)</h3>
+            <ul id="lobby-player-list" class="space-y-2 text-white opacity-80"></ul>
         </div>
-
         <div id="lobby-leader-controls" class="hidden" style="margin-top:1.5rem;text-align:center;">
-            <button onclick="actionStartGame()" class="btn-luxury btn-gold" style="font-size:1.15rem;padding:1rem 3rem;letter-spacing:0.2em;">
-                ▶ STOP! Começar Jogo
-            </button>
+            <button onclick="actionStartGame()" class="btn-luxury btn-gold w-full" style="font-size:1.15rem;letter-spacing:0.2em;">▶ START! Começar Jogo</button>
         </div>
     </div>
 </div>
 
-<div id="screen-game" class="hidden min-h-screen p-4 flex flex-col items-center" style="transition:background 1.2s ease;">
-
-    <div class="city-panel hidden md:flex">
-        <div class="city-thumb" style="background:rgba(201,168,76,0.15);"></div>
-        <div class="city-thumb" style="background:rgba(201,168,76,0.1);"></div>
-        <div class="city-thumb" style="background:rgba(201,168,76,0.05);"></div>
-    </div>
-
+<!-- GAMEPLAY -->
+<div id="screen-game" class="hidden min-h-screen p-4 flex flex-col items-center game-phase-victorian">
     <div class="w-full max-w-4xl luxury-card p-4 mb-6 flex justify-between items-center anim-slide-in">
         <div style="display:flex;align-items:center;gap:1rem;">
             <div class="month-ring" id="game-month-ring">1</div>
@@ -628,9 +234,9 @@
                 <p style="font-size:0.7rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);text-transform:uppercase;">Evolução do Capital</p>
                 <span id="game-phase-badge" style="font-size:0.65rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;border:1px solid rgba(201,168,76,0.3);padding:0.2rem 0.6rem;border-radius:20px;">FASE 1</span>
             </div>
-            <div id="crypto-chart" style="display:flex;align-items:flex-end;justify-content:space-between;height:11rem;background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem;border:1px solid rgba(255,255,255,0.05);gap:3px;"></div>
+            <div id="crypto-chart" style="display:flex;align-items:flex-end;justify-content:space-between;height:11rem;background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem;border:1px solid rgba(255,255,255,0.05);gap:4px;"></div>
             <div id="crisis-alert" style="display:none;margin-top:1rem;padding:0.75rem;background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.4);border-radius:8px;color:#fca5a5;font-weight:700;font-size:0.9rem;">
-                ⚠️ CRISE SISTÊMICA — Mercado em colapso!
+                ⚠️ CRISE SISTÊMICA — Mercado em colapso! Escolha com cuidado.
             </div>
         </div>
 
@@ -638,494 +244,295 @@
             <div>
                 <p style="font-size:0.7rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:0.5rem;">Decisão do Mês</p>
                 <h4 style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:1.25rem;line-height:1.3;" id="investment-question-title">Onde alocar seus R$ 100 deste mês?</h4>
+
                 <div id="standard-options" style="display:flex;flex-direction:column;gap:0.6rem;">
-                    <button onclick="submitTurn('OPT_A')" id="btn-opt-a" style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(201,168,76,0.1)';this.style.borderColor='rgba(201,168,76,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(201,168,76,0.2)'">
-                        <span id="btn-opt-a-label">🏢 Fundos Imobiliários</span><span id="btn-opt-a-tag" style="font-size:0.7rem;color:#86efac;">Opção A</span>
+                    <button onclick="submitTurn('OPT_A')" class="w-full text-left bg-white/5 border border-amber-500/20 hover:border-amber-400 p-3 rounded-lg text-white flex justify-between items-center transition">
+                        <span id="opt-a-label">🏢 Fundos Imobiliários</span><span id="opt-a-tag" style="font-size:0.7rem;color:#86efac;">Renda Var.</span>
                     </button>
-                    <button onclick="submitTurn('OPT_B')" id="btn-opt-b" style="background:rgba(255,255,255,0.04);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(139,92,246,0.1)';this.style.borderColor='rgba(139,92,246,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(139,92,246,0.25)'">
-                        <span id="btn-opt-b-label">🟪 Caixinhas Nubank</span><span id="btn-opt-b-tag" style="font-size:0.7rem;color:#c4b5fd;">Opção B</span>
+                    <button onclick="submitTurn('OPT_B')" class="w-full text-left bg-white/5 border border-violet-500/20 hover:border-violet-400 p-3 rounded-lg text-white flex justify-between items-center transition">
+                        <span id="opt-b-label">🟪 Caixinhas Nubank</span><span id="opt-b-tag" style="font-size:0.7rem;color:#c4b5fd;">Renda Fixa</span>
                     </button>
-                    <button onclick="submitTurn('OPT_C')" id="btn-opt-c" style="background:rgba(255,255,255,0.04);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(251,191,36,0.08)';this.style.borderColor='rgba(251,191,36,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(251,191,36,0.2)'">
-                        <span id="btn-opt-c-label">🏦 Poupança</span><span id="btn-opt-c-tag" style="font-size:0.7rem;color:#fde68a;">Opção C</span>
+                    <button onclick="submitTurn('OPT_C')" class="w-full text-left bg-white/5 border border-yellow-500/20 hover:border-yellow-400 p-3 rounded-lg text-white flex justify-between items-center transition">
+                        <span id="opt-c-label">🏦 Poupança</span><span id="opt-c-tag" style="font-size:0.7rem;color:#fde68a;">Baixo Rend.</span>
                     </button>
-                    <button onclick="submitTurn('OPT_D')" id="btn-opt-d" style="background:rgba(255,255,255,0.04);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(239,68,68,0.08)';this.style.borderColor='rgba(239,68,68,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(239,68,68,0.2)'">
-                        <span id="btn-opt-d-label">📱 Comprar Um Iphone</span><span id="btn-opt-d-tag" style="font-size:0.7rem;color:#fca5a5;">Opção D</span>
+                    <button onclick="submitTurn('OPT_D')" class="w-full text-left bg-white/5 border border-red-500/20 hover:border-red-400 p-3 rounded-lg text-white flex justify-between items-center transition">
+                        <span id="opt-d-label">📱 Comprar um iPhone</span><span id="opt-d-tag" style="font-size:0.7rem;color:#fca5a5;">Passivo Fin.</span>
                     </button>
                 </div>
-            </div>
-            <div style="margin-top:1.5rem;border-top:1px solid rgba(255,255,255,0.06);padding-top:1rem;text-align:center;">
-                <p id="game-waiting-text" style="font-size:0.8rem;color:rgba(255,255,255,0.4);font-style:italic;">Selecione uma opção para encerrar seu turno.</p>
-                <button id="leader-force-next-btn" onclick="actionLeaderForceNext()" class="btn-luxury btn-dark hidden" style="font-size:0.75rem;padding:0.5rem 1rem;margin-top:0.5rem;width:100%;">
-                    Avançar Mês Espontaneamente (Líder)
-                </button>
+
+                <div id="crisis-options" style="display:none;flex-direction:column;gap:0.75rem;">
+                    <button onclick="submitTurn('MANTER')" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.4);border-radius:8px;padding:1rem;color:#86efac;cursor:pointer;font-weight:700;">📈 MANTER na Bolsa</button>
+                    <button onclick="submitTurn('RETIRAR')" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);border-radius:8px;padding:1rem;color:#fca5a5;cursor:pointer;font-weight:700;">📉 RETIRAR da Bolsa</button>
+                </div>
             </div>
         </div>
     </div>
-
-    <div class="w-full max-w-4xl luxury-card p-4 mt-6 anim-fade-up">
-        <p style="font-size:0.7rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:0.75rem;">Status dos Competidores</p>
-        <div id="game-realtime-players" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3"></div>
-    </div>
 </div>
 
-<div id="screen-podium" class="hidden min-h-screen p-6 flex flex-col items-center justify-center">
-    <div class="podium-bg"></div>
-    <div class="relative z-10 w-full max-w-xl text-center">
-        <p style="font-size:0.8rem;letter-spacing:0.4em;color:#000;text-transform:uppercase;font-weight:700;">Encerramento</p>
-        <h2 style="font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;color:#000;line-height:1.1;margin-bottom:0.5rem;">PÓDIO DA PROSPERIDADE</h2>
-        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;color:rgba(0,0,0,0.6);margin-bottom:2rem;">Os resultados do mercado foram consolidados.</p>
-
-        <div class="luxury-card p-6 text-left space-y-3" id="podium-list-container" style="background:rgba(10,10,15,0.95);border-color:rgba(0,0,0,0.2);"></div>
-
-        <button onclick="actionRestartGameData()" class="btn-luxury btn-gold mt-6" style="background:#000;color:#fff;padding:1rem 2.5rem;">
-            🔄 Jogar Novamente
-        </button>
+<!-- PÓDIO -->
+<div id="screen-podium" class="hidden min-h-screen flex flex-col justify-center items-center p-6 game-phase-gold" style="position:relative;">
+    <div class="relative z-10 w-full max-w-xl luxury-card p-8 text-center text-white">
+        <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;color:var(--gold-light);font-weight:900;margin-bottom:1rem;">🏆 PÓDIO FINAL</h2>
+        <p class="text-sm text-gray-400 mb-6 tracking-widest uppercase">Resultados da Corrida da Prosperidade</p>
+        <div id="podium-list" class="space-y-3 mb-8 text-left"></div>
+        <button onclick="switchScreen('screen-home')" class="btn-luxury btn-gold w-full">Jogar Novamente ↩</button>
     </div>
 </div>
 
 <script>
-    // Configuração fornecida pelo usuário
-    const firebaseConfig = {
-        apiKey: "AIzaSyAOwdcG0IJX0CPaFCTumAQ6mXfmpQn-0GE",
-        authDomain: "caminho-para-a-prosperidade.firebaseapp.com",
-        projectId: "caminho-para-a-prosperidade",
-        storageBucket: "caminho-para-a-prosperidade.firebasestorage.app",
-        messagingSenderId: "53883464834",
-        appId: "1:53883464834:web:b00e37cabcf5ad0bab989b",
-        measurementId: "G-MK8VQSTCTM"
+    // ── OPÇÕES DE INVESTIMENTO POR FASE ──────────────────────────────────
+    const PHASE_OPTIONS = {
+        early: [ // meses 1-10
+            { label: '🏢 Fundos Imobiliários',  tag: 'Renda Var.',   yf: 1.008 },
+            { label: '🟪 Caixinhas Nubank',      tag: 'Renda Fixa',   yf: 1.009 },
+            { label: '🏦 Poupança',              tag: 'Baixo Rend.',  yf: 1.005 },
+            { label: '📱 Comprar um iPhone',     tag: 'Passivo Fin.', yf: 0.85  },
+        ],
+        mid: [ // meses 11-20
+            { label: '📈 Ações',                 tag: 'Renda Var.',   yf: 1.012 },
+            { label: '🏛️ Tesouro Direto',         tag: 'Renda Fixa',   yf: 1.009 },
+            { label: '🐷 Porquinho Banco Inter', tag: 'Cofrinho',     yf: 1.006 },
+            { label: '👗 Comprar Roupas',         tag: 'Passivo Fin.', yf: 0.90  },
+        ],
+        late: [ // meses 21-24
+            { label: '₿ Criptomoedas',           tag: 'Alto Risco',   yf: 1.020 },
+            { label: '🎉 Pagar Interclasse',      tag: 'Gasto Social', yf: 0.92  },
+            { label: '🏦 Poupança',              tag: 'Baixo Rend.',  yf: 1.005 },
+            { label: '💸 Deixar no PIX',          tag: '0% Rend.',     yf: 1.000 },
+        ],
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // Estado local do jogador
-    let isSoloMode = false;
-    let myRoomName = "";
-    let myPlayerName = "";
-    let isLeader = false;
-    let currentMonth = 1;
-    let currentMoney = 1000;
-    let historyCapital = [1000];
-    let hasSubmittedThisMonth = false;
-
-    // Regras de Mercado e Histórico de Crises da Bolsa
-    // Meses com crise na bolsa configurados nativamente
-    const crisisMonths = [4, 9, 14, 19, 23];
-
-    // Configuração de investimentos dinâmica por período de fases
-    function getInvestmentOptions(phaseNum) {
-        if (phaseNum >= 1 && phaseNum <= 10) {
-            return {
-                A: { label: "🏢 Fundos Imobiliários", isSafe: false },
-                B: { label: "🟪 Caixinhas do Nubank", isSafe: true },
-                C: { label: "🏦 Poupança", isSafe: true },
-                D: { label: "📱 Comprar Um Iphone", isSafe: false }
-            };
-        } else if (phaseNum >= 11 && phaseNum <= 20) {
-            return {
-                A: { label: "📈 Ações", isSafe: false },
-                B: { label: "📜 Tesouro Direto", isSafe: true },
-                C: { label: "🐷 Porquinho do Banco Inter", isSafe: true },
-                D: { label: "👔 Comprar Roupas", isSafe: false }
-            };
-        } else {
-            return {
-                A: { label: "🪙 Criptomoedas", isSafe: false },
-                B: { label: "🏆 Pagar Interclasse", isSafe: false },
-                C: { label: "🏦 Poupança", isSafe: true },
-                D: { label: "⚡ Deixar No PIX", isSafe: true }
-            };
-        }
+    function getOptions(month) {
+        if (month <= 10) return PHASE_OPTIONS.early;
+        if (month <= 20) return PHASE_OPTIONS.mid;
+        return PHASE_OPTIONS.late;
     }
 
-    // Navegação de telas
+    const phrases = [
+        "O tempo é o maior ativo do investidor.",
+        "Risco vem de não saber o que você está fazendo.",
+        "Não coloque todos os ovos na mesma cesta.",
+        "O mercado transfere dinheiro dos impacientes para os pacientes."
+    ];
+
+    // ── ESTADO ────────────────────────────────────────────────────────────
+    let gameState = {
+        playerName: "Trader",
+        roomName: "Solo",
+        currentMonth: 1,
+        maxMonths: 24,
+        currentMoney: 1000,
+        history: [1000],
+        mode: 'solo',
+        crisisEffect: null, // 'ganhar' ou 'perder' — aplicado no mês seguinte à crise
+        competitors: []
+    };
+
+    // ── TELAS ─────────────────────────────────────────────────────────────
     function switchScreen(screenId) {
-        document.getElementById('screen-home').classList.add('hidden');
-        document.getElementById('screen-solo').classList.add('hidden');
-        document.getElementById('screen-create').classList.add('hidden');
-        document.getElementById('screen-join').classList.add('hidden');
-        document.getElementById('screen-lobby').classList.add('hidden');
-        document.getElementById('screen-game').classList.add('hidden');
-        document.getElementById('screen-podium').classList.add('hidden');
+        document.querySelectorAll('body > div:not(#month-transition-overlay)').forEach(s => s.classList.add('hidden'));
         document.getElementById(screenId).classList.remove('hidden');
     }
 
-    // Iniciar modo Solo
+    // ── SOLO ──────────────────────────────────────────────────────────────
     function actionStartSolo() {
         const nameInput = document.getElementById('solo-player-name').value.trim();
-        if(!nameInput) { alert("Insira um codinome!"); return; }
-        isSoloMode = true;
-        isLeader = true;
-        myPlayerName = nameInput;
-        myRoomName = "SOLO_" + Math.floor(Math.random() * 100000);
-        
-        currentMonth = 1;
-        currentMoney = 1000;
-        historyCapital = [1000];
-        hasSubmittedThisMonth = false;
-
-        renderGameplayScreen();
-        switchScreen('screen-game');
+        gameState.playerName = nameInput || "Trader Solo";
+        gameState.mode = 'solo';
+        setupGame();
     }
 
-    // Criar Sala Multiplayer (Líder)
+    // ── CRIAR SALA ────────────────────────────────────────────────────────
     function actionCreateRoom() {
-        const roomName = document.getElementById('create-room-name').value.trim();
-        const roomPass = document.getElementById('create-room-pass').value.trim();
-        if(!roomName || !roomPass) { alert("Preencha os campos!"); return; }
-
-        isSoloMode = false;
-        isLeader = true;
-        myRoomName = roomName;
-        myPlayerName = "Líder_" + Math.floor(Math.random() * 900 + 100);
-
-        db.ref('rooms/' + myRoomName).set({
-            config: { password: roomPass, started: false, month: 1 },
-            players: {
-                [myPlayerName]: { money: 1000, submitted: false, choice: "" }
-            }
-        }).then(() => {
-            document.getElementById('lobby-room-title').innerText = myRoomName;
-            document.getElementById('lobby-leader-controls').classList.remove('hidden');
-            listenRoomData();
-            switchScreen('screen-lobby');
-        });
+        gameState.roomName = document.getElementById('create-room-name').value.trim() || "ETE-GP";
+        gameState.playerName = "Líder (Você)";
+        gameState.mode = 'multi';
+        openLobby();
     }
 
-    // Entrar em Sala existente
     function actionJoinRoom() {
-        const pName = document.getElementById('join-player-name').value.trim();
-        const rName = document.getElementById('join-room-name').value.trim();
-        const rPass = document.getElementById('join-room-pass').value.trim();
-        if(!pName || !rName || !rPass) { alert("Preencha todos os campos!"); return; }
-
-        isSoloMode = false;
-        isLeader = false;
-        myRoomName = rName;
-        myPlayerName = pName;
-
-        db.ref('rooms/' + myRoomName).once('value', snapshot => {
-            if(!snapshot.exists()) { alert("Sala não encontrada!"); return; }
-            const data = snapshot.val();
-            if(data.config.password !== rPass) { alert("Senha incorreta!"); return; }
-            if(data.config.started) { alert("Jogo já iniciado nesta sala!"); return; }
-
-            db.ref('rooms/' + myRoomName + '/players/' + myPlayerName).set({
-                money: 1000,
-                submitted: false,
-                choice: ""
-            }).then(() => {
-                document.getElementById('lobby-room-title').innerText = myRoomName;
-                document.getElementById('lobby-leader-controls').classList.add('hidden');
-                listenRoomData();
-                switchScreen('screen-lobby');
-            });
-        });
+        gameState.roomName = document.getElementById('join-room-name').value.trim() || "ETE-GP";
+        gameState.playerName = document.getElementById('join-player-name').value.trim() || "Guest Trader";
+        gameState.mode = 'multi';
+        openLobby();
     }
 
-    // Escuta em tempo real do Firebase para o Lobby e Gameplay
-    function listenRoomData() {
-        db.ref('rooms/' + myRoomName).on('value', snapshot => {
-            if(!snapshot.exists()) return;
-            const data = snapshot.val();
-
-            // Sincronização de telas do Lobby
-            if(!data.config.started) {
-                const playerListElement = document.getElementById('lobby-player-list');
-                playerListElement.innerHTML = "";
-                const playersObj = data.players || {};
-                const playerNames = Object.keys(playersObj);
-                document.getElementById('lobby-count').innerText = playerNames.length;
-
-                playerNames.forEach(p => {
-                    const li = document.createElement('li');
-                    li.style.cssText = "padding:0.5rem; border-bottom:1px solid rgba(255,255,255,0.05); color:rgba(255,255,255,0.8); font-size:0.95rem;";
-                    li.innerText = "💼 " + p;
-                    playerListElement.appendChild(li);
-                });
-            } else {
-                // Sincronização em tempo real do progresso de meses durante o Gameplay
-                if (data.config.month !== currentMonth) {
-                    processMonthTransition(data.config.month, data.players);
-                } else {
-                    renderRealtimeCompetitors(data.players);
-                }
-            }
-        });
+    function openLobby() {
+        document.getElementById('lobby-room-title').innerText = gameState.roomName;
+        switchScreen('screen-lobby');
+        gameState.competitors = [
+            { name: "Dev_CIn",      money: 1000 },
+            { name: "Alfonso_N",    money: 1000 },
+            { name: "Elena_Crypto", money: 1000 },
+            { name: "M_Buffett",    money: 1000 }
+        ];
+        const listContainer = document.getElementById('lobby-player-list');
+        listContainer.innerHTML = `<li>👑 ${gameState.playerName} (Você)</li>`;
+        gameState.competitors.forEach(c => { listContainer.innerHTML += `<li>👤 ${c.name} conectado</li>`; });
+        document.getElementById('lobby-count').innerText = "5";
+        document.getElementById('lobby-leader-controls').classList.remove('hidden');
     }
 
-    // Iniciar jogo oficial na sala
-    function actionStartGame() {
-        db.ref('rooms/' + myRoomName + '/config').update({ started: true, month: 1 });
-        renderGameplayScreen();
+    function actionStartGame() { setupGame(); }
+
+    // ── SETUP ─────────────────────────────────────────────────────────────
+    function setupGame() {
+        gameState.currentMonth = 1;
+        gameState.currentMoney = 1000;
+        gameState.history = [1000];
+        gameState.crisisEffect = null;
+        if (gameState.mode === 'solo') {
+            gameState.competitors = [
+                { name: "Bot Conservador", money: 1000 },
+                { name: "Bot Moderado",    money: 1000 },
+                { name: "Bot Agressivo",   money: 1000 },
+                { name: "Bot Trader",      money: 1000 }
+            ];
+        }
+        updateGameUI();
         switchScreen('screen-game');
     }
 
-    // Renderizar a tela de decisões baseado no Mês (Fase) vigente
-    function renderGameplayScreen() {
-        const elGame = document.getElementById('screen-game');
-        
-        // Atribuição de classes de cores de fundo de acordo com o intervalo das fases de 1 a 24
-        elGame.className = "min-h-screen p-4 flex flex-col items-center transition-all duration-1000";
-        if (currentMonth >= 1 && currentMonth <= 5) {
-            elGame.classList.add('game-phase-azul');
-        } else if (currentMonth >= 6 && currentMonth <= 10) {
-            elGame.classList.add('game-phase-preto');
-        } else if (currentMonth >= 11 && currentMonth <= 20) {
-            elGame.classList.add('game-phase-verde');
-        } else if (currentMonth >= 21 && currentMonth <= 24) {
-            elGame.classList.add('game-phase-laranja');
-        }
+    // ── UPDATE UI ─────────────────────────────────────────────────────────
+    function updateGameUI() {
+        const month = gameState.currentMonth;
+        document.getElementById('game-month-ring').innerText = month;
+        document.getElementById('game-current-month').innerText = `MÊS ${month} / ${gameState.maxMonths}`;
+        document.getElementById('game-player-identity').innerText = `Identidade: ${gameState.playerName}`;
+        document.getElementById('ui-current-money').innerText =
+            gameState.currentMoney.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
 
-        document.getElementById('game-month-ring').innerText = currentMonth;
-        document.getElementById('game-current-month').innerText = `MÊS ${currentMonth} / 24`;
-        document.getElementById('game-player-identity').innerText = `Codinome: ${myPlayerName} (${isSoloMode ? 'Modo Solo' : 'Multiplayer'})`;
-        document.getElementById('game-phase-badge').innerText = `FASE ${currentMonth}`;
+        // Cor de fundo por fase
+        const gs = document.getElementById('screen-game');
+        gs.classList.remove('game-phase-victorian','game-phase-black','game-phase-georgian','game-phase-orange');
+        if      (month <= 5)  gs.classList.add('game-phase-victorian');
+        else if (month <= 10) gs.classList.add('game-phase-black');
+        else if (month <= 20) gs.classList.add('game-phase-georgian');
+        else                  gs.classList.add('game-phase-orange');
 
-        // Alerta visual preventivo nativo de crise iminente
-        const isCrisisNext = crisisMonths.includes(currentMonth);
-        document.getElementById('crisis-alert').style.display = isCrisisNext ? 'block' : 'none';
+        // Badge
+        const badge = document.getElementById('game-phase-badge');
+        if      (month <= 5)  badge.innerText = 'Fase 1–5: Poupador';
+        else if (month <= 10) badge.innerText = 'Fase 6–10: Aprendiz';
+        else if (month <= 20) badge.innerText = 'Fase 11–20: Investidor';
+        else                  badge.innerText = 'Fase 21–24: Magnata';
 
-        // Atualizar textos dos botões de investimentos dinamicamente
-        const opts = getInvestmentOptions(currentMonth);
-        document.getElementById('btn-opt-a-label').innerText = opts.A.label;
-        document.getElementById('btn-opt-b-label').innerText = opts.B.label;
-        document.getElementById('btn-opt-c-label').innerText = opts.C.label;
-        document.getElementById('btn-opt-d-label').innerText = opts.D.label;
+        // Opções dinâmicas
+        const opts = getOptions(month);
+        document.getElementById('opt-a-label').innerText = opts[0].label;
+        document.getElementById('opt-a-tag').innerText   = opts[0].tag;
+        document.getElementById('opt-b-label').innerText = opts[1].label;
+        document.getElementById('opt-b-tag').innerText   = opts[1].tag;
+        document.getElementById('opt-c-label').innerText = opts[2].label;
+        document.getElementById('opt-c-tag').innerText   = opts[2].tag;
+        document.getElementById('opt-d-label').innerText = opts[3].label;
+        document.getElementById('opt-d-tag').innerText   = opts[3].tag;
 
-        updateMoneyUI();
-        drawCapitalChart();
+        // Crise nos meses 6 e 18
+        const isCrisis = (month === 6 || month === 18);
+        document.getElementById('crisis-alert').style.display     = isCrisis ? 'block' : 'none';
+        document.getElementById('standard-options').style.display = isCrisis ? 'none'  : 'flex';
+        document.getElementById('crisis-options').style.display   = isCrisis ? 'flex'  : 'none';
 
-        if (isLeader && !isSoloMode) {
-            document.getElementById('leader-force-next-btn').classList.remove('hidden');
-        } else {
-            document.getElementById('leader-force-next-btn').classList.add('hidden');
-        }
-
-        hasSubmittedThisMonth = false;
-        document.getElementById('game-waiting-text').innerText = "Selecione uma opção para encerrar seu turno.";
+        renderChart();
     }
 
-    function updateMoneyUI() {
-        const uiMoney = document.getElementById('ui-current-money');
-        uiMoney.innerText = `R$ ${currentMoney.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        uiMoney.classList.add('money-pop');
-        setTimeout(() => uiMoney.classList.remove('money-pop'), 400);
-    }
-
-    // Submeter a escolha do turno atual
-    function submitTurn(choiceId) {
-        if(hasSubmittedThisMonth) return;
-        hasSubmittedThisMonth = true;
-        document.getElementById('game-waiting-text').innerText = "Aguardando processamento do mercado...";
-
-        if(isSoloMode) {
-            setTimeout(() => {
-                const soloPlayersMock = { [myPlayerName]: { choice: choiceId, money: currentMoney } };
-                processMonthTransition(currentMonth + 1, soloPlayersMock);
-            }, 600);
-        } else {
-            db.ref('rooms/' + myRoomName + '/players/' + myPlayerName).update({
-                submitted: true,
-                choice: choiceId,
-                money: currentMoney
-            }).then(() => {
-                checkRoomTurnResolution();
-            });
-        }
-    }
-
-    // Verificação de avanço pelo líder ou consenso de submissões completas
-    function checkRoomTurnResolution() {
-        if(!isLeader) return;
-        db.ref('rooms/' + myRoomName + '/players').once('value', snapshot => {
-            const players = snapshot.val() || {};
-            const keys = Object.keys(players);
-            const allReady = keys.every(k => players[k].submitted === true);
-            if(allReady) {
-                db.ref('rooms/' + myRoomName + '/config').update({ month: currentMonth + 1 });
-            }
+    // ── GRÁFICO ───────────────────────────────────────────────────────────
+    function renderChart() {
+        const chart = document.getElementById('crypto-chart');
+        chart.innerHTML = '';
+        const maxVal = Math.max(...gameState.history, 1000);
+        gameState.history.forEach((value, index) => {
+            const bar = document.createElement('div');
+            const pct = (value / maxVal) * 100;
+            bar.style.cssText = `height:${Math.max(pct,4)}%;flex:1;border-radius:4px 4px 0 0;transition:height 0.5s ease;`;
+            bar.style.background = index === gameState.history.length - 1
+                ? 'linear-gradient(to top,#8B6914,#F0D080)'
+                : 'linear-gradient(to top,rgba(255,255,255,0.1),rgba(255,255,255,0.22))';
+            bar.title = `Mês ${index + 1}: R$ ${value.toFixed(2)}`;
+            chart.appendChild(bar);
         });
     }
 
-    function actionLeaderForceNext() {
-        if(!isLeader) return;
-        db.ref('rooms/' + myRoomName + '/config').update({ month: currentMonth + 1 });
+    // ── SUBMETER ESCOLHA ──────────────────────────────────────────────────
+    function submitTurn(choice) {
+        const month = gameState.currentMonth;
+        const isCrisis = (month === 6 || month === 18);
+        let yf = 1.01;
+
+        if (isCrisis) {
+            // No mês da crise: registra o efeito para o próximo mês
+            // MANTER → próximo mês ganha 50% a mais
+            // RETIRAR → próximo mês perde 30%
+            gameState.crisisEffect = (choice === 'MANTER') ? 'ganhar' : 'perder';
+            yf = 1.00; // mês da crise: capital neutro (sem aporte)
+            gameState.currentMoney = gameState.currentMoney * yf;
+        } else {
+            const opts = getOptions(month);
+            const map = { OPT_A: opts[0].yf, OPT_B: opts[1].yf, OPT_C: opts[2].yf, OPT_D: opts[3].yf };
+            yf = map[choice] !== undefined ? map[choice] : 1.01;
+
+            // Aplicar efeito da crise do mês anterior
+            if (gameState.crisisEffect === 'ganhar') {
+                yf *= 1.50;
+                gameState.crisisEffect = null;
+            } else if (gameState.crisisEffect === 'perder') {
+                yf *= 0.70;
+                gameState.crisisEffect = null;
+            }
+
+            gameState.currentMoney = (gameState.currentMoney + 100) * yf;
+        }
+
+        gameState.history.push(gameState.currentMoney);
+
+        // Bots
+        gameState.competitors.forEach(c => {
+            c.money = (c.money + 100) * (0.95 + Math.random() * 0.12);
+        });
+
+        if (gameState.currentMonth < gameState.maxMonths) {
+            triggerTransition();
+        } else {
+            endGame();
+        }
     }
 
-    // Processamento da virada de mês com as regras de mercado solicitadas para a crise
-    function processMonthTransition(nextMonth, roomPlayersData) {
-        // Obter escolha feita pelo jogador local
-        const myData = roomPlayersData[myPlayerName] || { choice: "OPT_B" };
-        const myChoice = myData.choice || "OPT_B";
-
-        // Determinação das características do investimento escolhido com base nas opções da fase atual
-        const opts = getInvestmentOptions(currentMonth);
-        let chosenMeta = opts.B; // fallback padrão seguro
-        if (myChoice === "OPT_A") chosenMeta = opts.A;
-        if (myChoice === "OPT_C") chosenMeta = opts.C;
-        if (myChoice === "OPT_D") chosenMeta = opts.D;
-
-        // Verificar se o mês vigente foi um mês de CRISE NA BOLSA
-        const absoluteCrisisOccurred = crisisMonths.includes(currentMonth);
-
-        if (absoluteCrisisOccurred) {
-            // Regra da Crise: Quem mantiver investimentos em ativos de segurança (deixa o dinheiro / renda fixa segura) ganha 50% a mais
-            // Quem aloca ou retira para ativos de risco (variáveis / compras de bens) perde 30%
-            if (chosenMeta.isSafe) {
-                currentMoney = currentMoney * 1.50;
-            } else {
-                currentMoney = currentMoney * 0.70;
-            }
-        } else {
-            // Rendimento de ciclo regular de mercado
-            if (chosenMeta.isSafe) {
-                currentMoney += 110; // Acréscimo fixo padrão
-            } else {
-                currentMoney += 140; // Renda variável performando regularmente
-            }
-        }
-
-        historyCapital.push(currentMoney);
-        currentMonth = nextMonth;
-
-        // Limpeza dos estados para o Firebase se multiplayer
-        if(!isSoloMode && isLeader) {
-            db.ref('rooms/' + myRoomName + '/players').once('value', snapshot => {
-                const players = snapshot.val() || {};
-                Object.keys(players).forEach(k => {
-                    db.ref('rooms/' + myRoomName + '/players/' + k).update({
-                        submitted: false,
-                        choice: ""
-                    });
-                });
-            });
-        }
-
-        // Exibir animação de cortina de transição
+    // ── TRANSIÇÃO ─────────────────────────────────────────────────────────
+    function triggerTransition() {
         const overlay = document.getElementById('month-transition-overlay');
-        document.getElementById('mto-month-num').innerText = currentMonth > 24 ? "FIM" : `MÊS ${currentMonth}`;
-        document.getElementById('mto-phase-label').innerText = `FASE ${currentMonth - 1} CONCLUÍDA`;
-
+        gameState.currentMonth++;
+        document.getElementById('mto-month-num').innerText = `MÊS ${gameState.currentMonth}`;
+        document.getElementById('mto-motto').innerText = `"${phrases[Math.floor(Math.random() * phrases.length)]}"`;
         overlay.style.display = 'flex';
         overlay.className = "active phase-close";
-
-        setTimeout(() => {
-            overlay.className = "active phase-show";
-            if (currentMonth > 24) {
-                displayFinalPodium(roomPlayersData);
-            } else {
-                renderGameplayScreen();
-            }
-        }, 500);
-
-        setTimeout(() => {
-            overlay.className = "";
-            overlay.style.display = 'none';
-        }, 1400);
+        setTimeout(() => { overlay.classList.add('phase-show'); updateGameUI(); }, 450);
+        setTimeout(() => { overlay.className = "active"; setTimeout(() => { overlay.style.display = 'none'; }, 300); }, 1600);
     }
 
-    // Renderização em tempo real do painel inferior dos competidores
-    function renderRealtimeCompetitors(playersObj) {
-        const container = document.getElementById('game-realtime-players');
-        container.innerHTML = "";
-        if(!playersObj) return;
-
-        Object.keys(playersObj).forEach(k => {
-            const p = playersObj[k];
-            const box = document.createElement('div');
-            box.style.cssText = "background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:0.6rem; border-radius:8px; text-align:center;";
-            
-            if(p.submitted) box.style.borderColor = "var(--gold)";
-
-            box.innerHTML = `
-                <p style="font-size:0.8rem; font-weight:600; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${k}</p>
-                <p style="font-size:0.85rem; color:var(--gold-light); font-weight:700; margin-top:0.2rem;">R$ ${(p.money || 1000).currentTarget?.value || (p.money || 1000).toLocaleString('pt-BR', {maximumFractionDigits:0})}</p>
-                <span style="font-size:0.6rem; text-transform:uppercase; color:${p.submitted ? '#86efac' : '#fca5a5'}">${p.submitted ? '✓ Pronto' : '⏳ Pensando'}</span>
-            `;
-            container.appendChild(box);
-        });
-    }
-
-    // Geração do gráfico de linhas simplificado nativo do Capital
-    function drawCapitalChart() {
-        const chartContainer = document.getElementById('crypto-chart');
-        chartContainer.innerHTML = "";
-        
-        const maxVal = Math.max(...historyCapital, 1200);
-        const minVal = Math.min(...historyCapital, 800);
-        const range = (maxVal - minVal) || 1;
-
-        historyCapital.forEach((val, idx) => {
-            const bar = document.createElement('div');
-            const pct = ((val - minVal) / range) * 85 + 15;
-            bar.style.width = "100%";
-            bar.style.height = `${pct}%`;
-            bar.style.background = "linear-gradient(to top, var(--gold-dark), var(--gold))";
-            bar.style.borderRadius = "3px 3px 0 0";
-            bar.className = "chart-bar-enter";
-            if(idx === historyCapital.length - 1) bar.classList.add('bar-newest');
-
-            // Tooltip simples nativo
-            bar.title = `Mês ${idx}: R$ ${val.toFixed(2)}`;
-            chartContainer.appendChild(bar);
-        });
-    }
-
-    // Exibição e composição do Pódio Final com a Cor Ouro de fundo aplicada
-    function displayFinalPodium(finalPlayersData) {
+    // ── PÓDIO FINAL ───────────────────────────────────────────────────────
+    function endGame() {
         switchScreen('screen-podium');
-        const container = document.getElementById('podium-list-container');
-        container.innerHTML = "";
-
-        let leaderboard = [];
-        if(isSoloMode) {
-            leaderboard = [{ name: myPlayerName, money: currentMoney }];
-        } else {
-            leaderboard = Object.keys(finalPlayersData).map(k => {
-                return { name: k, money: finalPlayersData[k].money || 1000 };
-            });
-        }
-
-        // Ordenar do maior patrimônio para o menor
+        const podiumList = document.getElementById('podium-list');
+        podiumList.innerHTML = '';
+        let leaderboard = [
+            { name: gameState.playerName + " (Você)", money: gameState.currentMoney },
+            ...gameState.competitors
+        ];
         leaderboard.sort((a, b) => b.money - a.money);
-
-        leaderboard.forEach((player, index) => {
+        const medals = ['🥇','🥈','🥉','🏅','🏅'];
+        leaderboard.forEach((user, index) => {
             const row = document.createElement('div');
-            const medals = ['🥇', '🥈', '🥉', '🏅', '🏅'];
-            const medal = medals[index] || '🏅';
-            const styles = [
-                'background:rgba(201,168,76,0.22);border:2px solid rgba(201,168,76,0.9);color:#000;font-weight:700;',
-                'background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#1e293b;',
-                'background:rgba(180,83,9,0.15);border:1px solid rgba(180,83,9,0.4);color:#451a03;',
-            ];
-            row.style.cssText = `display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-radius:10px;${styles[index] || 'background:rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.2);color:#334155;'} animation:fadeUp 0.5s ease ${index * 0.15}s both;`;
+            row.className = "flex justify-between items-center p-3 rounded-lg border border-white/10 bg-white/5 my-2 text-white";
             row.innerHTML = `
-                <div style="display:flex;align-items:center;gap:0.75rem;">
-                    <span style="font-size:1.5rem;">${medal}</span>
-                    <div>
-                        <p style="font-size:1.1rem;line-height:1.2;">${player.name} ${player.name === myPlayerName ? '<b>(Você)</b>' : ''}</p>
-                        <p style="font-size:0.75rem;opacity:0.7;">Classificação Oficial</p>
-                    </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xl">${medals[index] || '🏅'}</span>
+                    <span class="font-bold">${user.name}</span>
                 </div>
-                <div style="text-align:right;">
-                    <p style="font-size:1.2rem;font-weight:700;">R$ ${player.money.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                </div>
+                <span style="color:var(--gold-light);font-weight:700;">${user.money.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}</span>
             `;
-            container.appendChild(row);
+            podiumList.appendChild(row);
         });
-    }
-
-    // Reiniciar os dados locais e de sala para permitir novas rodadas espontâneas
-    function actionRestartGameData() {
-        if(!isSoloMode) {
-            db.ref('rooms/' + myRoomName).remove();
-        }
-        currentMonth = 1;
-        currentMoney = 1000;
-        historyCapital = [1000];
-        hasSubmittedThisMonth = false;
-        switchScreen('screen-home');
     }
 </script>
 </body>
