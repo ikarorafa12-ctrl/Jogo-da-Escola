@@ -5,12 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CAMINHO PARA A PROSPERIDADE</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght=700;900&family=Rajdhani:wght=400;600;700&family=Cormorant+Garamond:ital,wght=0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Rajdhani:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
     <style>
         :root {
             --gold: #C9A84C;
@@ -29,6 +25,7 @@
             overflow-x: hidden;
         }
 
+        /* ── MONTH TRANSITION OVERLAY ── */
         #month-transition-overlay {
             position: fixed;
             inset: 0;
@@ -93,6 +90,14 @@
             border-radius: 8px;
         }
 
+        .mto-city-strip img {
+            width: 120px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            filter: sepia(0.3) brightness(0.85);
+        }
+
         .mto-divider {
             width: 180px;
             height: 1px;
@@ -108,8 +113,10 @@
             letter-spacing: 0.15em;
         }
 
+        /* Phase color shift on game screen */
         #screen-game { transition: background 1.2s ease; }
 
+        /* ── HOME SCREEN ── */
         #screen-home {
             position: relative;
             overflow: hidden;
@@ -120,9 +127,15 @@
         .home-bg-layer {
             position: absolute;
             inset: 0;
-            opacity: 0.3;
-            filter: grayscale(0.2) brightness(0.6);
+            opacity: 0.35;
+            filter: brightness(0.75);
             background: url("https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2070&auto=format&fit=crop") center/cover no-repeat;
+        }
+
+        .home-bg-layer img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .home-bg-overlay {
@@ -130,10 +143,10 @@
             inset: 0;
             background: linear-gradient(
                 to bottom,
-                rgba(10,10,15,0.5) 0%,
+                rgba(10,10,15,0.4) 0%,
                 rgba(10,10,15,0.15) 40%,
-                rgba(10,10,15,0.6) 70%,
-                rgba(10,10,15,0.95) 100%
+                rgba(10,10,15,0.5) 70%,
+                rgba(10,10,15,0.95) 100
             );
         }
 
@@ -187,6 +200,7 @@
             margin-bottom: 0.5rem;
         }
 
+        /* City badges on home */
         .city-badge-row {
             display: flex;
             gap: 1rem;
@@ -203,6 +217,16 @@
             height: 55px;
         }
 
+        .city-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7) sepia(0.2);
+            transition: filter 0.3s;
+        }
+
+        .city-badge:hover img { filter: brightness(0.9) sepia(0); }
+
         .city-badge-label {
             position: absolute;
             bottom: 4px;
@@ -214,6 +238,7 @@
             text-transform: uppercase;
         }
 
+        /* Buttons */
         .btn-luxury {
             position: relative;
             overflow: hidden;
@@ -253,12 +278,25 @@
 
         .btn-dark:hover { border-color: var(--gold); color: var(--gold-light); }
 
-        /* Fases de cores */
-        .game-phase-1, .game-phase-2, .game-phase-3, .game-phase-4, .game-phase-5  { background: #0d1a2e; }
-        .game-phase-6, .game-phase-7, .game-phase-8, .game-phase-9, .game-phase-10 { background: #0a0a0f; }
-        .game-phase-11, .game-phase-12, .game-phase-13, .game-phase-14, .game-phase-15, .game-phase-16, .game-phase-17, .game-phase-18, .game-phase-19, .game-phase-20 { background: #0a1f0d; }
-        .game-phase-21, .game-phase-22, .game-phase-23, .game-phase-24 { background: #1f0e00; }
+        /* ── GAME SCREEN PHASES ── */
+        /* Fases 1-5: Azul Vitoriano */
+        .game-phase-azul { background: #002244 !important; }
+        /* Fases 6-10: Preto Luxuoso */
+        .game-phase-preto { background: #0A0A0F !important; }
+        /* Fases 11-20: Verde Georgiano */
+        .game-phase-verde { background: #1F4E37 !important; }
+        /* Fases 21-24: Laranja */
+        .game-phase-laranja { background: #E65C00 !important; }
 
+        /* Accent colors by phase */
+        .phase-accent-1 { color: #7dd3fc; }
+        .phase-accent-2 { color: #86efac; }
+        .phase-accent-3 { color: #fde68a; }
+        .phase-accent-4 { color: #f9a8d4; }
+        .phase-accent-5 { color: #67e8f9; }
+        .phase-accent-6 { color: #c4b5fd; }
+
+        /* Bar chart */
         .chart-bar-enter {
             animation: barGrow 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
         }
@@ -267,6 +305,7 @@
             to { opacity: 1; }
         }
 
+        /* Sidebar city panel */
         .city-panel {
             position: fixed;
             right: 0;
@@ -289,7 +328,13 @@
             filter: grayscale(0.5) brightness(0.7);
             transition: all 0.3s;
         }
+        .city-thumb:hover {
+            filter: grayscale(0) brightness(1);
+            border-color: var(--gold);
+            width: 100px;
+        }
 
+        /* Luxury panel styles */
         .luxury-card {
             background: rgba(18,18,26,0.8);
             border: 1px solid rgba(201,168,76,0.2);
@@ -297,12 +342,27 @@
             border-radius: 14px;
         }
 
+        /* Podium / Screen Podium Color Ouro */
         #screen-podium {
-            background: #2a1f00;
+            background: #FFD700 !important;
             position: relative;
             overflow: hidden;
         }
 
+        .podium-bg {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            opacity: 0.08;
+            filter: grayscale(0.5);
+        }
+
+        .podium-bg img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        /* Slide-in for screens */
         @keyframes slideInRight {
             from { transform: translateX(40px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -314,6 +374,7 @@
         .anim-slide-in { animation: slideInRight 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
         .anim-fade-up  { animation: fadeUp 0.5s ease forwards; }
 
+        /* Month number ring in game */
         .month-ring {
             display: inline-flex;
             align-items: center;
@@ -343,13 +404,40 @@
             font-size: 1rem;
         }
 
+        /* Animate money value when it changes */
         @keyframes moneyPop {
             0%   { transform: scale(1); }
             50%  { transform: scale(1.15); }
             100% { transform: scale(1); }
         }
         .money-pop { animation: moneyPop 0.4s ease; }
+
+        /* Screen lobby city images */
+        .lobby-city-banner {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            filter: brightness(0.6) sepia(0.2);
+            border: 1px solid rgba(201,168,76,0.2);
+        }
+
+        /* Glow on game bar chart newest bar */
+        .bar-newest {
+            box-shadow: 0 0 12px 4px rgba(201,168,76,0.5);
+        }
+
+        /* Ticker tape decoration */
+        .gold-border-top {
+            border-top: 1px solid rgba(201,168,76,0.25);
+        }
+        .gold-border-bottom {
+            border-bottom: 1px solid rgba(201,168,76,0.25);
+        }
     </style>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -369,6 +457,7 @@
 <div id="screen-home" class="min-h-screen">
     <div class="home-bg-layer"></div>
     <div class="home-bg-overlay"></div>
+
     <div class="home-content">
         <p class="home-eyebrow">Jogo de Educação Financeira</p>
         <div class="home-gold-line"></div>
@@ -392,431 +481,651 @@
         </div>
 
         <div class="flex flex-col sm:flex-row gap-4 w-full max-w-xl mt-2">
-            <button onclick="switchScreen('screen-solo')" class="btn-luxury btn-gold flex-1">▶ Jogar Sozinho</button>
-            <button onclick="switchScreen('screen-create')" class="btn-luxury btn-dark flex-1">⚑ Criar Sala (Líder)</button>
-            <button onclick="switchScreen('screen-join')" class="btn-luxury btn-dark flex-1">↗ Entrar na Sala</button>
+            <button onclick="switchScreen('screen-solo')" class="btn-luxury btn-gold flex-1">
+                ▶ Jogar Sozinho
+            </button>
+            <button onclick="switchScreen('screen-create')" class="btn-luxury btn-dark flex-1">
+                ⚑ Criar Sala (Líder)
+            </button>
+            <button onclick="switchScreen('screen-join')" class="btn-luxury btn-dark flex-1">
+                ↗ Entrar na Sala
+            </button>
         </div>
+
+        <p style="margin-top:2.5rem; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:0.85rem; color:rgba(201,168,76,0.45); letter-spacing:0.12em; text-align:center;">
+            "Invista em conhecimento. O retorno é sempre o melhor." — Benjamin Franklin
+        </p>
     </div>
 </div>
 
-<div id="screen-solo" class="hidden min-h-screen flex flex-col justify-center items-center p-4">
+<div id="screen-solo" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
+    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0d1a2e;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
+        <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.25rem;">Modo</p>
         <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:1.5rem;">Solo Trader</h2>
         <div class="space-y-4">
-            <input id="solo-player-name" type="text" placeholder="Ex: Íkaro" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
-            <button onclick="actionStartSolo()" class="btn-luxury btn-gold" style="width:100%;">Iniciar Jornada →</button>
-            <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;">← Voltar</button>
+            <div>
+                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Seu Codinome:</label>
+                <input id="solo-player-name" type="text" placeholder="Ex: Íkaro"
+                    style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+            </div>
+            <button onclick="actionStartSolo()" class="btn-luxury btn-gold" style="width:100%;margin-top:0.5rem;">
+                Iniciar Jornada →
+            </button>
+            <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">
+                ← Voltar
+            </button>
         </div>
     </div>
 </div>
 
-<div id="screen-create" class="hidden min-h-screen flex flex-col justify-center items-center p-4">
+<div id="screen-create" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
+    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0a0a0f;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
+        <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.25rem;">Administração</p>
         <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:1.5rem;">Painel do Líder</h2>
         <div class="space-y-4">
-            <input id="create-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
-            <input id="create-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
-            <button onclick="actionCreateRoom()" class="btn-luxury btn-gold" style="width:100%;">Criar Sala ⚑</button>
-            <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;">← Voltar</button>
+            <div>
+                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Nome da Sala:</label>
+                <input id="create-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+            </div>
+            <div>
+                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Senha:</label>
+                <input id="create-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+            </div>
+            <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;">
+                <input id="create-room-public" type="checkbox" checked style="width:1.1rem;height:1.1rem;accent-color:var(--gold);">
+                <label for="create-room-public" style="font-size:0.85rem;color:rgba(255,255,255,0.7);">Sala Pública</label>
+            </div>
+            <button onclick="actionCreateRoom()" class="btn-luxury btn-gold" style="width:100%;">Criar Sala ⚑</button> <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">← Voltar</button>
         </div>
     </div>
 </div>
 
-<div id="screen-join" class="hidden min-h-screen flex flex-col justify-center items-center p-4">
+<div id="screen-join" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
+    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0a0a0f;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
+        <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.25rem;">Acesso</p>
         <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:1.5rem;">Entrar no Mercado</h2>
         <div class="space-y-4">
-            <input id="join-player-name" type="text" placeholder="Ex: Dev_CIn" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
-            <input id="join-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
-            <input id="join-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
+            <div>
+                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Seu Codinome:</label>
+                <input id="join-player-name" type="text" placeholder="Ex: Dev_CIn" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+            </div>
+            <div>
+                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Nome da Sala:</label>
+                <input id="join-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+            </div>
+            <div>
+                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Senha:</label>
+                <input id="join-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+            </div>
             <button onclick="actionJoinRoom()" class="btn-luxury btn-gold" style="width:100%;">Entrar ↗</button>
-            <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;">← Voltar</button>
+            <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">← Voltar</button>
         </div>
     </div>
 </div>
 
-<div id="screen-lobby" class="hidden min-h-screen flex flex-col items-center justify-center p-6">
+<div id="screen-lobby" class="hidden min-h-screen flex flex-col items-center justify-center p-6" style="background:var(--obsidian);">
+    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.08;background:#0d1a2e;"></div>
     <div class="relative z-10 w-full max-w-lg">
-        <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#fff;" id="lobby-room-title">—</h2>
-        <div class="luxury-card p-6 mt-4">
-            <h3 style="font-size:0.8rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;">Traders Conectados (<span id="lobby-count">0</span>/5)</h3>
-            <ul id="lobby-player-list"></ul>
+        <div style="text-align:center;margin-bottom:2rem;">
+            <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;">Sala</p>
+            <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#fff;" id="lobby-room-title">—</h2>
+            <div class="home-gold-line"></div>
+            <p style="color:rgba(255,255,255,0.4);font-size:0.9rem;margin-top:0.5rem;">Aguardando formação do pódio de 5 jogadores...</p>
         </div>
-        <div id="lobby-leader-controls" class="hidden mt-4 text-center">
-            <button onclick="actionStartGame()" class="btn-luxury btn-gold">▶ Começar Jogo</button>
+
+        <div style="width:100%;height:180px;border-radius:12px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);margin-bottom:1.5rem;"></div>
+
+        <div class="luxury-card p-6">
+            <h3 style="font-size:0.8rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;">
+                Traders Conectados (<span id="lobby-count">0</span>/5)
+            </h3>
+            <ul id="lobby-player-list" style="list-style:none;padding:0;margin:0;space-y:0.5rem;"></ul>
+        </div>
+
+        <div id="lobby-leader-controls" class="hidden" style="margin-top:1.5rem;text-align:center;">
+            <button onclick="actionStartGame()" class="btn-luxury btn-gold" style="font-size:1.15rem;padding:1rem 3rem;letter-spacing:0.2em;">
+                ▶ STOP! Começar Jogo
+            </button>
         </div>
     </div>
 </div>
 
-<div id="screen-game" class="hidden min-h-screen p-4 flex flex-col items-center game-phase-1">
-    <div class="w-full max-w-4xl luxury-card p-4 mb-6 flex justify-between items-center">
-        <div class="flex items-center gap-4">
+<div id="screen-game" class="hidden min-h-screen p-4 flex flex-col items-center" style="transition:background 1.2s ease;">
+
+    <div class="city-panel hidden md:flex">
+        <div class="city-thumb" style="background:rgba(201,168,76,0.15);"></div>
+        <div class="city-thumb" style="background:rgba(201,168,76,0.1);"></div>
+        <div class="city-thumb" style="background:rgba(201,168,76,0.05);"></div>
+    </div>
+
+    <div class="w-full max-w-4xl luxury-card p-4 mb-6 flex justify-between items-center anim-slide-in">
+        <div style="display:flex;align-items:center;gap:1rem;">
             <div class="month-ring" id="game-month-ring">1</div>
             <div>
                 <p style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--gold-light);" id="game-current-month">MÊS 1 / 24</p>
-                <p id="game-player-identity" style="color:rgba(255,255,255,0.4); font-size:0.8rem;"></p>
+                <p style="font-size:0.75rem;color:rgba(255,255,255,0.4);letter-spacing:0.1em;" id="game-player-identity"></p>
             </div>
         </div>
-        <div class="text-right">
-            <p style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;" id="ui-current-money" class="gold-text">R$ 1.000,00</p>
+        <div style="display:flex;gap:2rem;text-align:right;">
+            <div>
+                <p style="font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.3);text-transform:uppercase;">Inicial</p>
+                <p style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.5);">R$ 1.000</p>
+            </div>
+            <div>
+                <p style="font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.3);text-transform:uppercase;">Atual</p>
+                <p style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;" id="ui-current-money" class="gold-text">R$ 1.000,00</p>
+            </div>
         </div>
     </div>
 
     <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="md:col-span-2 luxury-card p-6">
-            <div id="crypto-chart" style="display:flex;align-items:flex-end;justify-content:space-between;height:11rem;background:rgba(0,0,0,0.3);padding:1rem;gap:3px;"></div>
+        <div class="md:col-span-2 luxury-card p-6 flex flex-col justify-between">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                <p style="font-size:0.7rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);text-transform:uppercase;">Evolução do Capital</p>
+                <span id="game-phase-badge" style="font-size:0.65rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;border:1px solid rgba(201,168,76,0.3);padding:0.2rem 0.6rem;border-radius:20px;">FASE 1</span>
+            </div>
+            <div id="crypto-chart" style="display:flex;align-items:flex-end;justify-content:space-between;height:11rem;background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem;border:1px solid rgba(255,255,255,0.05);gap:3px;"></div>
+            <div id="crisis-alert" style="display:none;margin-top:1rem;padding:0.75rem;background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.4);border-radius:8px;color:#fca5a5;font-weight:700;font-size:0.9rem;">
+                ⚠️ CRISE SISTÊMICA — Mercado em colapso!
+            </div>
         </div>
+
         <div class="luxury-card p-6 flex flex-col justify-between">
             <div>
-                <h4 id="investment-question-title" style="color:#fff; font-weight:700; margin-bottom:1rem;">Onde alocar seu capital?</h4>
-                <div id="standard-options" class="flex flex-col gap-2">
-                    <button onclick="submitTurn('OPT_A')" id="btn-opt-a" class="btn-dark text-left p-2 rounded text-sm flex justify-between">
-                        <span id="btn-opt-a-label">🏢 FIIs</span><span id="btn-opt-a-tag" style="color:#86efac;">Variável</span>
+                <p style="font-size:0.7rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:0.5rem;">Decisão do Mês</p>
+                <h4 style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:1.25rem;line-height:1.3;" id="investment-question-title">Onde alocar seus R$ 100 deste mês?</h4>
+                <div id="standard-options" style="display:flex;flex-direction:column;gap:0.6rem;">
+                    <button onclick="submitTurn('OPT_A')" id="btn-opt-a" style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(201,168,76,0.1)';this.style.borderColor='rgba(201,168,76,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(201,168,76,0.2)'">
+                        <span id="btn-opt-a-label">🏢 Fundos Imobiliários</span><span id="btn-opt-a-tag" style="font-size:0.7rem;color:#86efac;">Opção A</span>
                     </button>
-                    <button onclick="submitTurn('OPT_B')" id="btn-opt-b" class="btn-dark text-left p-2 rounded text-sm flex justify-between">
-                        <span id="btn-opt-b-label">🟪 Renda Fixa</span><span id="btn-opt-b-tag" style="color:#c4b5fd;">CDI</span>
+                    <button onclick="submitTurn('OPT_B')" id="btn-opt-b" style="background:rgba(255,255,255,0.04);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(139,92,246,0.1)';this.style.borderColor='rgba(139,92,246,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(139,92,246,0.25)'">
+                        <span id="btn-opt-b-label">🟪 Caixinhas Nubank</span><span id="btn-opt-b-tag" style="font-size:0.7rem;color:#c4b5fd;">Opção B</span>
                     </button>
-                    <button onclick="submitTurn('OPT_C')" id="btn-opt-c" class="btn-dark text-left p-2 rounded text-sm flex justify-between">
-                        <span id="btn-opt-c-label">🏦 Poupança</span><span id="btn-opt-c-tag" style="color:#fde68a;">Baixo</span>
+                    <button onclick="submitTurn('OPT_C')" id="btn-opt-c" style="background:rgba(255,255,255,0.04);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(251,191,36,0.08)';this.style.borderColor='rgba(251,191,36,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(251,191,36,0.2)'">
+                        <span id="btn-opt-c-label">🏦 Poupança</span><span id="btn-opt-c-tag" style="font-size:0.7rem;color:#fde68a;">Opção C</span>
                     </button>
-                    <button onclick="submitTurn('OPT_D')" id="btn-opt-d" class="btn-dark text-left p-2 rounded text-sm flex justify-between">
-                        <span id="btn-opt-d-label">📱 Consumo</span><span id="btn-opt-d-tag" style="color:#fca5a5;">Passivo</span>
+                    <button onclick="submitTurn('OPT_D')" id="btn-opt-d" style="background:rgba(255,255,255,0.04);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(239,68,68,0.08)';this.style.borderColor='rgba(239,68,68,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(239,68,68,0.2)'">
+                        <span id="btn-opt-d-label">📱 Comprar Um Iphone</span><span id="btn-opt-d-tag" style="font-size:0.7rem;color:#fca5a5;">Opção D</span>
                     </button>
                 </div>
             </div>
-            <div id="wait-message" class="hidden text-center text-cyan-400 text-sm mt-2">Aguardando outros players...</div>
+            <div style="margin-top:1.5rem;border-top:1px solid rgba(255,255,255,0.06);padding-top:1rem;text-align:center;">
+                <p id="game-waiting-text" style="font-size:0.8rem;color:rgba(255,255,255,0.4);font-style:italic;">Selecione uma opção para encerrar seu turno.</p>
+                <button id="leader-force-next-btn" onclick="actionLeaderForceNext()" class="btn-luxury btn-dark hidden" style="font-size:0.75rem;padding:0.5rem 1rem;margin-top:0.5rem;width:100%;">
+                    Avançar Mês Espontaneamente (Líder)
+                </button>
+            </div>
         </div>
+    </div>
+
+    <div class="w-full max-w-4xl luxury-card p-4 mt-6 anim-fade-up">
+        <p style="font-size:0.7rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:0.75rem;">Status dos Competidores</p>
+        <div id="game-realtime-players" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3"></div>
     </div>
 </div>
 
-<div id="screen-leader-dashboard" class="hidden min-h-screen p-6 flex flex-col items-center">
-    <h2 class="text-white text-2xl font-bold mb-4">Mês <span id="leader-month-display">1</span>/24</h2>
-    <div id="leader-player-cards" class="grid grid-cols-2 gap-4 w-full max-w-2xl"></div>
-    <button id="btn-next-month" onclick="actionProcessMonth()" class="btn-luxury btn-gold mt-6 hidden">AVANÇAR MÊS ➡</button>
-</div>
+<div id="screen-podium" class="hidden min-h-screen p-6 flex flex-col items-center justify-center">
+    <div class="podium-bg"></div>
+    <div class="relative z-10 w-full max-w-xl text-center">
+        <p style="font-size:0.8rem;letter-spacing:0.4em;color:#000;text-transform:uppercase;font-weight:700;">Encerramento</p>
+        <h2 style="font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;color:#000;line-height:1.1;margin-bottom:0.5rem;">PÓDIO DA PROSPERIDADE</h2>
+        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;color:rgba(0,0,0,0.6);margin-bottom:2rem;">Os resultados do mercado foram consolidados.</p>
 
-<div id="screen-podium" class="hidden min-h-screen flex flex-col justify-center items-center">
-    <h1 class="gold-text text-4xl font-black mb-6">🏆 PÓDIO FINAL 🏆</h1>
-    <div id="podium-container" class="w-full max-w-md flex flex-col gap-2"></div>
-    <button onclick="location.reload()" class="btn-luxury btn-dark mt-6">↺ Jogar Novamente</button>
+        <div class="luxury-card p-6 text-left space-y-3" id="podium-list-container" style="background:rgba(10,10,15,0.95);border-color:rgba(0,0,0,0.2);"></div>
+
+        <button onclick="actionRestartGameData()" class="btn-luxury btn-gold mt-6" style="background:#000;color:#fff;padding:1rem 2.5rem;">
+            🔄 Jogar Novamente
+        </button>
+    </div>
 </div>
 
 <script>
-    // ── CONFIGURAÇÃO DO FIREBASE (Ativada e Integrada) ──
+    // Configuração fornecida pelo usuário
     const firebaseConfig = {
-        apiKey: "AIzaSyBV9d6TwfHYPl3bFszKgyj4oubrR2SlI1s",
-        authDomain: "jogo-cp.firebaseapp.com",
-        projectId: "jogo-cp",
-        storageBucket: "jogo-cp.firebasestorage.app",
-        messagingSenderId: "1034438606990",
-        appId: "1:1034438606990:web:ffb1521e728c6df0dd89df",
-        measurementId: "G-Y02WV5118B"
+        apiKey: "AIzaSyAOwdcG0IJX0CPaFCTumAQ6mXfmpQn-0GE",
+        authDomain: "caminho-para-a-prosperidade.firebaseapp.com",
+        projectId: "caminho-para-a-prosperidade",
+        storageBucket: "caminho-para-a-prosperidade.firebasestorage.app",
+        messagingSenderId: "53883464834",
+        appId: "1:53883464834:web:b00e37cabcf5ad0bab989b",
+        measurementId: "G-MK8VQSTCTM"
     };
-    
-    // Inicializa o Firebase
+
     firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const db = firebase.database();
 
-    let myRole = '';
-    let myPlayerName = '';
-    let isSolo = false;
-    let currentRoomName = '';
-    let roomRef = null;
-    const TOTAL_MONTHS = 24;
+    // Estado local do jogador
+    let isSoloMode = false;
+    let myRoomName = "";
+    let myPlayerName = "";
+    let isLeader = false;
+    let currentMonth = 1;
+    let currentMoney = 1000;
+    let historyCapital = [1000];
+    let hasSubmittedThisMonth = false;
 
-    const PHASES = [
-        { label: 'FASE 1 · POUPADOR', motto: '"O primeiro passo é começar."', bgClass: 'game-phase-1', accentColor: '#7dd3fc' },
-        { label: 'FASE 2 · POUPADOR', motto: '"Disciplina é liberdade."', bgClass: 'game-phase-2', accentColor: '#7dd3fc' },
-        { label: 'FASE 3 · POUPADOR', motto: '"Construindo a base."', bgClass: 'game-phase-3', accentColor: '#7dd3fc' },
-        { label: 'FASE 4 · POUPADOR', motto: '"Consistência."', bgClass: 'game-phase-4', accentColor: '#7dd3fc' },
-        { label: 'FASE 5 · POUPADOR', motto: '"Foco no longo prazo."', bgClass: 'game-phase-5', accentColor: '#7dd3fc' },
-        { label: 'FASE 6 · APRENDIZ', motto: '"Conhecimento gera retornos."', bgClass: 'game-phase-6', accentColor: '#a78bfa' },
-        { label: 'FASE 11 · INVESTIDOR', motto: '"Juros compostos em ação."', bgClass: 'game-phase-11', accentColor: '#86efac' },
-        { label: 'FASE 21 · MAGNATA', motto: '"Soberania Financeira."', bgClass: 'game-phase-21', accentColor: '#fb923c' }
-    ];
+    // Regras de Mercado e Histórico de Crises da Bolsa
+    // Meses com crise na bolsa configurados nativamente
+    const crisisMonths = [4, 9, 14, 19, 23];
 
-    const PHASE_OPTIONS = {
-        early: [
-            { key: 'OPT_A', label: '🏢 Fundos Imobiliários', tag: 'Renda Variável', yield: 0.008 },
-            { key: 'OPT_B', label: '🟪 Caixinhas Nubank', tag: 'Renda Fixa', yield: 0.009 },
-            { key: 'OPT_C', label: '🏦 Poupança', tag: 'Baixo Rendimento', yield: 0.005 },
-            { key: 'OPT_D', label: '📱 Comprar um iPhone', tag: 'Passivo', yield: -0.15 }
-        ],
-        mid: [
-            { key: 'OPT_A', label: '📈 Ações Bolsa', tag: 'Renda Variável', yield: 0.012 },
-            { key: 'OPT_B', label: '🏛️ Tesouro Direto', tag: 'Renda Fixa', yield: 0.009 },
-            { key: 'OPT_C', label: '🐷 Cofrinho Digital', tag: 'Baixo Rendimento', yield: 0.006 },
-            { key: 'OPT_D', label: '👗 Gastos Supérfluos', tag: 'Passivo', yield: -0.10 }
-        ],
-        late: [
-            { key: 'OPT_A', label: '₿ Criptomoedas', tag: 'Alto Risco', yield: 0.020 },
-            { key: 'OPT_B', label: '🎉 Eventos Sociais', tag: 'Gasto Consumo', yield: -0.08 },
-            { key: 'OPT_C', label: '🏦 Poupança Tradicional', tag: 'Baixo Rendimento', yield: 0.005 },
-            { key: 'OPT_D', label: '💸 Deixar Parado no PIX', tag: 'Sem Rendimento', yield: 0.000 }
-        ]
-    };
-
-    function getPhaseOptions(month) {
-        if (month <= 10) return PHASE_OPTIONS.early;
-        if (month <= 20) return PHASE_OPTIONS.mid;
-        return PHASE_OPTIONS.late;
+    // Configuração de investimentos dinâmica por período de fases
+    function getInvestmentOptions(phaseNum) {
+        if (phaseNum >= 1 && phaseNum <= 10) {
+            return {
+                A: { label: "🏢 Fundos Imobiliários", isSafe: false },
+                B: { label: "🟪 Caixinhas do Nubank", isSafe: true },
+                C: { label: "🏦 Poupança", isSafe: true },
+                D: { label: "📱 Comprar Um Iphone", isSafe: false }
+            };
+        } else if (phaseNum >= 11 && phaseNum <= 20) {
+            return {
+                A: { label: "📈 Ações", isSafe: false },
+                B: { label: "📜 Tesouro Direto", isSafe: true },
+                C: { label: "🐷 Porquinho do Banco Inter", isSafe: true },
+                D: { label: "👔 Comprar Roupas", isSafe: false }
+            };
+        } else {
+            return {
+                A: { label: "🪙 Criptomoedas", isSafe: false },
+                B: { label: "🏆 Pagar Interclasse", isSafe: false },
+                C: { label: "🏦 Poupança", isSafe: true },
+                D: { label: "⚡ Deixar No PIX", isSafe: true }
+            };
+        }
     }
 
-    function switchScreen(id) {
-        document.querySelectorAll('[id^="screen-"]').forEach(s => s.classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
+    // Navegação de telas
+    function switchScreen(screenId) {
+        document.getElementById('screen-home').classList.add('hidden');
+        document.getElementById('screen-solo').classList.add('hidden');
+        document.getElementById('screen-create').classList.add('hidden');
+        document.getElementById('screen-join').classList.add('hidden');
+        document.getElementById('screen-lobby').classList.add('hidden');
+        document.getElementById('screen-game').classList.add('hidden');
+        document.getElementById('screen-podium').classList.add('hidden');
+        document.getElementById(screenId).classList.remove('hidden');
     }
 
-    // ── MODO JOGAR SOZINHO ──
+    // Iniciar modo Solo
     function actionStartSolo() {
-        const name = document.getElementById('solo-player-name').value.trim();
-        if (!name) return alert('Digite um codinome!');
-        isSolo = true; myRole = 'leader'; myPlayerName = name;
+        const nameInput = document.getElementById('solo-player-name').value.trim();
+        if(!nameInput) { alert("Insira um codinome!"); return; }
+        isSoloMode = true;
+        isLeader = true;
+        myPlayerName = nameInput;
+        myRoomName = "SOLO_" + Math.floor(Math.random() * 100000);
         
-        let state = { name: 'Solo', status: 'game', currentMonth: 1, players: {} };
-        state.players[name] = { money: 1000, currentChoice: '', ready: false, history: [1000] };
-        
-        document.getElementById('game-player-identity').innerText = `Trader: ${name}`;
-        renderGameScreen(state);
+        currentMonth = 1;
+        currentMoney = 1000;
+        historyCapital = [1000];
+        hasSubmittedThisMonth = false;
+
+        renderGameplayScreen();
+        switchScreen('screen-game');
     }
 
-    // ── LÓGICA MULTIPLAYER COORDENADA COM FIREBASE ──
-    
+    // Criar Sala Multiplayer (Líder)
     function actionCreateRoom() {
-        const name = document.getElementById('create-room-name').value.trim().replace(/[.#$\[\]]/g, "");
-        if (!name) return alert('Dê nome à sala!');
-        
-        myRole = 'leader';
-        myPlayerName = 'Líder';
-        currentRoomName = name;
-        roomRef = database.ref('salas/' + name);
+        const roomName = document.getElementById('create-room-name').value.trim();
+        const roomPass = document.getElementById('create-room-pass').value.trim();
+        if(!roomName || !roomPass) { alert("Preencha os campos!"); return; }
 
-        let initialState = {
-            name: name,
-            status: 'lobby',
-            currentMonth: 1,
-            players: {},
-            count: 0
-        };
+        isSoloMode = false;
+        isLeader = true;
+        myRoomName = roomName;
+        myPlayerName = "Líder_" + Math.floor(Math.random() * 900 + 100);
 
-        roomRef.set(initialState).then(() => {
-            document.getElementById('lobby-room-title').innerText = name;
+        db.ref('rooms/' + myRoomName).set({
+            config: { password: roomPass, started: false, month: 1 },
+            players: {
+                [myPlayerName]: { money: 1000, submitted: false, choice: "" }
+            }
+        }).then(() => {
+            document.getElementById('lobby-room-title').innerText = myRoomName;
             document.getElementById('lobby-leader-controls').classList.remove('hidden');
+            listenRoomData();
             switchScreen('screen-lobby');
-            listenToRoomChanges();
         });
     }
 
+    // Entrar em Sala existente
     function actionJoinRoom() {
-        const pName = document.getElementById('join-player-name').value.trim().replace(/[.#$\[\]]/g, "");
-        const rName = document.getElementById('join-room-name').value.trim().replace(/[.#$\[\]]/g, "");
-        
-        if (!pName || !rName) return alert('Preencha os dados!');
-        
-        myRole = 'player'; 
+        const pName = document.getElementById('join-player-name').value.trim();
+        const rName = document.getElementById('join-room-name').value.trim();
+        const rPass = document.getElementById('join-room-pass').value.trim();
+        if(!pName || !rName || !rPass) { alert("Preencha todos os campos!"); return; }
+
+        isSoloMode = false;
+        isLeader = false;
+        myRoomName = rName;
         myPlayerName = pName;
-        currentRoomName = rName;
-        roomRef = database.ref('salas/' + rName);
 
-        roomRef.once('value', (snapshot) => {
-            if (!snapshot.exists()) {
-                return alert('Esta sala não existe! Certifique-se de que o líder já criou a sala no notebook.');
-            }
-            
-            roomRef.child('players/' + pName).set({
+        db.ref('rooms/' + myRoomName).once('value', snapshot => {
+            if(!snapshot.exists()) { alert("Sala não encontrada!"); return; }
+            const data = snapshot.val();
+            if(data.config.password !== rPass) { alert("Senha incorreta!"); return; }
+            if(data.config.started) { alert("Jogo já iniciado nesta sala!"); return; }
+
+            db.ref('rooms/' + myRoomName + '/players/' + myPlayerName).set({
                 money: 1000,
-                currentChoice: '',
-                ready: false,
-                history: [1000]
+                submitted: false,
+                choice: ""
             }).then(() => {
-                document.getElementById('lobby-room-title').innerText = rName;
-                document.getElementById('game-player-identity').innerText = `Trader: ${pName}`;
+                document.getElementById('lobby-room-title').innerText = myRoomName;
+                document.getElementById('lobby-leader-controls').classList.add('hidden');
+                listenRoomData();
                 switchScreen('screen-lobby');
-                listenToRoomChanges();
             });
         });
     }
 
-    function listenToRoomChanges() {
-        roomRef.on('value', (snapshot) => {
-            const state = snapshot.val();
-            if (!state) return;
+    // Escuta em tempo real do Firebase para o Lobby e Gameplay
+    function listenRoomData() {
+        db.ref('rooms/' + myRoomName).on('value', snapshot => {
+            if(!snapshot.exists()) return;
+            const data = snapshot.val();
 
-            const playerList = state.players ? Object.keys(state.players) : [];
-            
-            if (state.status === 'lobby') {
-                document.getElementById('lobby-count').innerText = playerList.length;
-                document.getElementById('lobby-player-list').innerHTML = playerList.map(p => `<li>⚡ ${p}</li>`).join('');
-            }
-            
-            if (state.status === 'game') {
-                if (myRole === 'leader' && !isSolo) {
-                    switchScreen('screen-leader-dashboard');
-                    renderLeaderDashboard(state);
+            // Sincronização de telas do Lobby
+            if(!data.config.started) {
+                const playerListElement = document.getElementById('lobby-player-list');
+                playerListElement.innerHTML = "";
+                const playersObj = data.players || {};
+                const playerNames = Object.keys(playersObj);
+                document.getElementById('lobby-count').innerText = playerNames.length;
+
+                playerNames.forEach(p => {
+                    const li = document.createElement('li');
+                    li.style.cssText = "padding:0.5rem; border-bottom:1px solid rgba(255,255,255,0.05); color:rgba(255,255,255,0.8); font-size:0.95rem;";
+                    li.innerText = "💼 " + p;
+                    playerListElement.appendChild(li);
+                });
+            } else {
+                // Sincronização em tempo real do progresso de meses durante o Gameplay
+                if (data.config.month !== currentMonth) {
+                    processMonthTransition(data.config.month, data.players);
                 } else {
-                    switchScreen('screen-game');
-                    renderGameScreen(state);
+                    renderRealtimeCompetitors(data.players);
                 }
-            }
-            
-            if (state.status === 'end') {
-                renderFinalPodium(state);
             }
         });
     }
 
+    // Iniciar jogo oficial na sala
     function actionStartGame() {
-        if (roomRef) {
-            roomRef.update({ status: 'game' });
+        db.ref('rooms/' + myRoomName + '/config').update({ started: true, month: 1 });
+        renderGameplayScreen();
+        switchScreen('screen-game');
+    }
+
+    // Renderizar a tela de decisões baseado no Mês (Fase) vigente
+    function renderGameplayScreen() {
+        const elGame = document.getElementById('screen-game');
+        
+        // Atribuição de classes de cores de fundo de acordo com o intervalo das fases de 1 a 24
+        elGame.className = "min-h-screen p-4 flex flex-col items-center transition-all duration-1000";
+        if (currentMonth >= 1 && currentMonth <= 5) {
+            elGame.classList.add('game-phase-azul');
+        } else if (currentMonth >= 6 && currentMonth <= 10) {
+            elGame.classList.add('game-phase-preto');
+        } else if (currentMonth >= 11 && currentMonth <= 20) {
+            elGame.classList.add('game-phase-verde');
+        } else if (currentMonth >= 21 && currentMonth <= 24) {
+            elGame.classList.add('game-phase-laranja');
         }
-    }
 
-    function renderLeaderDashboard(state) {
-        document.getElementById('leader-month-display').innerText = state.currentMonth;
-        const container = document.getElementById('leader-player-cards');
-        container.innerHTML = '';
-        
-        let allReady = true;
-        const players = state.players || {};
-        const playerNames = Object.keys(players);
+        document.getElementById('game-month-ring').innerText = currentMonth;
+        document.getElementById('game-current-month').innerText = `MÊS ${currentMonth} / 24`;
+        document.getElementById('game-player-identity').innerText = `Codinome: ${myPlayerName} (${isSoloMode ? 'Modo Solo' : 'Multiplayer'})`;
+        document.getElementById('game-phase-badge').innerText = `FASE ${currentMonth}`;
 
-        if (playerNames.length === 0) {
-            container.innerHTML = '<p class="text-white text-center col-span-2">Aguardando os celulares conectarem...</p>';
-            allReady = false;
-        }
+        // Alerta visual preventivo nativo de crise iminente
+        const isCrisisNext = crisisMonths.includes(currentMonth);
+        document.getElementById('crisis-alert').style.display = isCrisisNext ? 'block' : 'none';
 
-        playerNames.forEach(p => {
-            if (!players[p].ready) allReady = false;
-            container.innerHTML += `
-                <div class="p-4 bg-slate-800 rounded text-white flex justify-between items-center">
-                    <div>
-                        <span class="font-bold block">${p}</span>
-                        <span class="text-xs opacity-60">R$ ${players[p].money.toFixed(2)}</span>
-                    </div>
-                    <span class="px-2 py-1 rounded text-xs ${players[p].ready ? 'bg-green-600 text-white' : 'bg-amber-600 text-white'}">
-                        ${players[p].ready ? 'PRONTO' : 'ESCOLHENDO'}
-                    </span>
-                </div>`;
-        });
-        
-        document.getElementById('btn-next-month').style.display = allReady && playerNames.length > 0 ? 'block' : 'none';
-    }
+        // Atualizar textos dos botões de investimentos dinamicamente
+        const opts = getInvestmentOptions(currentMonth);
+        document.getElementById('btn-opt-a-label').innerText = opts.A.label;
+        document.getElementById('btn-opt-b-label').innerText = opts.B.label;
+        document.getElementById('btn-opt-c-label').innerText = opts.C.label;
+        document.getElementById('btn-opt-d-label').innerText = opts.D.label;
 
-    function renderGameScreen(state) {
-        const me = state.players ? state.players[myPlayerName] : null;
-        if (!me) return;
+        updateMoneyUI();
+        drawCapitalChart();
 
-        const opts = getPhaseOptions(state.currentMonth);
-        
-        ['a','b','c','d'].forEach((l, i) => {
-            document.getElementById(`btn-opt-${l}-label`).innerText = opts[i].label;
-            document.getElementById(`btn-opt-${l}-tag`).innerText = opts[i].tag;
-        });
-
-        document.getElementById('game-current-month').innerText = `MÊS ${state.currentMonth} / ${TOTAL_MONTHS}`;
-        document.getElementById('game-month-ring').innerText = state.currentMonth;
-        document.getElementById('ui-current-money').innerText = `R$ ${me.money.toFixed(2)}`;
-        
-        document.getElementById('wait-message').classList.toggle('hidden', !me.ready);
-        
-        ['a','b','c','d'].forEach(l => {
-            document.getElementById(`btn-opt-${l}`).disabled = me.ready;
-            document.getElementById(`btn-opt-${l}`).style.opacity = me.ready ? '0.5' : '1';
-        });
-
-        renderChart(me.history || [1000]);
-    }
-
-    function submitTurn(choice) {
-        if (isSolo) {
-            let mockState = { currentMonth: parseInt(document.getElementById('game-month-ring').innerText), players: {} };
-            mockState.players[myPlayerName] = { money: parseFloat(document.getElementById('ui-current-money').innerText.replace("R$ ","")), ready: true, currentChoice: choice, history: [] };
-            actionProcessMonthSolo(mockState);
+        if (isLeader && !isSoloMode) {
+            document.getElementById('leader-force-next-btn').classList.remove('hidden');
         } else {
-            roomRef.child('players/' + myPlayerName).update({
-                currentChoice: choice,
-                ready: true
+            document.getElementById('leader-force-next-btn').classList.add('hidden');
+        }
+
+        hasSubmittedThisMonth = false;
+        document.getElementById('game-waiting-text').innerText = "Selecione uma opção para encerrar seu turno.";
+    }
+
+    function updateMoneyUI() {
+        const uiMoney = document.getElementById('ui-current-money');
+        uiMoney.innerText = `R$ ${currentMoney.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        uiMoney.classList.add('money-pop');
+        setTimeout(() => uiMoney.classList.remove('money-pop'), 400);
+    }
+
+    // Submeter a escolha do turno atual
+    function submitTurn(choiceId) {
+        if(hasSubmittedThisMonth) return;
+        hasSubmittedThisMonth = true;
+        document.getElementById('game-waiting-text').innerText = "Aguardando processamento do mercado...";
+
+        if(isSoloMode) {
+            setTimeout(() => {
+                const soloPlayersMock = { [myPlayerName]: { choice: choiceId, money: currentMoney } };
+                processMonthTransition(currentMonth + 1, soloPlayersMock);
+            }, 600);
+        } else {
+            db.ref('rooms/' + myRoomName + '/players/' + myPlayerName).update({
+                submitted: true,
+                choice: choiceId,
+                money: currentMoney
+            }).then(() => {
+                checkRoomTurnResolution();
             });
         }
     }
 
-    function actionProcessMonth() {
-        roomRef.once('value', (snapshot) => {
-            let state = snapshot.val();
-            if (!state || !state.players) return;
-
-            let updatedPlayers = { ...state.players };
-
-            Object.keys(updatedPlayers).forEach(pName => {
-                let p = updatedPlayers[pName];
-                let capital = p.money + 100; 
-                const opts = getPhaseOptions(state.currentMonth);
-                const chosen = opts.find(o => o.key === p.currentChoice);
-                
-                if (chosen) {
-                    capital = chosen.yield < 0 ? capital + (capital * chosen.yield) : capital * (1 + chosen.yield);
-                }
-                
-                p.money = capital;
-                if (!p.history) p.history = [1000];
-                p.history.push(Math.round(capital));
-                p.ready = false; 
-                p.currentChoice = '';
-            });
-
-            let nextMonth = state.currentMonth + 1;
-            let nextStatus = nextMonth > TOTAL_MONTHS ? 'end' : 'game';
-
-            roomRef.update({
-                players: updatedPlayers,
-                currentMonth: nextMonth > TOTAL_MONTHS ? TOTAL_MONTHS : nextMonth,
-                status: nextStatus
-            });
+    // Verificação de avanço pelo líder ou consenso de submissões completas
+    function checkRoomTurnResolution() {
+        if(!isLeader) return;
+        db.ref('rooms/' + myRoomName + '/players').once('value', snapshot => {
+            const players = snapshot.val() || {};
+            const keys = Object.keys(players);
+            const allReady = keys.every(k => players[k].submitted === true);
+            if(allReady) {
+                db.ref('rooms/' + myRoomName + '/config').update({ month: currentMonth + 1 });
+            }
         });
     }
 
-    function actionProcessMonthSolo(state) {
-        let p = state.players[myPlayerName];
-        let capital = p.money + 100;
-        const opts = getPhaseOptions(state.currentMonth);
-        const chosen = opts.find(o => o.key === p.currentChoice);
-        if (chosen) capital = chosen.yield < 0 ? capital + (capital * chosen.yield) : capital * (1 + chosen.yield);
-        
-        let localHistory = JSON.parse(sessionStorage.getItem('local_hist') || "[1000]");
-        localHistory.push(Math.round(capital));
-        sessionStorage.setItem('local_hist', JSON.stringify(localHistory));
-
-        let nextMonth = state.currentMonth + 1;
-        if (nextMonth > TOTAL_MONTHS) {
-            switchScreen('screen-podium');
-            document.getElementById('podium-container').innerHTML = `<div class="p-4 bg-slate-900 border border-amber-500 rounded text-white flex justify-between"><span>1º ${myPlayerName}</span><span>R$ ${capital.toFixed(2)}</span></div>`;
-        } else {
-            let newState = { name: 'Solo', status: 'game', currentMonth: nextMonth, players: {} };
-            newState.players[myPlayerName] = { money: capital, currentChoice: '', ready: false, history: localHistory };
-            renderGameScreen(newState);
-        }
+    function actionLeaderForceNext() {
+        if(!isLeader) return;
+        db.ref('rooms/' + myRoomName + '/config').update({ month: currentMonth + 1 });
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
-        sessionStorage.removeItem('local_hist');
-    });
+    // Processamento da virada de mês com as regras de mercado solicitadas para a crise
+    function processMonthTransition(nextMonth, roomPlayersData) {
+        // Obter escolha feita pelo jogador local
+        const myData = roomPlayersData[myPlayerName] || { choice: "OPT_B" };
+        const myChoice = myData.choice || "OPT_B";
 
-    function renderChart(history) {
-        const chart = document.getElementById('crypto-chart');
-        chart.innerHTML = '';
-        const max = Math.max(...history, 1500);
-        history.forEach(v => {
+        // Determinação das características do investimento escolhido com base nas opções da fase atual
+        const opts = getInvestmentOptions(currentMonth);
+        let chosenMeta = opts.B; // fallback padrão seguro
+        if (myChoice === "OPT_A") chosenMeta = opts.A;
+        if (myChoice === "OPT_C") chosenMeta = opts.C;
+        if (myChoice === "OPT_D") chosenMeta = opts.D;
+
+        // Verificar se o mês vigente foi um mês de CRISE NA BOLSA
+        const absoluteCrisisOccurred = crisisMonths.includes(currentMonth);
+
+        if (absoluteCrisisOccurred) {
+            // Regra da Crise: Quem mantiver investimentos em ativos de segurança (deixa o dinheiro / renda fixa segura) ganha 50% a mais
+            // Quem aloca ou retira para ativos de risco (variáveis / compras de bens) perde 30%
+            if (chosenMeta.isSafe) {
+                currentMoney = currentMoney * 1.50;
+            } else {
+                currentMoney = currentMoney * 0.70;
+            }
+        } else {
+            // Rendimento de ciclo regular de mercado
+            if (chosenMeta.isSafe) {
+                currentMoney += 110; // Acréscimo fixo padrão
+            } else {
+                currentMoney += 140; // Renda variável performando regularmente
+            }
+        }
+
+        historyCapital.push(currentMoney);
+        currentMonth = nextMonth;
+
+        // Limpeza dos estados para o Firebase se multiplayer
+        if(!isSoloMode && isLeader) {
+            db.ref('rooms/' + myRoomName + '/players').once('value', snapshot => {
+                const players = snapshot.val() || {};
+                Object.keys(players).forEach(k => {
+                    db.ref('rooms/' + myRoomName + '/players/' + k).update({
+                        submitted: false,
+                        choice: ""
+                    });
+                });
+            });
+        }
+
+        // Exibir animação de cortina de transição
+        const overlay = document.getElementById('month-transition-overlay');
+        document.getElementById('mto-month-num').innerText = currentMonth > 24 ? "FIM" : `MÊS ${currentMonth}`;
+        document.getElementById('mto-phase-label').innerText = `FASE ${currentMonth - 1} CONCLUÍDA`;
+
+        overlay.style.display = 'flex';
+        overlay.className = "active phase-close";
+
+        setTimeout(() => {
+            overlay.className = "active phase-show";
+            if (currentMonth > 24) {
+                displayFinalPodium(roomPlayersData);
+            } else {
+                renderGameplayScreen();
+            }
+        }, 500);
+
+        setTimeout(() => {
+            overlay.className = "";
+            overlay.style.display = 'none';
+        }, 1400);
+    }
+
+    // Renderização em tempo real do painel inferior dos competidores
+    function renderRealtimeCompetitors(playersObj) {
+        const container = document.getElementById('game-realtime-players');
+        container.innerHTML = "";
+        if(!playersObj) return;
+
+        Object.keys(playersObj).forEach(k => {
+            const p = playersObj[k];
+            const box = document.createElement('div');
+            box.style.cssText = "background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); padding:0.6rem; border-radius:8px; text-align:center;";
+            
+            if(p.submitted) box.style.borderColor = "var(--gold)";
+
+            box.innerHTML = `
+                <p style="font-size:0.8rem; font-weight:600; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${k}</p>
+                <p style="font-size:0.85rem; color:var(--gold-light); font-weight:700; margin-top:0.2rem;">R$ ${(p.money || 1000).currentTarget?.value || (p.money || 1000).toLocaleString('pt-BR', {maximumFractionDigits:0})}</p>
+                <span style="font-size:0.6rem; text-transform:uppercase; color:${p.submitted ? '#86efac' : '#fca5a5'}">${p.submitted ? '✓ Pronto' : '⏳ Pensando'}</span>
+            `;
+            container.appendChild(box);
+        });
+    }
+
+    // Geração do gráfico de linhas simplificado nativo do Capital
+    function drawCapitalChart() {
+        const chartContainer = document.getElementById('crypto-chart');
+        chartContainer.innerHTML = "";
+        
+        const maxVal = Math.max(...historyCapital, 1200);
+        const minVal = Math.min(...historyCapital, 800);
+        const range = (maxVal - minVal) || 1;
+
+        historyCapital.forEach((val, idx) => {
             const bar = document.createElement('div');
-            bar.style.cssText = `flex:1; background:#C9A84C; height:${(v/max)*100}%; min-width:6px; border-radius:2px 2px 0 0;`;
-            chart.appendChild(bar);
+            const pct = ((val - minVal) / range) * 85 + 15;
+            bar.style.width = "100%";
+            bar.style.height = `${pct}%`;
+            bar.style.background = "linear-gradient(to top, var(--gold-dark), var(--gold))";
+            bar.style.borderRadius = "3px 3px 0 0";
+            bar.className = "chart-bar-enter";
+            if(idx === historyCapital.length - 1) bar.classList.add('bar-newest');
+
+            // Tooltip simples nativo
+            bar.title = `Mês ${idx}: R$ ${val.toFixed(2)}`;
+            chartContainer.appendChild(bar);
         });
     }
 
-    function renderFinalPodium(state) {
+    // Exibição e composição do Pódio Final com a Cor Ouro de fundo aplicada
+    function displayFinalPodium(finalPlayersData) {
         switchScreen('screen-podium');
-        const container = document.getElementById('podium-container');
-        const ranking = Object.keys(state.players).map(p => ({name: p, money: state.players[p].money})).sort((a,b) => b.money - a.money);
-        container.innerHTML = ranking.map((p, i) => `<div class="p-4 bg-slate-900 border border-amber-500 rounded text-white flex justify-between"><span>${i+1}º ${p.name}</span><span>R$ ${p.money.toFixed(2)}</span></div>`).join('');
+        const container = document.getElementById('podium-list-container');
+        container.innerHTML = "";
+
+        let leaderboard = [];
+        if(isSoloMode) {
+            leaderboard = [{ name: myPlayerName, money: currentMoney }];
+        } else {
+            leaderboard = Object.keys(finalPlayersData).map(k => {
+                return { name: k, money: finalPlayersData[k].money || 1000 };
+            });
+        }
+
+        // Ordenar do maior patrimônio para o menor
+        leaderboard.sort((a, b) => b.money - a.money);
+
+        leaderboard.forEach((player, index) => {
+            const row = document.createElement('div');
+            const medals = ['🥇', '🥈', '🥉', '🏅', '🏅'];
+            const medal = medals[index] || '🏅';
+            const styles = [
+                'background:rgba(201,168,76,0.22);border:2px solid rgba(201,168,76,0.9);color:#000;font-weight:700;',
+                'background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.4);color:#1e293b;',
+                'background:rgba(180,83,9,0.15);border:1px solid rgba(180,83,9,0.4);color:#451a03;',
+            ];
+            row.style.cssText = `display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-radius:10px;${styles[index] || 'background:rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.2);color:#334155;'} animation:fadeUp 0.5s ease ${index * 0.15}s both;`;
+            row.innerHTML = `
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                    <span style="font-size:1.5rem;">${medal}</span>
+                    <div>
+                        <p style="font-size:1.1rem;line-height:1.2;">${player.name} ${player.name === myPlayerName ? '<b>(Você)</b>' : ''}</p>
+                        <p style="font-size:0.75rem;opacity:0.7;">Classificação Oficial</p>
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <p style="font-size:1.2rem;font-weight:700;">R$ ${player.money.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                </div>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    // Reiniciar os dados locais e de sala para permitir novas rodadas espontâneas
+    function actionRestartGameData() {
+        if(!isSoloMode) {
+            db.ref('rooms/' + myRoomName).remove();
+        }
+        currentMonth = 1;
+        currentMoney = 1000;
+        historyCapital = [1000];
+        hasSubmittedThisMonth = false;
+        switchScreen('screen-home');
     }
 </script>
 </body>
