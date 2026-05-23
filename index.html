@@ -7,9 +7,43 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Rajdhani:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDsx8c8MgqLqETHGb7NzPI3_LuZc0POYB4",
+            authDomain: "jogos-de-escolas.firebaseapp.com",
+            databaseURL: "https://jogos-de-escolas-default-rtdb.firebaseio.com",
+            projectId: "jogos-de-escolas",
+            storageBucket: "jogos-de-escolas.firebasestorage.app",
+            messagingSenderId: "399379585625",
+            appId: "1:399379585625:web:09a22749338bd392466f48",
+            measurementId: "G-3N475E1RJ7"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ── Firebase helpers (substituem o localStorage para salas multiplayer) ──
+        function getRoomRef(roomName) {
+            return db.ref('rooms/' + roomName.replace(/[.#$[\]]/g, '_'));
+        }
+
+        function saveRoomStateFirebase(state) {
+            return getRoomRef(state.name).set(state);
+        }
+
+        function listenRoomState(roomName, callback) {
+            getRoomRef(roomName).on('value', snap => {
+                const val = snap.val();
+                if (val) callback(val);
+            });
+        }
+
+        function stopListenRoomState(roomName) {
+            getRoomRef(roomName).off();
+        }
+    </script>
     <style>
         :root {
             --gold: #C9A84C;
@@ -84,6 +118,23 @@
             line-height: 1;
         }
 
+        .mto-city-strip {
+            display: none !important;
+            display: flex;
+            gap: 8px;
+            margin-top: 1.5rem;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .mto-city-strip img {
+            width: 120px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            filter: sepia(0.3) brightness(0.85);
+        }
+
         .mto-divider {
             width: 180px;
             height: 1px;
@@ -116,6 +167,12 @@
             opacity: 0.3;
             filter: grayscale(0.2) brightness(0.6);
             background: url("https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2070&auto=format&fit=crop") center/cover no-repeat;
+        }
+
+        .home-bg-layer img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .home-bg-overlay {
@@ -180,6 +237,7 @@
             margin-bottom: 0.5rem;
         }
 
+        /* City badges on home */
         .city-badge-row {
             display: flex;
             gap: 1rem;
@@ -195,6 +253,16 @@
             width: 90px;
             height: 55px;
         }
+
+        .city-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7) sepia(0.2);
+            transition: filter 0.3s;
+        }
+
+        .city-badge:hover img { filter: brightness(0.9) sepia(0); }
 
         .city-badge-label {
             position: absolute;
@@ -248,16 +316,19 @@
         .btn-dark:hover { border-color: var(--gold); color: var(--gold-light); }
 
         /* ── GAME SCREEN PHASES ── */
+        /* Fases 1-5: Azul Vitoriano */
         .game-phase-1  { background: #0d1a2e; }
         .game-phase-2  { background: #0d1a2e; }
         .game-phase-3  { background: #0d1a2e; }
         .game-phase-4  { background: #0d1a2e; }
         .game-phase-5  { background: #0d1a2e; }
+        /* Fases 6-10: Preto Luxuoso */
         .game-phase-6  { background: #0a0a0f; }
         .game-phase-7  { background: #0a0a0f; }
         .game-phase-8  { background: #0a0a0f; }
         .game-phase-9  { background: #0a0a0f; }
         .game-phase-10 { background: #0a0a0f; }
+        /* Fases 11-20: Verde Georgiano */
         .game-phase-11 { background: #0a1f0d; }
         .game-phase-12 { background: #0a1f0d; }
         .game-phase-13 { background: #0a1f0d; }
@@ -268,10 +339,19 @@
         .game-phase-18 { background: #0a1f0d; }
         .game-phase-19 { background: #0a1f0d; }
         .game-phase-20 { background: #0a1f0d; }
+        /* Fases 21-24: Laranja */
         .game-phase-21 { background: #1f0e00; }
         .game-phase-22 { background: #1f0e00; }
         .game-phase-23 { background: #1f0e00; }
         .game-phase-24 { background: #1f0e00; }
+
+        /* Accent colors by phase */
+        .phase-accent-1 { color: #7dd3fc; }
+        .phase-accent-2 { color: #86efac; }
+        .phase-accent-3 { color: #fde68a; }
+        .phase-accent-4 { color: #f9a8d4; }
+        .phase-accent-5 { color: #67e8f9; }
+        .phase-accent-6 { color: #c4b5fd; }
 
         /* Bar chart */
         .chart-bar-enter {
@@ -282,6 +362,36 @@
             to { opacity: 1; }
         }
 
+        /* Sidebar city panel */
+        .city-panel {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 8px;
+            z-index: 100;
+            opacity: 0.7;
+        }
+
+        .city-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 4px;
+            object-fit: cover;
+            border: 1px solid rgba(201,168,76,0.2);
+            filter: grayscale(0.5) brightness(0.7);
+            transition: all 0.3s;
+        }
+        .city-thumb:hover {
+            filter: grayscale(0) brightness(1);
+            border-color: var(--gold);
+            width: 100px;
+        }
+
+        /* Luxury panel styles */
         .luxury-card {
             background: rgba(18,18,26,0.8);
             border: 1px solid rgba(201,168,76,0.2);
@@ -289,6 +399,27 @@
             border-radius: 14px;
         }
 
+        /* Podium */
+        #screen-podium {
+            background: #2a1f00;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .podium-bg {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            opacity: 0.08;
+            filter: grayscale(0.5);
+        }
+
+        .podium-bg img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        /* Slide-in for screens */
         @keyframes slideInRight {
             from { transform: translateX(40px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -300,6 +431,7 @@
         .anim-slide-in { animation: slideInRight 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
         .anim-fade-up  { animation: fadeUp 0.5s ease forwards; }
 
+        /* Month number ring in game */
         .month-ring {
             display: inline-flex;
             align-items: center;
@@ -329,16 +461,43 @@
             font-size: 1rem;
         }
 
+        /* Animate money value when it changes */
         @keyframes moneyPop {
             0%   { transform: scale(1); }
             50%  { transform: scale(1.15); }
             100% { transform: scale(1); }
         }
         .money-pop { animation: moneyPop 0.4s ease; }
+
+        /* Screen lobby city images */
+        .lobby-city-banner {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            filter: brightness(0.6) sepia(0.2);
+            border: 1px solid rgba(201,168,76,0.2);
+        }
+
+        /* Glow on game bar chart newest bar */
+        .bar-newest {
+            box-shadow: 0 0 12px 4px rgba(201,168,76,0.5);
+        }
+
+        /* Ticker tape decoration */
+        .gold-border-top {
+            border-top: 1px solid rgba(201,168,76,0.25);
+        }
+        .gold-border-bottom {
+            border-bottom: 1px solid rgba(201,168,76,0.25);
+        }
     </style>
 </head>
 <body>
 
+<!-- ══════════════════════════════════════════
+     MONTH TRANSITION OVERLAY
+══════════════════════════════════════════ -->
 <div id="month-transition-overlay">
     <div class="mto-curtain-left"></div>
     <div class="mto-curtain-right"></div>
@@ -347,11 +506,17 @@
         <div class="mto-divider"></div>
         <div class="mto-month-label" id="mto-month-num">MÊS 2</div>
         <div class="mto-divider"></div>
+        <div class="mto-city-strip" id="mto-city-strip">
+        </div>
         <p class="mto-tagline" style="margin-top:1rem; font-size:0.85rem;" id="mto-motto">"O tempo é o maior ativo do investidor."</p>
     </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     SCREEN 1: TELA INICIAL
+══════════════════════════════════════════ -->
 <div id="screen-home" class="min-h-screen">
+    <!-- Background city images -->
     <div class="home-bg-layer"></div>
     <div class="home-bg-overlay"></div>
 
@@ -362,52 +527,771 @@
         <div class="home-gold-line"></div>
         <p class="home-subtitle">O mercado não espera. Nem você deveria.</p>
 
+        <!-- City badges -->
         <div class="city-badge-row">
-            <div class="city-badge"><div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div><span class="city-badge-label">New York</span></div>
-            <div class="city-badge"><div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div><span class="city-badge-label">Manhattan</span></div>
-            <div class="city-badge"><div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div><span class="city-badge-label">Liberty</span></div>
+            <div class="city-badge">
+                <div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div>
+                <span class="city-badge-label">New York</span>
+            </div>
+            <div class="city-badge">
+                <div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div>
+                <span class="city-badge-label">Manhattan</span>
+            </div>
+            <div class="city-badge">
+                <div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div>
+                <span class="city-badge-label">Liberty</span>
+            </div>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-4 w-full max-w-xl mt-2">
-            <button onclick="switchScreen('screen-solo')" class="btn-luxury btn-gold flex-1">▶ Jogar Sozinho</button>
-            <button onclick="switchScreen('screen-create')" class="btn-luxury btn-dark flex-1">⚑ Criar Sala (Líder)</button>
-            <button onclick="switchScreen('screen-join')" class="btn-luxury btn-dark flex-1">↗ Entrar na Sala</button>
+            <button onclick="switchScreen('screen-solo')" class="btn-luxury btn-gold flex-1">
+                ▶ Jogar Sozinho
+            </button>
+            <button onclick="switchScreen('screen-create')" class="btn-luxury btn-dark flex-1">
+                ⚑ Criar Sala (Líder)
+            </button>
+            <button onclick="switchScreen('screen-join')" class="btn-luxury btn-dark flex-1">
+                ↗ Entrar na Sala
+            </button>
         </div>
+
+        <p style="margin-top:2.5rem; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:0.85rem; color:rgba(201,168,76,0.45); letter-spacing:0.12em; text-align:center;">
+            "Invista em conhecimento. O retorno é sempre o melhor." — Benjamin Franklin
+        </p>
     </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     SCREEN SOLO
+══════════════════════════════════════════ -->
 <div id="screen-solo" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
+    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0d1a2e;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
         <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.25rem;">Modo</p>
         <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:1.5rem;">Solo Trader</h2>
         <div class="space-y-4">
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Seu Codinome:</label>
-                <input id="solo-player-name" type="text" placeholder="Ex: Íkaro" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
+                <input id="solo-player-name" type="text" placeholder="Ex: Íkaro"
+                    style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
             </div>
-            <button onclick="actionStartSolo()" class="btn-luxury btn-gold" style="width:100%;margin-top:0.5rem;">Iniciar Jornada →</button>
+            <button onclick="actionStartSolo()" class="btn-luxury btn-gold" style="width:100%;margin-top:0.5rem;">
+                Iniciar Jornada →
+            </button>
+            <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">
+                ← Voltar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 2: CRIAR SALA
+══════════════════════════════════════════ -->
+<div id="screen-create" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
+    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0a0a0f;"></div>
+    <div class="luxury-card p-8 w-full max-w-md relative z-10">
+        <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.25rem;">Administração</p>
+        <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:1.5rem;">Painel do Líder</h2>
+        <div class="space-y-4">
+            <div>
+                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Nome da Sala:</label>
+                <input id="create-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+            </div>
+            <div>
+                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Senha:</label>
+                <input id="create-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+            </div>
+            <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;">
+                <input id="create-room-public" type="checkbox" checked style="width:1.1rem;height:1.1rem;accent-color:var(--gold);">
+                <label for="create-room-public" style="font-size:0.85rem;color:rgba(255,255,255,0.7);">Sala Pública</label>
+            </div>
+            <button onclick="actionCreateRoom()" class="btn-luxury btn-gold" style="width:100%;">Criar Sala ⚑</button>
             <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">← Voltar</button>
         </div>
     </div>
 </div>
 
-<div id="screen-create" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
+<!-- ══════════════════════════════════════════
+     SCREEN 3: ENTRAR NA SALA
+══════════════════════════════════════════ -->
+<div id="screen-join" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
+    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0a0a0f;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
-        <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.25rem;">Multiplayer</p>
-        <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:1.5rem;">Criar Sala</h2>
+        <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.25rem;">Acesso</p>
+        <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin-bottom:1.5rem;">Entrar no Mercado</h2>
         <div class="space-y-4">
             <div>
-                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Nome da Sala:</label>
-                <input id="create-room-name" type="text" placeholder="Ex: Turma A" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
+                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Seu Codinome:</label>
+                <input id="join-player-name" type="text" placeholder="Ex: Dev_CIn" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
             </div>
             <div>
-                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Senha (opcional):</label>
-                <input id="create-room-pass" type="password" placeholder="Deixe em branco para sem senha" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;">
+                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Nome da Sala:</label>
+                <input id="join-room-name" type="text" value="ETE-GP" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
             </div>
-            <button onclick="actionCreateRoom()" class="btn-luxury btn-gold" style="width:100%;margin-top:0.5rem;">Criar Sala →</button>
+            <div>
+                <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Senha:</label>
+                <input id="join-room-pass" type="password" value="123" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+            </div>
+            <button onclick="actionJoinRoom()" class="btn-luxury btn-gold" style="width:100%;">Entrar ↗</button>
             <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">← Voltar</button>
         </div>
     </div>
 </div>
-<div id="screen-join" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--o
-(Content truncated due to size limit. Use line ranges to read remaining content)
+
+<!-- ══════════════════════════════════════════
+     SCREEN 4: LOBBY
+══════════════════════════════════════════ -->
+<div id="screen-lobby" class="hidden min-h-screen flex flex-col items-center justify-center p-6" style="background:var(--obsidian);">
+    <div style="position:absolute;inset:0;overflow:hidden;opacity:0.08;background:#0d1a2e;"></div>
+    <div class="relative z-10 w-full max-w-lg">
+        <div style="text-align:center;margin-bottom:2rem;">
+            <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;">Sala</p>
+            <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#fff;" id="lobby-room-title">—</h2>
+            <div class="home-gold-line"></div>
+            <p style="color:rgba(255,255,255,0.4);font-size:0.9rem;margin-top:0.5rem;">Aguardando formação do pódio de 5 jogadores...</p>
+        </div>
+
+        <div style="width:100%;height:180px;border-radius:12px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);margin-bottom:1.5rem;"></div>
+
+        <div class="luxury-card p-6">
+            <h3 style="font-size:0.8rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;">
+                Traders Conectados (<span id="lobby-count">0</span>/5)
+            </h3>
+            <ul id="lobby-player-list" style="list-style:none;padding:0;margin:0;space-y:0.5rem;"></ul>
+        </div>
+
+        <div id="lobby-leader-controls" class="hidden" style="margin-top:1.5rem;text-align:center;">
+            <button onclick="actionStartGame()" class="btn-luxury btn-gold" style="font-size:1.15rem;padding:1rem 3rem;letter-spacing:0.2em;">
+                ▶ STOP! Começar Jogo
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 5: GAMEPLAY
+══════════════════════════════════════════ -->
+<div id="screen-game" class="hidden min-h-screen p-4 flex flex-col items-center game-phase-1" style="transition:background 1.2s ease;">
+
+    <!-- Sidebar city thumbnails (decorative) -->
+    <div class="city-panel hidden md:flex">
+        <div class="city-thumb" style="background:rgba(201,168,76,0.15);"></div>
+        <div class="city-thumb" style="background:rgba(201,168,76,0.1);"></div>
+        <div class="city-thumb" style="background:rgba(201,168,76,0.05);"></div>
+    </div>
+
+    <!-- Header bar -->
+    <div class="w-full max-w-4xl luxury-card p-4 mb-6 flex justify-between items-center anim-slide-in">
+        <div style="display:flex;align-items:center;gap:1rem;">
+            <div class="month-ring" id="game-month-ring">1</div>
+            <div>
+                <p style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--gold-light);" id="game-current-month">MÊS 1 / 24</p>
+                <p style="font-size:0.75rem;color:rgba(255,255,255,0.4);letter-spacing:0.1em;" id="game-player-identity"></p>
+            </div>
+        </div>
+        <div style="display:flex;gap:2rem;text-align:right;">
+            <div>
+                <p style="font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.3);text-transform:uppercase;">Inicial</p>
+                <p style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.5);">R$ 1.000</p>
+            </div>
+            <div>
+                <p style="font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.3);text-transform:uppercase;">Atual</p>
+                <p style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;" id="ui-current-money" class="gold-text">R$ 1.000,00</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Chart panel -->
+        <div class="md:col-span-2 luxury-card p-6 flex flex-col justify-between">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+                <p style="font-size:0.7rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);text-transform:uppercase;">Evolução do Capital</p>
+                <span id="game-phase-badge" style="font-size:0.65rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;border:1px solid rgba(201,168,76,0.3);padding:0.2rem 0.6rem;border-radius:20px;">FASE 1</span>
+            </div>
+            <div id="crypto-chart" style="display:flex;align-items:flex-end;justify-content:space-between;height:11rem;background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem;border:1px solid rgba(255,255,255,0.05);gap:3px;"></div>
+            <div id="crisis-alert" style="display:none;margin-top:1rem;padding:0.75rem;background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.4);border-radius:8px;color:#fca5a5;font-weight:700;font-size:0.9rem;">
+                ⚠️ CRISE SISTÊMICA — Mercado em colapso!
+            </div>
+        </div>
+
+        <!-- Investment panel -->
+        <div class="luxury-card p-6 flex flex-col justify-between">
+            <div>
+                <p style="font-size:0.7rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:0.5rem;">Decisão do Mês</p>
+                <h4 style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:1.25rem;line-height:1.3;" id="investment-question-title">Onde alocar seus R$ 100 deste mês?</h4>
+
+                <div id="standard-options" style="display:flex;flex-direction:column;gap:0.6rem;">
+                    <button onclick="submitTurn('OPT_A')" id="btn-opt-a" style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(201,168,76,0.1)';this.style.borderColor='rgba(201,168,76,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(201,168,76,0.2)'">
+                        <span id="btn-opt-a-label">🏢 Fundos Imobiliários</span><span id="btn-opt-a-tag" style="font-size:0.7rem;color:#86efac;">Renda Variável</span>
+                    </button>
+                    <button onclick="submitTurn('OPT_B')" id="btn-opt-b" style="background:rgba(255,255,255,0.04);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(139,92,246,0.1)';this.style.borderColor='rgba(139,92,246,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(139,92,246,0.25)'">
+                        <span id="btn-opt-b-label">🟪 Caixinhas Nubank</span><span id="btn-opt-b-tag" style="font-size:0.7rem;color:#c4b5fd;">Renda Fixa (100% CDI)</span>
+                    </button>
+                    <button onclick="submitTurn('OPT_C')" id="btn-opt-c" style="background:rgba(255,255,255,0.04);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(251,191,36,0.08)';this.style.borderColor='rgba(251,191,36,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(251,191,36,0.2)'">
+                        <span id="btn-opt-c-label">🏦 Poupança</span><span id="btn-opt-c-tag" style="font-size:0.7rem;color:#fde68a;">Baixo Rendimento</span>
+                    </button>
+                    <button onclick="submitTurn('OPT_D')" id="btn-opt-d" style="background:rgba(255,255,255,0.04);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(239,68,68,0.1)';this.style.borderColor='rgba(239,68,68,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(239,68,68,0.2)'">
+                        <span id="btn-opt-d-label">📱 Comprar um iPhone</span><span id="btn-opt-d-tag" style="font-size:0.7rem;color:#fca5a5;">Passivo Financeiro</span>
+                    </button>
+                </div>
+
+                <div id="crisis-options" style="display:none;flex-direction:column;gap:0.75rem;">
+                    <button onclick="submitTurn('MANTER')" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.4);border-radius:8px;padding:1rem;color:#86efac;cursor:pointer;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:1rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(34,197,94,0.25)'" onmouseout="this.style.background='rgba(34,197,94,0.15)'">📈 MANTER na Bolsa</button>
+                    <button onclick="submitTurn('RETIRAR')" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);border-radius:8px;padding:1rem;color:#fca5a5;cursor:pointer;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:1rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.25)'" onmouseout="this.style.background='rgba(239,68,68,0.15)'">📉 RETIRAR da Bolsa</button>
+                </div>
+            </div>
+
+            <div id="wait-message" style="display:none;text-align:center;color:#67e8f9;font-weight:700;animation:pulse 1.5s infinite;margin-top:1rem;font-size:0.9rem;">
+                Aguardando os outros traders... ⏱️
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 6: LÍDER DASHBOARD
+══════════════════════════════════════════ -->
+<div id="screen-leader-dashboard" class="hidden min-h-screen p-6 flex flex-col items-center" style="background:var(--obsidian);">
+    <div style="text-align:center;margin-bottom:2rem;">
+        <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;">Console do Líder</p>
+        <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#fff;">
+            MÊS <span id="leader-month-display">1</span><span style="color:rgba(255,255,255,0.3);font-size:1.5rem;">/24</span>
+        </h2>
+    </div>
+    <div class="luxury-card p-6 w-full max-w-4xl mb-6">
+        <h3 style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:1rem;">Status dos Traders (Mecânica Stop):</h3>
+        <div id="leader-player-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;"></div>
+    </div>
+    <button id="btn-next-month" onclick="actionProcessMonth()" style="display:none;background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));color:var(--obsidian);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:0.2em;padding:1rem 3rem;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s;animation:pulse 1.5s infinite;">
+        AVANÇAR MÊS ➡
+    </button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 7: PÓDIO
+══════════════════════════════════════════ -->
+<div id="screen-podium" class="hidden min-h-screen flex flex-col justify-center items-center p-6" style="background:#2a1f00;position:relative;overflow:hidden;">
+    <!-- Background dourado -->
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,#2a1f00 0%,#1a1200 50%,#2a1f00 100%);opacity:0.9;"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,var(--obsidian) 100%);"></div>
+
+    <div class="relative z-10" style="text-align:center;margin-bottom:2rem;">
+        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--gold);letter-spacing:0.2em;margin-bottom:0.5rem;">Ensino Médio Concluído</p>
+        <h1 style="font-family:'Playfair Display',serif;font-size:clamp(3rem,8vw,5rem);font-weight:900;" class="gold-text">🏆 PÓDIO FINAL 🏆</h1>
+        <div class="home-gold-line"></div>
+        <p style="color:rgba(255,255,255,0.4);font-family:'Cormorant Garamond',serif;font-style:italic;">Quem atingiu o Patrimônio Massivo?</p>
+    </div>
+
+    <div id="podium-container" class="relative z-10 w-full max-w-md" style="display:flex;flex-direction:column;gap:0.75rem;"></div>
+
+    <button onclick="location.reload()" class="btn-luxury btn-dark relative z-10" style="margin-top:3rem;letter-spacing:0.2em;">
+        ↺ Jogar Novamente
+    </button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+    let myRole = '';
+    let myPlayerName = '';
+    let isSolo = false;
+    const TOTAL_MONTHS = 24;
+
+    // Phase definitions (1 per month = 24 phases)
+    const PHASES = [
+        { label: 'FASE 1 · POUPADOR',      motto: '"O primeiro passo é começar a guardar."',         bgClass: 'game-phase-1',  accentColor: '#7dd3fc' },
+        { label: 'FASE 2 · POUPADOR',      motto: '"Disciplina hoje, liberdade amanhã."',             bgClass: 'game-phase-2',  accentColor: '#7dd3fc' },
+        { label: 'FASE 3 · POUPADOR',      motto: '"Cada real guardado é um tijolo do futuro."',      bgClass: 'game-phase-3',  accentColor: '#7dd3fc' },
+        { label: 'FASE 4 · POUPADOR',      motto: '"O hábito de poupar é o alicerce da riqueza."',   bgClass: 'game-phase-4',  accentColor: '#7dd3fc' },
+        { label: 'FASE 5 · POUPADOR',      motto: '"Consistência supera intensidade."',               bgClass: 'game-phase-5',  accentColor: '#7dd3fc' },
+        { label: 'FASE 6 · APRENDIZ',      motto: '"Conhecimento é o melhor investimento."',          bgClass: 'game-phase-6',  accentColor: '#a78bfa' },
+        { label: 'FASE 7 · APRENDIZ',      motto: '"Aprenda com os erros dos outros."',               bgClass: 'game-phase-7',  accentColor: '#a78bfa' },
+        { label: 'FASE 8 · APRENDIZ',      motto: '"O mercado recompensa quem estuda."',              bgClass: 'game-phase-8',  accentColor: '#a78bfa' },
+        { label: 'FASE 9 · APRENDIZ',      motto: '"Paciência é a virtude do investidor."',           bgClass: 'game-phase-9',  accentColor: '#a78bfa' },
+        { label: 'FASE 10 · APRENDIZ',     motto: '"Risco calculado não é imprudência."',             bgClass: 'game-phase-10', accentColor: '#a78bfa' },
+        { label: 'FASE 11 · INVESTIDOR',   motto: '"O tempo no mercado bate o timing do mercado."',  bgClass: 'game-phase-11', accentColor: '#86efac' },
+        { label: 'FASE 12 · INVESTIDOR',   motto: '"Juros compostos são a oitava maravilha."',        bgClass: 'game-phase-12', accentColor: '#86efac' },
+        { label: 'FASE 13 · INVESTIDOR',   motto: '"Diversificar é proteger o futuro."',              bgClass: 'game-phase-13', accentColor: '#86efac' },
+        { label: 'FASE 14 · INVESTIDOR',   motto: '"Não coloque todos os ovos numa cesta."',          bgClass: 'game-phase-14', accentColor: '#86efac' },
+        { label: 'FASE 15 · ESTRATEGISTA', motto: '"A estratégia separa o rico do sortudo."',         bgClass: 'game-phase-15', accentColor: '#86efac' },
+        { label: 'FASE 16 · ESTRATEGISTA', motto: '"Pense em décadas, aja em anos."',                 bgClass: 'game-phase-16', accentColor: '#86efac' },
+        { label: 'FASE 17 · ESTRATEGISTA', motto: '"O patrimônio se constrói na calmaria."',          bgClass: 'game-phase-17', accentColor: '#86efac' },
+        { label: 'FASE 18 · ESTRATEGISTA', motto: '"Quem planeja, prospera."',                        bgClass: 'game-phase-18', accentColor: '#86efac' },
+        { label: 'FASE 19 · ESTRATEGISTA', motto: '"Riqueza é liberdade de escolha."',                bgClass: 'game-phase-19', accentColor: '#86efac' },
+        { label: 'FASE 20 · ESTRATEGISTA', motto: '"O caminho da prosperidade exige visão."',         bgClass: 'game-phase-20', accentColor: '#86efac' },
+        { label: 'FASE 21 · MAGNATA',      motto: '"Legado é o investimento que transcende gerações."', bgClass: 'game-phase-21', accentColor: '#fb923c' },
+        { label: 'FASE 22 · MAGNATA',      motto: '"A soberania financeira é a maior liberdade."',   bgClass: 'game-phase-22', accentColor: '#fb923c' },
+        { label: 'FASE 23 · MAGNATA',      motto: '"Poucos chegam aqui. Você chegou."',               bgClass: 'game-phase-23', accentColor: '#fb923c' },
+        { label: 'FASE 24 · MAGNATA',      motto: '"O castelo não é o destino — a soberania é."',    bgClass: 'game-phase-24', accentColor: '#fb923c' },
+    ];
+
+    // Opções de investimento por grupo de fases
+    const PHASE_OPTIONS = {
+        early: [ // fases 1-10
+            { key: 'OPT_A', label: '🏢 Fundos Imobiliários',   tag: 'Renda Variável',       yield: 0.008  },
+            { key: 'OPT_B', label: '🟪 Caixinhas Nubank',       tag: 'Renda Fixa (100% CDI)', yield: 0.009  },
+            { key: 'OPT_C', label: '🏦 Poupança',               tag: 'Baixo Rendimento',     yield: 0.005  },
+            { key: 'OPT_D', label: '📱 Comprar um iPhone',      tag: 'Passivo Financeiro',   yield: -0.15  },
+        ],
+        mid: [ // fases 11-20
+            { key: 'OPT_A', label: '📈 Ações',                  tag: 'Renda Variável',       yield: 0.012  },
+            { key: 'OPT_B', label: '🏛️ Tesouro Direto',         tag: 'Renda Fixa Segura',    yield: 0.009  },
+            { key: 'OPT_C', label: '🐷 Porquinho do Banco Inter', tag: 'Cofrinho Digital',  yield: 0.006  },
+            { key: 'OPT_D', label: '👗 Comprar Roupas',         tag: 'Passivo Financeiro',   yield: -0.10  },
+        ],
+        late: [ // fases 21-24
+            { key: 'OPT_A', label: '₿ Criptomoedas',            tag: 'Alto Risco/Retorno',   yield: 0.020  },
+            { key: 'OPT_B', label: '🎉 Pagar Interclasse',      tag: 'Gasto Social',         yield: -0.08  },
+            { key: 'OPT_C', label: '🏦 Poupança',               tag: 'Baixo Rendimento',     yield: 0.005  },
+            { key: 'OPT_D', label: '💸 Deixar no PIX',          tag: '0% Rendimento',        yield: 0.000  },
+        ],
+    };
+
+    function getPhaseOptions(month) {
+        if (month <= 10) return PHASE_OPTIONS.early;
+        if (month <= 20) return PHASE_OPTIONS.mid;
+        return PHASE_OPTIONS.late;
+    }
+
+    const CITY_IMAGES = [];
+
+    let lastMonth = 0;
+
+    function getPhaseIndex(month) {
+        return Math.min(month - 1, 23);
+    }
+
+    // ── MONTH TRANSITION ANIMATION ──────────────────────────────────────
+    function playMonthTransition(newMonth, onComplete) {
+        const overlay = document.getElementById('month-transition-overlay');
+        const phaseIdx = getPhaseIndex(newMonth);
+        const phase = PHASES[phaseIdx];
+
+        // Update overlay content
+        document.getElementById('mto-month-num').textContent = `MÊS ${newMonth}`;
+        document.getElementById('mto-phase-label').textContent = phase.label;
+        document.getElementById('mto-motto').textContent = phase.motto;
+
+        // City images removed as requested
+        const strip = document.getElementById('mto-city-strip');
+        strip.innerHTML = '';
+
+        overlay.classList.remove('phase-close', 'phase-show');
+        overlay.style.display = '';
+        overlay.classList.add('active');
+
+        // Step 1: curtains close
+        requestAnimationFrame(() => {
+            overlay.classList.add('phase-close');
+        });
+
+        setTimeout(() => {
+            // Step 2: show content + update game screen bg
+            overlay.classList.add('phase-show');
+            updateGamePhase(newMonth);
+            if (onComplete) onComplete();
+        }, 500);
+
+        setTimeout(() => {
+            // Step 3: curtains open
+            overlay.classList.remove('phase-close');
+        }, 1600);
+
+        setTimeout(() => {
+            // Step 4: hide overlay
+            overlay.classList.remove('phase-show');
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                overlay.style.display = 'none';
+            }, 400);
+        }, 2000);
+    }
+
+    function updateGamePhase(month) {
+        const phaseIdx = getPhaseIndex(month);
+        const phase = PHASES[phaseIdx];
+        const gameScreen = document.getElementById('screen-game');
+
+        // Remove all phase classes
+        PHASES.forEach(p => gameScreen.classList.remove(p.bgClass));
+        gameScreen.classList.add(phase.bgClass);
+
+        // Update phase badge
+        const badge = document.getElementById('game-phase-badge');
+        if (badge) {
+            badge.textContent = phase.label.split('·')[0].trim();
+            badge.style.color = phase.accentColor;
+            badge.style.borderColor = phase.accentColor + '55';
+        }
+
+        // Update month ring color
+        const ring = document.getElementById('game-month-ring');
+        if (ring) {
+            ring.style.borderColor = phase.accentColor;
+            ring.style.color = phase.accentColor;
+            ring.style.boxShadow = `0 0 20px ${phase.accentColor}44`;
+        }
+    }
+
+    // ── SCREEN SWITCH ────────────────────────────────────────────────────
+    function switchScreen(screenId) {
+        document.querySelectorAll('[id^="screen-"]').forEach(s => s.classList.add('hidden'));
+        const el = document.getElementById(screenId);
+        el.classList.remove('hidden');
+        el.classList.add('anim-slide-in');
+        setTimeout(() => el.classList.remove('anim-slide-in'), 600);
+    }
+
+    // ── STATE HELPERS ─────────────────────────────────────────────────────
+    // Solo usa memória; multiplayer usa Firebase
+    let _soloState = null;
+    let currentRoomName = '';
+
+    function getRoomState() {
+        if (isSolo) return _soloState;
+        return null;
+    }
+    function saveRoomState(state) {
+        if (isSolo) {
+            _soloState = state;
+        } else {
+            saveRoomStateFirebase(state);
+        }
+    }
+
+    // ── MODO SOLO ─────────────────────────────────────────────────────────
+    function actionStartSolo() {
+        const pName = document.getElementById('solo-player-name').value.trim();
+        if (!pName) return alert('Digite seu codinome!');
+        isSolo = true;
+        myRole = 'leader';
+        myPlayerName = pName;
+
+        const roomState = {
+            name: 'Solo', password: '', status: 'game', currentMonth: 1,
+            players: {}, count: 1, crisis: false, solo: true
+        };
+        roomState.players[pName] = {
+            money: 1000, currentChoice: null, ready: false, active: true, history: [1000]
+        };
+        _soloState = roomState;
+
+        document.getElementById('game-player-identity').innerText = `Trader: ${pName}`;
+        renderGameScreen(roomState);
+        switchScreen('screen-game');
+        updateGamePhase(1);
+        lastMonth = 1;
+    }
+
+    // ── CRIAR SALA (Firebase) ─────────────────────────────────────────────
+    function actionCreateRoom() {
+        const name = document.getElementById('create-room-name').value.trim();
+        const pass = document.getElementById('create-room-pass').value;
+        if (!name) return alert('Dê um nome à sala!');
+        myRole = 'leader';
+        currentRoomName = name;
+        const roomState = {
+            name, password: pass, status: 'lobby', currentMonth: 1,
+            players: {}, count: 0, crisis: false, solo: false
+        };
+        saveRoomStateFirebase(roomState).then(() => {
+            document.getElementById('lobby-room-title').innerText = name;
+            document.getElementById('lobby-leader-controls').classList.remove('hidden');
+            switchScreen('screen-lobby');
+            startFirebaseListener(name);
+        }).catch(err => alert('Erro ao criar sala: ' + err.message));
+    }
+
+    // ── ENTRAR NA SALA (Firebase) ─────────────────────────────────────────
+    function actionJoinRoom() {
+        const pName = document.getElementById('join-player-name').value.trim();
+        const rName = document.getElementById('join-room-name').value.trim();
+        const rPass = document.getElementById('join-room-pass').value;
+        if (!pName || !rName) return alert('Preencha todos os campos!');
+
+        getRoomRef(rName).once('value').then(snap => {
+            const state = snap.val();
+            if (!state) return alert('Sala não encontrada!');
+            if (state.password !== rPass) return alert('Senha incorreta!');
+            if (state.count >= 5) return alert('A sala já atingiu o limite de 5 jogadores!');
+
+            myRole = 'player';
+            myPlayerName = pName;
+            currentRoomName = rName;
+
+            const players = state.players || {};
+            players[pName] = { money: 1000, currentChoice: null, ready: false, active: true, history: [1000] };
+            const count = Object.keys(players).length;
+
+            getRoomRef(rName).update({ players, count }).then(() => {
+                document.getElementById('lobby-room-title').innerText = rName;
+                document.getElementById('game-player-identity').innerText = `Trader: ${pName}`;
+                switchScreen('screen-lobby');
+                startFirebaseListener(rName);
+            });
+        }).catch(err => alert('Erro ao entrar na sala: ' + err.message));
+    }
+
+    // ── FIREBASE LISTENER (tempo real, substitui o polling) ───────────────
+    function startFirebaseListener(roomName) {
+        listenRoomState(roomName, state => {
+            if (!state) return;
+            if (state.status === 'lobby') {
+                document.getElementById('lobby-count').innerText = state.count || 0;
+                const listUi = document.getElementById('lobby-player-list');
+                listUi.innerHTML = Object.keys(state.players || {}).map(p =>
+                    `<li style="padding:0.4rem 0;border-bottom:1px solid rgba(201,168,76,0.1);color:#86efac;font-size:0.9rem;">⚡ ${p}</li>`
+                ).join('');
+            }
+            if (state.status === 'game') {
+                if (myRole === 'leader') {
+                    if (document.getElementById('screen-leader-dashboard').classList.contains('hidden')) {
+                        switchScreen('screen-leader-dashboard');
+                    }
+                    renderLeaderDashboard(state);
+                } else if (myRole === 'player') {
+                    renderGameScreen(state);
+                }
+            }
+            if (state.status === 'end') renderFinalPodium(state);
+        });
+    }
+
+    function actionStartGame() {
+        getRoomRef(currentRoomName).once('value').then(snap => {
+            const state = snap.val();
+            if (!state || state.count === 0) return alert('Aguarde pelo menos um jogador entrar!');
+            getRoomRef(currentRoomName).update({ status: 'game' });
+            switchScreen('screen-leader-dashboard');
+        });
+    }
+
+    function renderLeaderDashboard(state) {
+        document.getElementById('leader-month-display').innerText = state.currentMonth;
+        const cardsContainer = document.getElementById('leader-player-cards');
+        cardsContainer.innerHTML = '';
+        let allReady = true;
+        Object.keys(state.players).forEach(pName => {
+            const player = state.players[pName];
+            if (!player.ready) allReady = false;
+            const card = document.createElement('div');
+            card.style.cssText = `padding:1rem;border-radius:10px;border:1px solid ${player.ready ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.08)'};background:${player.ready ? 'rgba(34,197,94,0.06)' : 'rgba(255,255,255,0.03)'};transition:all 0.3s;`;
+            card.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                    <span style="font-weight:700;font-size:1rem;">${pName}</span>
+                    <span style="font-size:0.65rem;padding:0.2rem 0.5rem;border-radius:20px;font-weight:700;background:${player.ready ? 'rgba(34,197,94,0.2)' : 'rgba(251,191,36,0.15)'};color:${player.ready ? '#86efac' : '#fde68a'};">${player.ready ? 'STOP ✓' : 'PENSANDO...'}</span>
+                </div>
+                <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);">R$ ${parseFloat(player.money).toFixed(2)}</p>
+            `;
+            cardsContainer.appendChild(card);
+        });
+        const nextBtn = document.getElementById('btn-next-month');
+        nextBtn.style.display = allReady ? '' : 'none';
+    }
+
+    function renderGameScreen(state) {
+        if (document.getElementById('screen-game').classList.contains('hidden')) {
+            switchScreen('screen-game');
+        }
+
+        const me = state.players[myPlayerName];
+        const currentMonth = state.currentMonth;
+
+        // Update investment option labels based on current month
+        const opts = getPhaseOptions(currentMonth);
+        opts.forEach((opt, i) => {
+            const keys = ['a','b','c','d'];
+            const labelEl = document.getElementById(`btn-opt-${keys[i]}-label`);
+            const tagEl   = document.getElementById(`btn-opt-${keys[i]}-tag`);
+            if (labelEl) labelEl.textContent = opt.label;
+            if (tagEl)   tagEl.textContent   = opt.tag;
+        });
+
+        document.getElementById('game-current-month').innerText = `MÊS ${currentMonth} / ${TOTAL_MONTHS}`;
+        document.getElementById('game-month-ring').innerText = currentMonth;
+
+        // Animate money value
+        const moneyEl = document.getElementById('ui-current-money');
+        moneyEl.innerText = `R$ ${parseFloat(me.money).toFixed(2)}`;
+        moneyEl.classList.remove('money-pop');
+        void moneyEl.offsetWidth;
+        moneyEl.classList.add('money-pop');
+
+        const standardOptions = document.getElementById('standard-options');
+        const crisisOptions = document.getElementById('crisis-options');
+        const crisisAlert = document.getElementById('crisis-alert');
+        const qTitle = document.getElementById('investment-question-title');
+
+        if (state.crisis) {
+            standardOptions.style.display = 'none';
+            crisisOptions.style.display = 'flex';
+            crisisAlert.style.display = '';
+            qTitle.innerText = 'Crise Extrema! O mercado está derretendo:';
+        } else {
+            standardOptions.style.display = 'flex';
+            crisisOptions.style.display = 'none';
+            crisisAlert.style.display = 'none';
+            qTitle.innerText = 'Onde alocar seus R$ 100 deste mês?';
+        }
+
+        if (me.ready) {
+            standardOptions.style.pointerEvents = 'none';
+            standardOptions.style.opacity = '0.3';
+            crisisOptions.style.pointerEvents = 'none';
+            crisisOptions.style.opacity = '0.3';
+            if (isSolo) {
+                setTimeout(actionProcessMonth, 600);
+            } else {
+                document.getElementById('wait-message').style.display = '';
+            }
+        } else {
+            standardOptions.style.pointerEvents = '';
+            standardOptions.style.opacity = '';
+            crisisOptions.style.pointerEvents = '';
+            crisisOptions.style.opacity = '';
+            document.getElementById('wait-message').style.display = 'none';
+        }
+
+        renderPictographicChart(me.history, currentMonth);
+    }
+
+    function submitTurn(choice) {
+        if (isSolo) {
+            let state = getRoomState();
+            let me = state.players[myPlayerName];
+            me.currentChoice = choice;
+            me.ready = true;
+            renderGameScreen(state);
+        } else {
+            const update = {};
+            update['players/' + myPlayerName + '/currentChoice'] = choice;
+            update['players/' + myPlayerName + '/ready'] = true;
+            getRoomRef(currentRoomName).update(update);
+        }
+    }
+
+    function actionProcessMonth() {
+        if (isSolo) {
+            let state = getRoomState();
+            _processMonthLogic(state);
+            if (state.status === 'end') {
+                renderFinalPodium(state);
+            } else {
+                playMonthTransition(state.currentMonth, () => { renderGameScreen(state); });
+                lastMonth = state.currentMonth;
+            }
+        } else {
+            getRoomRef(currentRoomName).once('value').then(snap => {
+                const state = snap.val();
+                if (!state) return;
+                _processMonthLogic(state);
+                saveRoomStateFirebase(state);
+            });
+        }
+    }
+
+    function _processMonthLogic(state) {
+        if (state.currentMonth === 11) state.crisis = true;
+        else if (state.currentMonth === 12) state.crisis = false;
+
+        Object.keys(state.players).forEach(pName => {
+            let p = state.players[pName];
+            let capital = parseFloat(p.money);
+
+            if (state.currentMonth === 12) {
+                capital = p.currentChoice === 'RETIRAR' ? capital * 0.70 : capital * 1.50;
+            } else {
+                capital += 100;
+                const opts = getPhaseOptions(state.currentMonth);
+                const chosen = opts.find(o => o.key === p.currentChoice);
+                if (chosen) {
+                    if (chosen.yield < 0) {
+                        capital += capital * chosen.yield;
+                    } else {
+                        capital = capital * (1 + chosen.yield);
+                    }
+                }
+            }
+
+            p.money = capital;
+            if (!Array.isArray(p.history)) p.history = [1000];
+            p.history.push(Math.round(capital));
+            p.currentChoice = null;
+            p.ready = false;
+        });
+
+        const nextMonth = state.currentMonth + 1;
+        if (state.currentMonth >= TOTAL_MONTHS) {
+            state.status = 'end';
+        } else {
+            state.currentMonth = nextMonth;
+        }
+    }
+
+    function renderPictographicChart(history, currentMonth) {
+        const chartUi = document.getElementById('crypto-chart');
+        chartUi.innerHTML = '';
+        const maxVal = Math.max(...history, 1500);
+        const minVal = Math.min(...history, 500);
+        const phaseIdx = getPhaseIndex(currentMonth || 1);
+        const phase = PHASES[phaseIdx];
+
+        history.forEach((val, idx) => {
+            const isNewest = idx === history.length - 1;
+            const bar = document.createElement('div');
+            bar.style.cssText = `flex:1;border-radius:4px 4px 0 0;position:relative;cursor:pointer;transition:opacity 0.2s;min-width:4px;`;
+            const pct = ((val - (minVal * 0.8)) / (maxVal - (minVal * 0.8))) * 100;
+            bar.style.height = `${Math.max(pct, 5)}%`;
+            const gradient = isNewest
+                ? `linear-gradient(to top, ${phase.accentColor}99, ${phase.accentColor})`
+                : `linear-gradient(to top, rgba(255,255,255,0.1), rgba(255,255,255,0.22))`;
+            bar.style.background = gradient;
+            if (isNewest) {
+                bar.style.boxShadow = `0 0 12px ${phase.accentColor}88`;
+            }
+            bar.classList.add('chart-bar-enter');
+            bar.innerHTML = `<span style="position:absolute;bottom:105%;left:50%;transform:translateX(-50%);background:#1c1c28;font-size:9px;color:#fff;padding:2px 5px;border-radius:4px;opacity:0;transition:opacity 0.2s;white-space:nowrap;z-index:50;border:1px solid rgba(201,168,76,0.3);">Mês ${idx}: R$ ${val}</span>`;
+            bar.addEventListener('mouseenter', () => bar.querySelector('span').style.opacity = '1');
+            bar.addEventListener('mouseleave', () => bar.querySelector('span').style.opacity = '0');
+            chartUi.appendChild(bar);
+        });
+    }
+
+    function renderFinalPodium(state) {
+        switchScreen('screen-podium');
+        const container = document.getElementById('podium-container');
+        container.innerHTML = `<p style="text-align:center;color:var(--gold);animation:pulse 1.5s infinite;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;">Contabilizando rendimentos e apurando o pódio...</p>`;
+
+        const ranking = Object.keys(state.players).map(pName => ({
+            name: pName, score: state.players[pName].money
+        })).sort((a, b) => b.score - a.score);
+
+        setTimeout(() => {
+            container.innerHTML = '';
+            ranking.forEach((player, index) => {
+                const row = document.createElement('div');
+                const medals = ['🥇', '🥈', '🥉', '🏅', '🏅'];
+                const medal = medals[index] || '🏅';
+                const styles = [
+                    'background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.5);color:#fde68a;',
+                    'background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.3);color:#cbd5e1;',
+                    'background:rgba(180,83,9,0.1);border:1px solid rgba(180,83,9,0.35);color:#fbbf24;',
+                ];
+                row.style.cssText = `display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-radius:10px;${styles[index] || 'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#94a3b8;'}animation:fadeUp 0.5s ease ${index * 0.15}s both;`;
+                row.innerHTML = `
+                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                        <span style="font-size:1.5rem;">${medal}</span>
+                        <span style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;">${index + 1}º — ${player.name}</span>
+                    </div>
+                    <span style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;">R$ ${parseFloat(player.score).toFixed(2)}</span>
+                `;
+                container.appendChild(row);
+            });
+        }, 2200);
+    }
+</script>
+</body>
+</html>v
