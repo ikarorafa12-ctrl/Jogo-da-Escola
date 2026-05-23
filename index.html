@@ -992,6 +992,7 @@
         const pass = document.getElementById('create-room-pass').value;
         if (!name) return alert('Dê um nome à sala!');
         myRole = 'leader';
+        myPlayerName = name + '_LIDER';
         currentRoomName = name;
         const roomState = {
             name, password: pass, status: 'lobby', currentMonth: 1,
@@ -1039,6 +1040,7 @@
     function startFirebaseListener(roomName) {
         listenRoomState(roomName, state => {
             if (!state) return;
+
             if (state.status === 'lobby') {
                 document.getElementById('lobby-count').innerText = state.count || 0;
                 const listUi = document.getElementById('lobby-player-list');
@@ -1046,6 +1048,7 @@
                     `<li style="padding:0.4rem 0;border-bottom:1px solid rgba(201,168,76,0.1);color:#86efac;font-size:0.9rem;">⚡ ${p}</li>`
                 ).join('');
             }
+
             if (state.status === 'game') {
                 if (myRole === 'leader') {
                     if (document.getElementById('screen-leader-dashboard').classList.contains('hidden')) {
@@ -1053,18 +1056,34 @@
                     }
                     renderLeaderDashboard(state);
                 } else if (myRole === 'player') {
+                    // Normaliza history de todos os players (Firebase converte arrays)
+                    if (state.players) {
+                        Object.keys(state.players).forEach(p => {
+                            state.players[p].history = normalizeHistory(state.players[p].history);
+                        });
+                    }
                     renderGameScreen(state);
                 }
             }
-            if (state.status === 'end') renderFinalPodium(state);
+
+            if (state.status === 'end') {
+                // Normaliza history antes do pódio
+                if (state.players) {
+                    Object.keys(state.players).forEach(p => {
+                        state.players[p].history = normalizeHistory(state.players[p].history);
+                    });
+                }
+                renderFinalPodium(state);
+            }
         });
     }
 
+    
     function actionStartGame() {
         getRoomRef(currentRoomName).once('value').then(snap => {
             const state = snap.val();
             if (!state || state.count === 0) return alert('Aguarde pelo menos um jogador entrar!');
-            getRoomRef(currentRoomName).update({ status: 'game' });
+            getRoomRef(currentRoomName).update({ status: 'game', leaderName: myPlayerName });
             switchScreen('screen-leader-dashboard');
         });
     }
@@ -1073,8 +1092,9 @@
         document.getElementById('leader-month-display').innerText = state.currentMonth;
         const cardsContainer = document.getElementById('leader-player-cards');
         cardsContainer.innerHTML = '';
-        let allReady = true;
-        Object.keys(state.players).forEach(pName => {
+        const playerKeys = Object.keys(state.players || {});
+        let allReady = playerKeys.length > 0;
+        playerKeys.forEach(pName => {
             const player = state.players[pName];
             if (!player.ready) allReady = false;
             const card = document.createElement('div');
@@ -1097,7 +1117,8 @@
             switchScreen('screen-game');
         }
 
-        const me = state.players[myPlayerName];
+        const me = state.players && state.players[myPlayerName];
+        if (!me) return; // ainda aguardando dados do jogador no Firebase
         const currentMonth = state.currentMonth;
 
         // Update investment option labels based on current month
@@ -1193,6 +1214,18 @@
         }
     }
 
+    // Firebase converte arrays JS em objetos {0:v, 1:v, ...}
+    // Esta função normaliza de volta para array
+    function normalizeHistory(h) {
+        if (Array.isArray(h)) return h;
+        if (!h) return [1000];
+        // objeto Firebase -> array
+        const len = Object.keys(h).length;
+        const arr = [];
+        for (let i = 0; i < len; i++) arr.push(h[i] !== undefined ? h[i] : 1000);
+        return arr;
+    }
+
     function _processMonthLogic(state) {
         if (state.currentMonth === 11) state.crisis = true;
         else if (state.currentMonth === 12) state.crisis = false;
@@ -1200,6 +1233,9 @@
         Object.keys(state.players).forEach(pName => {
             let p = state.players[pName];
             let capital = parseFloat(p.money);
+
+            // Normaliza history (Firebase converte arrays em objetos)
+            p.history = normalizeHistory(p.history);
 
             if (state.currentMonth === 12) {
                 capital = p.currentChoice === 'RETIRAR' ? capital * 0.70 : capital * 1.50;
@@ -1217,7 +1253,6 @@
             }
 
             p.money = capital;
-            if (!Array.isArray(p.history)) p.history = [1000];
             p.history.push(Math.round(capital));
             p.currentChoice = null;
             p.ready = false;
@@ -1234,6 +1269,7 @@
     function renderPictographicChart(history, currentMonth) {
         const chartUi = document.getElementById('crypto-chart');
         chartUi.innerHTML = '';
+        history = normalizeHistory(history); // garante array mesmo vindo do Firebase
         const maxVal = Math.max(...history, 1500);
         const minVal = Math.min(...history, 500);
         const phaseIdx = getPhaseIndex(currentMonth || 1);
@@ -1294,4 +1330,4 @@
     }
 </script>
 </body>
-</html>v
+</html>
