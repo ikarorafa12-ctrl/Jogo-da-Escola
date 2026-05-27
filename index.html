@@ -7,11 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Rajdhani:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Firebase carregado de forma síncrona (sem defer/async) -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <script>
-        // Firebase já carregado acima de forma síncrona — seguro inicializar aqui
         const firebaseConfig = {
             apiKey: "AIzaSyDsx8c8MgqLqETHGb7NzPI3_LuZc0POYB4",
             authDomain: "jogos-de-escolas.firebaseapp.com",
@@ -19,29 +18,27 @@
             projectId: "jogos-de-escolas",
             storageBucket: "jogos-de-escolas.firebasestorage.app",
             messagingSenderId: "399379585625",
-            appId: "1:399379585625:web:09a22749338bd392466f48"
+            appId: "1:399379585625:web:09a22749338bd392466f48",
+            measurementId: "G-3N475E1RJ7"
         };
- 
-        let db;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.database();
-        } catch(e) {
-            console.error('Firebase init error:', e);
-        }
- 
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         function getRoomRef(roomName) {
             return db.ref('rooms/' + roomName.replace(/[.#$[\]]/g, '_'));
         }
+
         function saveRoomStateFirebase(state) {
             return getRoomRef(state.name).set(state);
         }
+
         function listenRoomState(roomName, callback) {
             getRoomRef(roomName).on('value', snap => {
                 const val = snap.val();
                 if (val) callback(val);
             });
         }
+
         function stopListenRoomState(roomName) {
             getRoomRef(roomName).off();
         }
@@ -55,119 +52,510 @@
             --charcoal: #12121A;
             --ink: #1C1C28;
         }
+
         * { box-sizing: border-box; }
-        body { font-family: 'Rajdhani', sans-serif; background: var(--obsidian); overflow-x: hidden; }
- 
-        #month-transition-overlay { position:fixed;inset:0;z-index:9999;pointer-events:none;display:none; }
-        #month-transition-overlay.active { display:flex;flex-direction:column;align-items:center;justify-content:center; }
-        .mto-curtain-left,.mto-curtain-right { position:absolute;top:0;bottom:0;width:0;background:var(--obsidian);transition:width 0.45s cubic-bezier(0.77,0,0.18,1); }
-        .mto-curtain-left { left:0; }
-        .mto-curtain-right { right:0; }
-        #month-transition-overlay.phase-close .mto-curtain-left,
-        #month-transition-overlay.phase-close .mto-curtain-right { width:52%; }
-        .mto-content { position:relative;z-index:10;text-align:center;opacity:0;transform:scale(0.8);transition:opacity 0.3s ease 0.45s,transform 0.3s ease 0.45s; }
-        #month-transition-overlay.phase-show .mto-content { opacity:1;transform:scale(1); }
-        .mto-month-label { font-family:'Playfair Display',serif;font-size:clamp(3rem,10vw,7rem);font-weight:900;letter-spacing:0.05em;background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1; }
-        .mto-city-strip { display:none !important; }
-        .mto-divider { width:180px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1rem auto; }
-        .mto-tagline { font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:rgba(201,168,76,0.7);letter-spacing:0.15em; }
- 
-        #screen-game { transition:background 1.2s ease; }
-        #screen-home { position:relative;overflow:hidden;min-height:100vh;background:var(--obsidian); }
-        .home-bg-layer { position:absolute;inset:0;opacity:0.3;filter:grayscale(0.2) brightness(0.6);background:url("https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2070&auto=format&fit=crop") center/cover no-repeat; }
-        .home-bg-overlay { position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,10,15,0.5) 0%,rgba(10,10,15,0.15) 40%,rgba(10,10,15,0.6) 70%,rgba(10,10,15,0.95) 100%); }
-        .home-gold-line { width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:1rem auto; }
-        .home-content { position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem; }
-        .home-eyebrow { font-family:'Rajdhani',sans-serif;font-size:0.8rem;letter-spacing:0.4em;color:var(--gold);text-transform:uppercase;margin-bottom:0.5rem; }
-        .home-title { font-family:'Playfair Display',serif;font-size:clamp(2rem,8vw,4.5rem);font-weight:900;line-height:1.1;text-align:center;background:linear-gradient(135deg,#fff 0%,var(--gold-light) 50%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:0 4px 15px rgba(0,0,0,0.5); }
-        .home-subtitle { font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:rgba(240,208,128,0.7);letter-spacing:0.1em;text-align:center;margin-bottom:0.5rem; }
-        .city-badge-row { display:flex;gap:1rem;margin:1.5rem 0;align-items:center; }
-        .city-badge { position:relative;overflow:hidden;border-radius:8px;border:1px solid rgba(201,168,76,0.3);width:90px;height:55px; }
-        .city-badge-label { position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:0.55rem;letter-spacing:0.15em;color:var(--gold-light);text-transform:uppercase; }
-        .btn-luxury { position:relative;overflow:hidden;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.85rem 1.5rem;border-radius:6px;cursor:pointer;transition:all 0.25s ease; }
-        .btn-luxury::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.12),transparent);opacity:0;transition:opacity 0.25s; }
-        .btn-luxury:hover::before { opacity:1; }
-        .btn-luxury:hover { transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.4); }
-        .btn-gold { background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));color:var(--obsidian);border:none; }
-        .btn-dark { background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,0.2); }
-        .btn-dark:hover { border-color:var(--gold);color:var(--gold-light); }
- 
-        .game-phase-1  { background:#0d1a2e; } .game-phase-2  { background:#0d1a2e; }
-        .game-phase-3  { background:#0d1a2e; } .game-phase-4  { background:#0d1a2e; }
-        .game-phase-5  { background:#0d1a2e; } .game-phase-6  { background:#0a0a0f; }
-        .game-phase-7  { background:#0a0a0f; } .game-phase-8  { background:#0a0a0f; }
-        .game-phase-9  { background:#0a0a0f; } .game-phase-10 { background:#0a0a0f; }
-        .game-phase-11 { background:#0a1f0d; } .game-phase-12 { background:#0a1f0d; }
-        .game-phase-13 { background:#0a1f0d; } .game-phase-14 { background:#0a1f0d; }
-        .game-phase-15 { background:#0a1f0d; } .game-phase-16 { background:#0a1f0d; }
-        .game-phase-17 { background:#0a1f0d; } .game-phase-18 { background:#0a1f0d; }
-        .game-phase-19 { background:#0a1f0d; } .game-phase-20 { background:#0a1f0d; }
-        .game-phase-21 { background:#1f0e00; } .game-phase-22 { background:#1f0e00; }
-        .game-phase-23 { background:#1f0e00; } .game-phase-24 { background:#1f0e00; }
- 
-        .chart-bar-enter { animation:barGrow 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-        @keyframes barGrow { from{height:0!important;opacity:0} to{opacity:1} }
-        .city-panel { position:fixed;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:4px;padding:8px;z-index:100;opacity:0.7; }
-        .city-thumb { width:44px;height:44px;border-radius:4px;border:1px solid rgba(201,168,76,0.2);transition:all 0.3s; }
-        .luxury-card { background:rgba(18,18,26,0.8);border:1px solid rgba(201,168,76,0.2);backdrop-filter:blur(10px);border-radius:14px; }
-        #screen-podium { background:#2a1f00;position:relative;overflow:hidden; }
-        @keyframes slideInRight { from{transform:translateX(40px);opacity:0} to{transform:translateX(0);opacity:1} }
-        @keyframes fadeUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
-        .anim-slide-in { animation:slideInRight 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
-        .anim-fade-up  { animation:fadeUp 0.5s ease forwards; }
-        .month-ring { display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;border:2px solid var(--gold);background:rgba(201,168,76,0.08);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--gold-light);box-shadow:0 0 20px rgba(201,168,76,0.2);flex-shrink:0; }
-        .gold-text { background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
-        input { font-family:'Rajdhani',sans-serif;font-size:1rem; }
-        @keyframes moneyPop { 0%{transform:scale(1)} 50%{transform:scale(1.15)} 100%{transform:scale(1)} }
-        .money-pop { animation:moneyPop 0.4s ease; }
-        .lobby-city-banner { width:100%;height:180px;object-fit:cover;border-radius:12px;filter:brightness(0.6) sepia(0.2);border:1px solid rgba(201,168,76,0.2); }
-        .gold-border-top { border-top:1px solid rgba(201,168,76,0.25); }
-        .gold-border-bottom { border-bottom:1px solid rgba(201,168,76,0.25); }
- 
-        /* ── PÓS-CAPA: fundo Londres ── */
-        #screen-intro {
-            position: relative;
-            overflow: hidden;
-            min-height: 100vh;
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--obsidian);
+            overflow-x: hidden;
+        }
+
+        #month-transition-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            display: none;
+        }
+
+        #month-transition-overlay.active {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
         }
-        .intro-bg {
+
+        .mto-curtain-left, .mto-curtain-right {
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 0;
+            background: var(--obsidian);
+            transition: width 0.45s cubic-bezier(0.77,0,0.18,1);
+        }
+        .mto-curtain-left { left: 0; }
+        .mto-curtain-right { right: 0; }
+
+        #month-transition-overlay.phase-close .mto-curtain-left,
+        #month-transition-overlay.phase-close .mto-curtain-right {
+            width: 52%;
+        }
+
+        .mto-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s ease 0.45s, transform 0.3s ease 0.45s;
+        }
+        #month-transition-overlay.phase-show .mto-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .mto-month-label {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .mto-city-strip {
+            display: none !important;
+            display: flex;
+            gap: 8px;
+            margin-top: 1.5rem;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .mto-city-strip img {
+            width: 120px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            filter: sepia(0.3) brightness(0.85);
+        }
+
+        .mto-divider {
+            width: 180px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 1rem auto;
+        }
+
+        .mto-tagline {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: rgba(201,168,76,0.7);
+            letter-spacing: 0.15em;
+        }
+
+        #screen-game { transition: background 1.2s ease; }
+
+        #screen-home {
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            background: var(--obsidian);
+        }
+
+        .home-bg-layer {
+            position: absolute;
+            inset: 0;
+            opacity: 0.3;
+            filter: grayscale(0.2) brightness(0.6);
+            background: url("https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2070&auto=format&fit=crop") center/cover no-repeat;
+        }
+
+        .home-bg-layer img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .home-bg-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(10,10,15,0.5) 0%,
+                rgba(10,10,15,0.15) 40%,
+                rgba(10,10,15,0.6) 70%,
+                rgba(10,10,15,0.95) 100%
+            );
+        }
+
+        .home-gold-line {
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 1rem auto;
+        }
+
+        .home-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .home-eyebrow {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.4em;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .home-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 8vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            text-align: center;
+            background: linear-gradient(135deg, #fff 0%, var(--gold-light) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .home-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: rgba(240,208,128,0.7);
+            letter-spacing: 0.1em;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .city-badge-row {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            align-items: center;
+        }
+
+        .city-badge {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid rgba(201,168,76,0.3);
+            width: 90px;
+            height: 55px;
+        }
+
+        .city-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7) sepia(0.2);
+            transition: filter 0.3s;
+        }
+
+        .city-badge:hover img { filter: brightness(0.9) sepia(0); }
+
+        .city-badge-label {
+            position: absolute;
+            bottom: 4px;
+            left: 0; right: 0;
+            text-align: center;
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            color: var(--gold-light);
+            text-transform: uppercase;
+        }
+
+        .btn-luxury {
+            position: relative;
+            overflow: hidden;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 0.85rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .btn-luxury::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+        .btn-luxury:hover::before { opacity: 1; }
+        .btn-luxury:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+            color: var(--obsidian);
+            border: none;
+        }
+
+        .btn-dark {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-dark:hover { border-color: var(--gold); color: var(--gold-light); }
+
+        .game-phase-1  { background: #0d1a2e; }
+        .game-phase-2  { background: #0d1a2e; }
+        .game-phase-3  { background: #0d1a2e; }
+        .game-phase-4  { background: #0d1a2e; }
+        .game-phase-5  { background: #0d1a2e; }
+        .game-phase-6  { background: #0a0a0f; }
+        .game-phase-7  { background: #0a0a0f; }
+        .game-phase-8  { background: #0a0a0f; }
+        .game-phase-9  { background: #0a0a0f; }
+        .game-phase-10 { background: #0a0a0f; }
+        .game-phase-11 { background: #0a1f0d; }
+        .game-phase-12 { background: #0a1f0d; }
+        .game-phase-13 { background: #0a1f0d; }
+        .game-phase-14 { background: #0a1f0d; }
+        .game-phase-15 { background: #0a1f0d; }
+        .game-phase-16 { background: #0a1f0d; }
+        .game-phase-17 { background: #0a1f0d; }
+        .game-phase-18 { background: #0a1f0d; }
+        .game-phase-19 { background: #0a1f0d; }
+        .game-phase-20 { background: #0a1f0d; }
+        .game-phase-21 { background: #1f0e00; }
+        .game-phase-22 { background: #1f0e00; }
+        .game-phase-23 { background: #1f0e00; }
+        .game-phase-24 { background: #1f0e00; }
+
+        .chart-bar-enter {
+            animation: barGrow 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        }
+        @keyframes barGrow {
+            from { height: 0 !important; opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .city-panel {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 8px;
+            z-index: 100;
+            opacity: 0.7;
+        }
+
+        .city-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 4px;
+            object-fit: cover;
+            border: 1px solid rgba(201,168,76,0.2);
+            filter: grayscale(0.5) brightness(0.7);
+            transition: all 0.3s;
+        }
+        .city-thumb:hover {
+            filter: grayscale(0) brightness(1);
+            border-color: var(--gold);
+            width: 100px;
+        }
+
+        .luxury-card {
+            background: rgba(18,18,26,0.8);
+            border: 1px solid rgba(201,168,76,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+        }
+
+        #screen-podium {
+            background: #2a1f00;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .podium-bg {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            opacity: 0.08;
+            filter: grayscale(0.5);
+        }
+
+        .podium-bg img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(40px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .anim-slide-in { animation: slideInRight 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
+        .anim-fade-up  { animation: fadeUp 0.5s ease forwards; }
+
+        .month-ring {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            background: rgba(201,168,76,0.08);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--gold-light);
+            box-shadow: 0 0 20px rgba(201,168,76,0.2);
+            flex-shrink: 0;
+        }
+
+        .gold-text {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        input {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+        }
+
+        @keyframes moneyPop {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+        .money-pop { animation: moneyPop 0.4s ease; }
+
+        .lobby-city-banner {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            filter: brightness(0.6) sepia(0.2);
+            border: 1px solid rgba(201,168,76,0.2);
+        }
+
+        .bar-newest {
+            box-shadow: 0 0 12px 4px rgba(201,168,76,0.5);
+        }
+
+        .gold-border-top {
+            border-top: 1px solid rgba(201,168,76,0.25);
+        }
+        .gold-border-bottom {
+            border-bottom: 1px solid rgba(201,168,76,0.25);
+        }
+
+        /* ── PÓS-CAPA (SCREEN STORY) ── */
+        #screen-story {
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            background: #0a0e1a;
+        }
+
+        .story-bg {
             position: absolute;
             inset: 0;
             background: url("https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=2070&auto=format&fit=crop") center/cover no-repeat;
-            filter: brightness(0.35) grayscale(0.2);
+            opacity: 0.35;
+            filter: grayscale(0.3) brightness(0.5);
         }
-        .intro-overlay {
+
+        .story-bg-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(10,10,15,0.55) 0%, rgba(10,10,15,0.7) 100%);
+            background: linear-gradient(
+                to bottom,
+                rgba(10,14,26,0.55) 0%,
+                rgba(10,14,26,0.25) 35%,
+                rgba(10,14,26,0.7) 70%,
+                rgba(10,14,26,0.97) 100%
+            );
         }
-        .intro-content {
+
+        .story-content {
             position: relative;
             z-index: 10;
-            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
             padding: 3rem 2rem;
+            max-width: 780px;
+            margin: 0 auto;
             text-align: center;
         }
-        .intro-text {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(1.1rem, 2.5vw, 1.45rem);
-            font-weight: 600;
-            color: #fff;
-            line-height: 1.85;
-            letter-spacing: 0.03em;
-            text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+
+        .story-eyebrow {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.45em;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
         }
-        .intro-text em {
-            color: var(--gold-light);
+
+        .story-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+
+        .story-divider {
+            width: 160px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 0.75rem auto 1.75rem;
+        }
+
+        .story-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+            line-height: 1.85;
+            color: rgba(255, 255, 255, 0.92);
             font-style: italic;
+            letter-spacing: 0.02em;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+            background: rgba(10,10,20,0.45);
+            border-left: 3px solid var(--gold);
+            border-right: 3px solid var(--gold);
+            padding: 1.5rem 2rem;
+            border-radius: 6px;
+            backdrop-filter: blur(4px);
+            margin-bottom: 2rem;
+        }
+
+        .story-text strong {
+            color: var(--gold-light);
+            font-style: normal;
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
- 
+
 <div id="month-transition-overlay">
     <div class="mto-curtain-left"></div>
     <div class="mto-curtain-right"></div>
@@ -177,54 +565,85 @@
         <div class="mto-month-label" id="mto-month-num">MÊS 2</div>
         <div class="mto-divider"></div>
         <div class="mto-city-strip" id="mto-city-strip"></div>
-        <p class="mto-tagline" style="margin-top:1rem;font-size:0.85rem;" id="mto-motto">"O tempo é o maior ativo do investidor."</p>
+        <p class="mto-tagline" style="margin-top:1rem; font-size:0.85rem;" id="mto-motto">"O tempo é o maior ativo do investidor."</p>
     </div>
 </div>
- 
-<!-- CAPA -->
+
+<!-- ══════════════════════════════════════════
+     SCREEN 1: TELA INICIAL (CAPA) — SEM MODIFICAÇÃO
+══════════════════════════════════════════ -->
 <div id="screen-home" class="min-h-screen">
     <div class="home-bg-layer"></div>
     <div class="home-bg-overlay"></div>
+
     <div class="home-content">
         <p class="home-eyebrow">Jogo de Educação Financeira</p>
         <div class="home-gold-line"></div>
         <h1 class="home-title">CAMINHO PARA<br>A PROSPERIDADE</h1>
         <div class="home-gold-line"></div>
         <p class="home-subtitle">O mercado não espera. Nem você deveria.</p>
+
         <div class="city-badge-row">
-            <div class="city-badge"><div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div><span class="city-badge-label">New York</span></div>
-            <div class="city-badge"><div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div><span class="city-badge-label">Manhattan</span></div>
-            <div class="city-badge"><div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div><span class="city-badge-label">Liberty</span></div>
+            <div class="city-badge">
+                <div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div>
+                <span class="city-badge-label">New York</span>
+            </div>
+            <div class="city-badge">
+                <div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div>
+                <span class="city-badge-label">Manhattan</span>
+            </div>
+            <div class="city-badge">
+                <div style="width:100%;height:100%;background:rgba(201,168,76,0.1);"></div>
+                <span class="city-badge-label">Liberty</span>
+            </div>
         </div>
+
         <div class="flex flex-col sm:flex-row gap-4 w-full max-w-xl mt-2">
-            <button onclick="switchScreen('screen-solo')" class="btn-luxury btn-gold flex-1">▶ Jogar Sozinho</button>
-            <button onclick="switchScreen('screen-create')" class="btn-luxury btn-dark flex-1">⚑ Criar Sala (Líder)</button>
-            <button onclick="switchScreen('screen-join')" class="btn-luxury btn-dark flex-1">↗ Entrar na Sala</button>
+            <button onclick="switchScreen('screen-solo')" class="btn-luxury btn-gold flex-1">
+                ▶ Jogar Sozinho
+            </button>
+            <button onclick="switchScreen('screen-create')" class="btn-luxury btn-dark flex-1">
+                ⚑ Criar Sala (Líder)
+            </button>
+            <button onclick="switchScreen('screen-join')" class="btn-luxury btn-dark flex-1">
+                ↗ Entrar na Sala
+            </button>
         </div>
-        <p style="margin-top:2.5rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.85rem;color:rgba(201,168,76,0.45);letter-spacing:0.12em;text-align:center;">"Invista em conhecimento. O retorno é sempre o melhor." — Benjamin Franklin</p>
+
+        <p style="margin-top:2.5rem; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:0.85rem; color:rgba(201,168,76,0.45); letter-spacing:0.12em; text-align:center;">
+            "Invista em conhecimento. O retorno é sempre o melhor." — Benjamin Franklin
+        </p>
     </div>
 </div>
- 
-<!-- PÓS-CAPA: história do jogo com fundo de Londres -->
-<div id="screen-intro" class="hidden">
-    <div class="intro-bg"></div>
-    <div class="intro-overlay"></div>
-    <div class="intro-content">
-        <div class="home-gold-line"></div>
-        <p class="intro-text">
-            O jogo inicia-se no <em>primeiro semestre da faculdade</em>, onde todos começam com
-            <em>mil dólares</em> e recebem <em>cem dólares mensais</em> de auxílio estudantil.<br><br>
+
+<!-- ══════════════════════════════════════════
+     SCREEN PÓS-CAPA: HISTÓRIA DO JOGO
+══════════════════════════════════════════ -->
+<div id="screen-story" class="hidden min-h-screen">
+    <div class="story-bg"></div>
+    <div class="story-bg-overlay"></div>
+
+    <div class="story-content">
+        <p class="story-eyebrow">A Sua Jornada Começa Aqui</p>
+        <h2 class="story-title">A História do Jogo</h2>
+        <div class="story-divider"></div>
+
+        <p class="story-text">
+            O jogo inicia-se no <strong>primeiro semestre da faculdade</strong>, onde todos começam com
+            <strong>mil dólares</strong> e recebem <strong>cem dólares mensais</strong> de auxílio estudantil.
             A cada mês, esse dinheiro deve ser investido com sabedoria, enquanto os jogadores
-            enfrentam e resolvem <em>diversos problemas financeiros do dia a dia</em>.
+            enfrentam e resolvem <strong>diversos problemas financeiros do dia a dia</strong>.
         </p>
-        <div class="home-gold-line" style="margin-top:2rem;"></div>
-        <button onclick="goFromIntro()" class="btn-luxury btn-gold" style="margin-top:2rem;padding:1rem 3rem;font-size:1.05rem;">
-            Começar Jornada →
+
+        <button onclick="goFromStoryToGame()" class="btn-luxury btn-gold" style="font-size:1.05rem; padding:1rem 2.5rem; letter-spacing:0.2em;">
+            Começar a Jornada →
         </button>
     </div>
 </div>
- 
-<!-- SOLO -->
+
+<!-- ══════════════════════════════════════════
+     SCREEN SOLO
+══════════════════════════════════════════ -->
 <div id="screen-solo" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
     <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0d1a2e;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
@@ -233,15 +652,23 @@
         <div class="space-y-4">
             <div>
                 <label style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.5);text-transform:uppercase;display:block;margin-bottom:0.4rem;">Seu Codinome:</label>
-                <input id="solo-player-name" type="text" placeholder="Ex: Íkaro" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
+                <input id="solo-player-name" type="text" placeholder="Ex: Íkaro"
+                    style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.25);border-radius:6px;color:#fff;outline:none;transition:border-color 0.2s;"
+                    onfocus="this.style.borderColor='rgba(201,168,76,0.7)'" onblur="this.style.borderColor='rgba(201,168,76,0.25)'">
             </div>
-            <button onclick="actionStartSolo()" class="btn-luxury btn-gold" style="width:100%;margin-top:0.5rem;">Iniciar Jornada →</button>
-            <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">← Voltar</button>
+            <button onclick="actionStartSolo()" class="btn-luxury btn-gold" style="width:100%;margin-top:0.5rem;">
+                Iniciar Jornada →
+            </button>
+            <button onclick="switchScreen('screen-home')" class="btn-luxury btn-dark" style="width:100%;font-size:0.85rem;">
+                ← Voltar
+            </button>
         </div>
     </div>
 </div>
- 
-<!-- CRIAR SALA -->
+
+<!-- ══════════════════════════════════════════
+     SCREEN 2: CRIAR SALA
+══════════════════════════════════════════ -->
 <div id="screen-create" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
     <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0a0a0f;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
@@ -265,8 +692,10 @@
         </div>
     </div>
 </div>
- 
-<!-- ENTRAR NA SALA -->
+
+<!-- ══════════════════════════════════════════
+     SCREEN 3: ENTRAR NA SALA
+══════════════════════════════════════════ -->
 <div id="screen-join" class="hidden min-h-screen flex flex-col justify-center items-center p-4" style="background:var(--obsidian);">
     <div style="position:absolute;inset:0;overflow:hidden;opacity:0.1;background:#0a0a0f;"></div>
     <div class="luxury-card p-8 w-full max-w-md relative z-10">
@@ -290,8 +719,10 @@
         </div>
     </div>
 </div>
- 
-<!-- LOBBY -->
+
+<!-- ══════════════════════════════════════════
+     SCREEN 4: LOBBY
+══════════════════════════════════════════ -->
 <div id="screen-lobby" class="hidden min-h-screen flex flex-col items-center justify-center p-6" style="background:var(--obsidian);">
     <div style="position:absolute;inset:0;overflow:hidden;opacity:0.08;background:#0d1a2e;"></div>
     <div class="relative z-10 w-full max-w-lg">
@@ -301,24 +732,35 @@
             <div class="home-gold-line"></div>
             <p style="color:rgba(255,255,255,0.4);font-size:0.9rem;margin-top:0.5rem;">Aguardando formação do pódio de 5 jogadores...</p>
         </div>
+
         <div style="width:100%;height:180px;border-radius:12px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);margin-bottom:1.5rem;"></div>
+
         <div class="luxury-card p-6">
-            <h3 style="font-size:0.8rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;">Traders Conectados (<span id="lobby-count">0</span>/5)</h3>
-            <ul id="lobby-player-list" style="list-style:none;padding:0;margin:0;"></ul>
+            <h3 style="font-size:0.8rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;">
+                Traders Conectados (<span id="lobby-count">0</span>/5)
+            </h3>
+            <ul id="lobby-player-list" style="list-style:none;padding:0;margin:0;space-y:0.5rem;"></ul>
         </div>
+
         <div id="lobby-leader-controls" class="hidden" style="margin-top:1.5rem;text-align:center;">
-            <button onclick="actionStartGame()" class="btn-luxury btn-gold" style="font-size:1.15rem;padding:1rem 3rem;letter-spacing:0.2em;">▶ STOP! Começar Jogo</button>
+            <button onclick="actionStartGame()" class="btn-luxury btn-gold" style="font-size:1.15rem;padding:1rem 3rem;letter-spacing:0.2em;">
+                ▶ STOP! Começar Jogo
+            </button>
         </div>
     </div>
 </div>
- 
-<!-- GAMEPLAY -->
+
+<!-- ══════════════════════════════════════════
+     SCREEN 5: GAMEPLAY
+══════════════════════════════════════════ -->
 <div id="screen-game" class="hidden min-h-screen p-4 flex flex-col items-center game-phase-1" style="transition:background 1.2s ease;">
+
     <div class="city-panel hidden md:flex">
         <div class="city-thumb" style="background:rgba(201,168,76,0.15);"></div>
         <div class="city-thumb" style="background:rgba(201,168,76,0.1);"></div>
         <div class="city-thumb" style="background:rgba(201,168,76,0.05);"></div>
     </div>
+
     <div class="w-full max-w-4xl luxury-card p-4 mb-6 flex justify-between items-center anim-slide-in">
         <div style="display:flex;align-items:center;gap:1rem;">
             <div class="month-ring" id="game-month-ring">1</div>
@@ -330,14 +772,15 @@
         <div style="display:flex;gap:2rem;text-align:right;">
             <div>
                 <p style="font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.3);text-transform:uppercase;">Inicial</p>
-                <p style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.5);">US$ 1.000</p>
+                <p style="font-size:1rem;font-weight:700;color:rgba(255,255,255,0.5);">$ 1.000</p>
             </div>
             <div>
                 <p style="font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.3);text-transform:uppercase;">Atual</p>
-                <p style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;" id="ui-current-money" class="gold-text">US$ 1.000,00</p>
+                <p style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;" id="ui-current-money" class="gold-text">$ 1.000,00</p>
             </div>
         </div>
     </div>
+
     <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="md:col-span-2 luxury-card p-6 flex flex-col justify-between">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
@@ -345,12 +788,16 @@
                 <span id="game-phase-badge" style="font-size:0.65rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;border:1px solid rgba(201,168,76,0.3);padding:0.2rem 0.6rem;border-radius:20px;">FASE 1</span>
             </div>
             <div id="crypto-chart" style="display:flex;align-items:flex-end;justify-content:space-between;height:11rem;background:rgba(0,0,0,0.3);border-radius:10px;padding:1rem;border:1px solid rgba(255,255,255,0.05);gap:3px;"></div>
-            <div id="crisis-alert" style="display:none;margin-top:1rem;padding:0.75rem;background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.4);border-radius:8px;color:#fca5a5;font-weight:700;font-size:0.9rem;">⚠️ CRISE SISTÊMICA — Mercado em colapso!</div>
+            <div id="crisis-alert" style="display:none;margin-top:1rem;padding:0.75rem;background:rgba(220,38,38,0.12);border:1px solid rgba(220,38,38,0.4);border-radius:8px;color:#fca5a5;font-weight:700;font-size:0.9rem;">
+                ⚠️ CRISE SISTÊMICA — Mercado em colapso!
+            </div>
         </div>
+
         <div class="luxury-card p-6 flex flex-col justify-between">
             <div>
                 <p style="font-size:0.7rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:0.5rem;">Decisão do Mês</p>
-                <h4 style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:1.25rem;line-height:1.3;" id="investment-question-title">Onde alocar seus US$ 100 deste mês?</h4>
+                <h4 style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:1.25rem;line-height:1.3;" id="investment-question-title">Onde alocar seus $ 100 deste mês?</h4>
+
                 <div id="standard-options" style="display:flex;flex-direction:column;gap:0.6rem;">
                     <button onclick="submitTurn('OPT_A')" id="btn-opt-a" style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(201,168,76,0.1)';this.style.borderColor='rgba(201,168,76,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(201,168,76,0.2)'">
                         <span id="btn-opt-a-label">🏢 Fundos Imobiliários</span><span id="btn-opt-a-tag" style="font-size:0.7rem;color:#86efac;">Renda Variável</span>
@@ -365,222 +812,283 @@
                         <span id="btn-opt-d-label">📱 Comprar um iPhone</span><span id="btn-opt-d-tag" style="font-size:0.7rem;color:#fca5a5;">Passivo Financeiro</span>
                     </button>
                 </div>
+
                 <div id="crisis-options" style="display:none;flex-direction:column;gap:0.75rem;">
                     <button onclick="submitTurn('MANTER')" style="background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.4);border-radius:8px;padding:1rem;color:#86efac;cursor:pointer;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:1rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(34,197,94,0.25)'" onmouseout="this.style.background='rgba(34,197,94,0.15)'">📈 MANTER na Bolsa</button>
                     <button onclick="submitTurn('RETIRAR')" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);border-radius:8px;padding:1rem;color:#fca5a5;cursor:pointer;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:1rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.25)'" onmouseout="this.style.background='rgba(239,68,68,0.15)'">📉 RETIRAR da Bolsa</button>
                 </div>
             </div>
-            <div id="wait-message" style="display:none;text-align:center;color:#67e8f9;font-weight:700;animation:pulse 1.5s infinite;margin-top:1rem;font-size:0.9rem;">Aguardando os outros traders... ⏱️</div>
+
+            <div id="wait-message" style="display:none;text-align:center;color:#67e8f9;font-weight:700;animation:pulse 1.5s infinite;margin-top:1rem;font-size:0.9rem;">
+                Aguardando os outros traders... ⏱️
+            </div>
         </div>
     </div>
 </div>
- 
-<!-- LÍDER DASHBOARD -->
+
+<!-- ══════════════════════════════════════════
+     SCREEN 6: LÍDER DASHBOARD
+══════════════════════════════════════════ -->
 <div id="screen-leader-dashboard" class="hidden min-h-screen p-6 flex flex-col items-center" style="background:var(--obsidian);">
     <div style="text-align:center;margin-bottom:2rem;">
         <p style="font-size:0.7rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;">Console do Líder</p>
-        <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#fff;">MÊS <span id="leader-month-display">1</span><span style="color:rgba(255,255,255,0.3);font-size:1.5rem;">/24</span></h2>
+        <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#fff;">
+            MÊS <span id="leader-month-display">1</span><span style="color:rgba(255,255,255,0.3);font-size:1.5rem;">/24</span>
+        </h2>
     </div>
     <div class="luxury-card p-6 w-full max-w-4xl mb-6">
         <h3 style="font-size:0.75rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:1rem;">Status dos Traders (Mecânica Stop):</h3>
         <div id="leader-player-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;"></div>
     </div>
-    <button id="btn-next-month" onclick="actionProcessMonth()" style="display:none;background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));color:var(--obsidian);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:0.2em;padding:1rem 3rem;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s;animation:pulse 1.5s infinite;">AVANÇAR MÊS ➡</button>
+    <button id="btn-next-month" onclick="actionProcessMonth()" style="display:none;background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));color:var(--obsidian);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:0.2em;padding:1rem 3rem;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s;animation:pulse 1.5s infinite;">
+        AVANÇAR MÊS ➡
+    </button>
 </div>
- 
-<!-- PÓDIO -->
+
+<!-- ══════════════════════════════════════════
+     SCREEN 7: PÓDIO
+══════════════════════════════════════════ -->
 <div id="screen-podium" class="hidden min-h-screen flex flex-col justify-center items-center p-6" style="background:#2a1f00;position:relative;overflow:hidden;">
     <div style="position:absolute;inset:0;background:linear-gradient(135deg,#2a1f00 0%,#1a1200 50%,#2a1f00 100%);opacity:0.9;"></div>
     <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,var(--obsidian) 100%);"></div>
+
     <div class="relative z-10" style="text-align:center;margin-bottom:2rem;">
-        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--gold);letter-spacing:0.2em;margin-bottom:0.5rem;">Ensino Médio Concluído</p>
+        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--gold);letter-spacing:0.2em;margin-bottom:0.5rem;">Faculdade Concluída</p>
         <h1 style="font-family:'Playfair Display',serif;font-size:clamp(3rem,8vw,5rem);font-weight:900;" class="gold-text">🏆 PÓDIO FINAL 🏆</h1>
         <div class="home-gold-line"></div>
         <p style="color:rgba(255,255,255,0.4);font-family:'Cormorant Garamond',serif;font-style:italic;">Quem atingiu o Patrimônio Massivo?</p>
     </div>
+
     <div id="podium-container" class="relative z-10 w-full max-w-md" style="display:flex;flex-direction:column;gap:0.75rem;"></div>
-    <button onclick="location.reload()" class="btn-luxury btn-dark relative z-10" style="margin-top:3rem;letter-spacing:0.2em;">↺ Jogar Novamente</button>
+
+    <button onclick="location.reload()" class="btn-luxury btn-dark relative z-10" style="margin-top:3rem;letter-spacing:0.2em;">
+        ↺ Jogar Novamente
+    </button>
 </div>
- 
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
 <script>
     let myRole = '';
     let myPlayerName = '';
     let isSolo = false;
     const TOTAL_MONTHS = 24;
- 
-    // ── PÓS-CAPA ─────────────────────────────────────────────────────────
-    // Guarda para onde ir depois da intro (solo ou lobby)
-    let _afterIntroScreen = '';
-    let _afterIntroFn = null;
- 
-    function goFromIntro() {
-        if (_afterIntroFn) _afterIntroFn();
-        else if (_afterIntroScreen) switchScreen(_afterIntroScreen);
-    }
- 
-    // ── FASES ─────────────────────────────────────────────────────────────
+
+    // Flags persistentes por jogador (armazenadas no state.players[name])
+    // boughtBooks   : true se comprou livros no mês 2
+    // acceptedJob   : true se aceitou oferta no mês 17
+    // jobPaidOut    : true se o bônus do mês 19 já foi aplicado
+    // manhattan     : true se escolheu Manhattan no mês 18
+
     const PHASES = [
-        { label:'FASE 1 · POUPADOR',      motto:'"O primeiro passo é começar a guardar."',          bgClass:'game-phase-1',  accentColor:'#7dd3fc' },
-        { label:'FASE 2 · POUPADOR',      motto:'"Disciplina hoje, liberdade amanhã."',              bgClass:'game-phase-2',  accentColor:'#7dd3fc' },
-        { label:'FASE 3 · POUPADOR',      motto:'"Cada real guardado é um tijolo do futuro."',       bgClass:'game-phase-3',  accentColor:'#7dd3fc' },
-        { label:'FASE 4 · POUPADOR',      motto:'"O hábito de poupar é o alicerce da riqueza."',    bgClass:'game-phase-4',  accentColor:'#7dd3fc' },
-        { label:'FASE 5 · POUPADOR',      motto:'"Consistência supera intensidade."',                bgClass:'game-phase-5',  accentColor:'#7dd3fc' },
-        { label:'FASE 6 · APRENDIZ',      motto:'"Conhecimento é o melhor investimento."',           bgClass:'game-phase-6',  accentColor:'#a78bfa' },
-        { label:'FASE 7 · APRENDIZ',      motto:'"Aprenda com os erros dos outros."',                bgClass:'game-phase-7',  accentColor:'#a78bfa' },
-        { label:'FASE 8 · APRENDIZ',      motto:'"O mercado recompensa quem estuda."',               bgClass:'game-phase-8',  accentColor:'#a78bfa' },
-        { label:'FASE 9 · APRENDIZ',      motto:'"Paciência é a virtude do investidor."',            bgClass:'game-phase-9',  accentColor:'#a78bfa' },
-        { label:'FASE 10 · APRENDIZ',     motto:'"Risco calculado não é imprudência."',              bgClass:'game-phase-10', accentColor:'#a78bfa' },
-        { label:'FASE 11 · INVESTIDOR',   motto:'"O tempo no mercado bate o timing do mercado."',   bgClass:'game-phase-11', accentColor:'#86efac' },
-        { label:'FASE 12 · INVESTIDOR',   motto:'"Juros compostos são a oitava maravilha."',         bgClass:'game-phase-12', accentColor:'#86efac' },
-        { label:'FASE 13 · INVESTIDOR',   motto:'"Diversificar é proteger o futuro."',               bgClass:'game-phase-13', accentColor:'#86efac' },
-        { label:'FASE 14 · INVESTIDOR',   motto:'"Não coloque todos os ovos numa cesta."',           bgClass:'game-phase-14', accentColor:'#86efac' },
-        { label:'FASE 15 · ESTRATEGISTA', motto:'"A estratégia separa o rico do sortudo."',          bgClass:'game-phase-15', accentColor:'#86efac' },
-        { label:'FASE 16 · ESTRATEGISTA', motto:'"Pense em décadas, aja em anos."',                  bgClass:'game-phase-16', accentColor:'#86efac' },
-        { label:'FASE 17 · ESTRATEGISTA', motto:'"O patrimônio se constrói na calmaria."',           bgClass:'game-phase-17', accentColor:'#86efac' },
-        { label:'FASE 18 · ESTRATEGISTA', motto:'"Quem planeja, prospera."',                         bgClass:'game-phase-18', accentColor:'#86efac' },
-        { label:'FASE 19 · ESTRATEGISTA', motto:'"Riqueza é liberdade de escolha."',                 bgClass:'game-phase-19', accentColor:'#86efac' },
-        { label:'FASE 20 · ESTRATEGISTA', motto:'"O caminho da prosperidade exige visão."',          bgClass:'game-phase-20', accentColor:'#86efac' },
-        { label:'FASE 21 · MAGNATA',      motto:'"Legado é o investimento que transcende gerações."',bgClass:'game-phase-21', accentColor:'#fb923c' },
-        { label:'FASE 22 · MAGNATA',      motto:'"A soberania financeira é a maior liberdade."',    bgClass:'game-phase-22', accentColor:'#fb923c' },
-        { label:'FASE 23 · MAGNATA',      motto:'"Poucos chegam aqui. Você chegou."',                bgClass:'game-phase-23', accentColor:'#fb923c' },
-        { label:'FASE 24 · MAGNATA',      motto:'"O castelo não é o destino — a soberania é."',     bgClass:'game-phase-24', accentColor:'#fb923c' },
+        { label: 'FASE 1 · UNIVERSITÁRIO',   motto: '"O primeiro passo é começar a guardar."',              bgClass: 'game-phase-1',  accentColor: '#7dd3fc' },
+        { label: 'FASE 2 · UNIVERSITÁRIO',   motto: '"Disciplina hoje, liberdade amanhã."',                 bgClass: 'game-phase-2',  accentColor: '#7dd3fc' },
+        { label: 'FASE 3 · UNIVERSITÁRIO',   motto: '"Cada real guardado é um tijolo do futuro."',          bgClass: 'game-phase-3',  accentColor: '#7dd3fc' },
+        { label: 'FASE 4 · UNIVERSITÁRIO',   motto: '"O hábito de poupar é o alicerce da riqueza."',       bgClass: 'game-phase-4',  accentColor: '#7dd3fc' },
+        { label: 'FASE 5 · UNIVERSITÁRIO',   motto: '"Consistência supera intensidade."',                   bgClass: 'game-phase-5',  accentColor: '#7dd3fc' },
+        { label: 'FASE 6 · APRENDIZ',        motto: '"Conhecimento é o melhor investimento."',              bgClass: 'game-phase-6',  accentColor: '#a78bfa' },
+        { label: 'FASE 7 · APRENDIZ',        motto: '"Aprenda com os erros dos outros."',                   bgClass: 'game-phase-7',  accentColor: '#a78bfa' },
+        { label: 'FASE 8 · APRENDIZ',        motto: '"O mercado recompensa quem estuda."',                  bgClass: 'game-phase-8',  accentColor: '#a78bfa' },
+        { label: 'FASE 9 · APRENDIZ',        motto: '"Paciência é a virtude do investidor."',               bgClass: 'game-phase-9',  accentColor: '#a78bfa' },
+        { label: 'FASE 10 · APRENDIZ',       motto: '"Risco calculado não é imprudência."',                 bgClass: 'game-phase-10', accentColor: '#a78bfa' },
+        { label: 'FASE 11 · INVESTIDOR',     motto: '"O tempo no mercado bate o timing do mercado."',      bgClass: 'game-phase-11', accentColor: '#86efac' },
+        { label: 'FASE 12 · INVESTIDOR',     motto: '"Juros compostos são a oitava maravilha."',            bgClass: 'game-phase-12', accentColor: '#86efac' },
+        { label: 'FASE 13 · INVESTIDOR',     motto: '"Diversificar é proteger o futuro."',                  bgClass: 'game-phase-13', accentColor: '#86efac' },
+        { label: 'FASE 14 · INVESTIDOR',     motto: '"Não coloque todos os ovos numa cesta."',              bgClass: 'game-phase-14', accentColor: '#86efac' },
+        { label: 'FASE 15 · ESTRATEGISTA',   motto: '"A estratégia separa o rico do sortudo."',             bgClass: 'game-phase-15', accentColor: '#86efac' },
+        { label: 'FASE 16 · ESTRATEGISTA',   motto: '"Pense em décadas, aja em anos."',                     bgClass: 'game-phase-16', accentColor: '#86efac' },
+        { label: 'FASE 17 · ESTRATEGISTA',   motto: '"O patrimônio se constrói na calmaria."',              bgClass: 'game-phase-17', accentColor: '#86efac' },
+        { label: 'FASE 18 · ESTRATEGISTA',   motto: '"Quem planeja, prospera."',                            bgClass: 'game-phase-18', accentColor: '#86efac' },
+        { label: 'FASE 19 · ESTRATEGISTA',   motto: '"Riqueza é liberdade de escolha."',                    bgClass: 'game-phase-19', accentColor: '#86efac' },
+        { label: 'FASE 20 · ESTRATEGISTA',   motto: '"O caminho da prosperidade exige visão."',             bgClass: 'game-phase-20', accentColor: '#86efac' },
+        { label: 'FASE 21 · MAGNATA',        motto: '"Legado é o investimento que transcende gerações."',   bgClass: 'game-phase-21', accentColor: '#fb923c' },
+        { label: 'FASE 22 · MAGNATA',        motto: '"A soberania financeira é a maior liberdade."',       bgClass: 'game-phase-22', accentColor: '#fb923c' },
+        { label: 'FASE 23 · MAGNATA',        motto: '"Poucos chegam aqui. Você chegou."',                   bgClass: 'game-phase-23', accentColor: '#fb923c' },
+        { label: 'FASE 24 · MAGNATA',        motto: '"O castelo não é o destino — a soberania é."',        bgClass: 'game-phase-24', accentColor: '#fb923c' },
     ];
- 
-    // ── OPÇÕES DE INVESTIMENTO PADRÃO POR FASE ────────────────────────────
+
+    // Opções padrão (meses sem evento especial)
     const PHASE_OPTIONS = {
         early: [
-            { key:'OPT_A', label:'🏢 Fundos Imobiliários',    tag:'Renda Variável',      yield:0.008  },
-            { key:'OPT_B', label:'🟪 Caixinhas Nubank',        tag:'Renda Fixa (100% CDI)',yield:0.009  },
-            { key:'OPT_C', label:'🏦 Poupança',                tag:'Baixo Rendimento',    yield:0.005  },
-            { key:'OPT_D', label:'📱 Comprar um iPhone',       tag:'Passivo Financeiro',  yield:-0.15  },
+            { key: 'OPT_A', label: '🏢 Fundos Imobiliários',      tag: 'Renda Variável',        yield: 0.008  },
+            { key: 'OPT_B', label: '🟪 Caixinhas Nubank',          tag: 'Renda Fixa (100% CDI)', yield: 0.009  },
+            { key: 'OPT_C', label: '🏦 Poupança',                  tag: 'Baixo Rendimento',      yield: 0.005  },
+            { key: 'OPT_D', label: '📱 Comprar um iPhone',         tag: 'Passivo Financeiro',    yield: -0.15  },
         ],
         mid: [
-            { key:'OPT_A', label:'📈 Ações',                   tag:'Renda Variável',      yield:0.012  },
-            { key:'OPT_B', label:'🏛️ Tesouro Direto',           tag:'Renda Fixa Segura',   yield:0.009  },
-            { key:'OPT_C', label:'🐷 Porquinho do Banco Inter', tag:'Cofrinho Digital',    yield:0.006  },
-            { key:'OPT_D', label:'👗 Comprar Roupas',           tag:'Passivo Financeiro',  yield:-0.10  },
+            { key: 'OPT_A', label: '📈 Ações',                     tag: 'Renda Variável',        yield: 0.012  },
+            { key: 'OPT_B', label: '🏛️ Tesouro Direto',            tag: 'Renda Fixa Segura',     yield: 0.009  },
+            { key: 'OPT_C', label: '🐷 Porquinho do Banco Inter',  tag: 'Cofrinho Digital',      yield: 0.006  },
+            { key: 'OPT_D', label: '👗 Comprar Roupas',            tag: 'Passivo Financeiro',    yield: -0.10  },
         ],
         late: [
-            { key:'OPT_A', label:'₿ Criptomoedas',             tag:'Alto Risco/Retorno',  yield:0.020  },
-            { key:'OPT_B', label:'🎉 Pagar Interclasse',        tag:'Gasto Social',        yield:-0.08  },
-            { key:'OPT_C', label:'🏦 Poupança',                 tag:'Baixo Rendimento',    yield:0.005  },
-            { key:'OPT_D', label:'💸 Deixar no PIX',            tag:'0% Rendimento',       yield:0.000  },
+            { key: 'OPT_A', label: '₿ Criptomoedas',               tag: 'Alto Risco/Retorno',    yield: 0.020  },
+            { key: 'OPT_B', label: '🎉 Pagar Interclasse',         tag: 'Gasto Social',          yield: -0.08  },
+            { key: 'OPT_C', label: '🏦 Poupança',                  tag: 'Baixo Rendimento',      yield: 0.005  },
+            { key: 'OPT_D', label: '💸 Deixar no PIX',             tag: '0% Rendimento',         yield: 0.000  },
         ],
     };
- 
+
     function getPhaseOptions(month) {
         if (month <= 10) return PHASE_OPTIONS.early;
         if (month <= 20) return PHASE_OPTIONS.mid;
         return PHASE_OPTIONS.late;
     }
- 
-    // ── MESES ESPECIAIS ───────────────────────────────────────────────────
-    // Retorna {title, opts} para os meses com decisões narrativas,
-    // ou null para os meses normais.
-    // opts: [{key, label, tag, delta}]  — delta em US$ (fixo, não percentual)
-    function getSpecialMonth(month) {
-        switch(month) {
-            case 2: return {
-                title: 'Decisão universitária: o que você fará?',
-                opts: [
-                    { key:'OPT_A', label:'📚 Comprar os Livros da Universidade', tag:'US$ -200', delta:-200 },
-                    { key:'OPT_B', label:'😴 Reprovar num Semestre',             tag:'Penalidade futura', delta:0 },
+
+    // Meses com evento especial — retorna objeto de configuração ou null
+    function getSpecialEvent(month) {
+        const events = {
+            2: {
+                question: 'Decisão Universitária: O que você vai fazer?',
+                options: [
+                    { key: 'OPT_A', label: '📚 Comprar os Livros da Universidade', tag: 'US$ -200',  color: '#fde68a' },
+                    { key: 'OPT_B', label: '😴 Reprovar no Semestre',              tag: 'Consequência futura', color: '#fca5a5' },
                 ]
-            };
-            case 5: return {
-                title: 'Como você vai se locomover este mês?',
-                opts: [
-                    { key:'OPT_A', label:'🚗 Ir de Uber',  tag:'US$ -100', delta:-100 },
-                    { key:'OPT_B', label:'🚶 Ir a pé',     tag:'US$ 0',    delta:0    },
+            },
+            5: {
+                question: 'Transporte: Como você vai se locomover este mês?',
+                options: [
+                    { key: 'OPT_A', label: '🚗 Ir de Uber',  tag: 'US$ -100', color: '#fde68a' },
+                    { key: 'OPT_B', label: '🚶 Ir a Pé',     tag: 'US$ 0',    color: '#86efac' },
                 ]
-            };
-            case 9: return {
-                title: 'Seus pais lhe expulsaram de casa. Onde morar?',
-                opts: [
-                    { key:'OPT_A', label:'🏖️ Apartamento em Boa Viagem', tag:'US$ -230', delta:-230 },
-                    { key:'OPT_B', label:'🏘️ Apartamento no Ibura',       tag:'US$ -30',  delta:-30  },
+            },
+            9: {
+                question: 'Seus pais lhe expulsaram de casa. Onde você vai morar?',
+                options: [
+                    { key: 'OPT_A', label: '🏖️ Apartamento em Boa Viagem', tag: 'US$ -230', color: '#fde68a' },
+                    { key: 'OPT_B', label: '🏘️ Apartamento no Ibura',      tag: 'US$ -30',  color: '#86efac' },
                 ]
-            };
-            case 10: return {
-                title: 'Seus pais aceitam você de volta, mas querem US$ 100/mês. O que você faz?',
-                opts: [
-                    { key:'OPT_A', label:'💼 Trabalhar e Estudar para Investir', tag:'US$ +100', delta:100  },
-                    { key:'OPT_B', label:'🚫 Não Investir',                       tag:'US$ -100', delta:-100 },
+            },
+            10: {
+                question: 'Seus pais lhe aceitaram de volta, mas querem US$ 100/mês. O que você faz?',
+                options: [
+                    { key: 'OPT_A', label: '💼 Trabalhar e Estudar para Investir', tag: 'US$ +100', color: '#86efac' },
+                    { key: 'OPT_B', label: '😔 Não Investir este mês',             tag: 'US$ 0',    color: '#fca5a5' },
                 ]
-            };
-            case 14: return {
-                title: 'Você faz ADS na UFPE e precisa de um notebook bom:',
-                opts: [
-                    { key:'OPT_A', label:'🍎 Comprar um Notebook Apple',   tag:'US$ -500', delta:-500 },
-                    { key:'OPT_B', label:'💻 Comprar um Notebook Samsung',  tag:'US$ -250', delta:-250 },
+            },
+            14: {
+                question: 'Você faz ADS na UFPE e precisa de um notebook bom. Qual você escolhe?',
+                options: [
+                    { key: 'OPT_A', label: '🍎 Notebook Apple', tag: 'US$ -500', color: '#fde68a' },
+                    { key: 'OPT_B', label: '💻 Notebook Samsung', tag: 'US$ -250', color: '#86efac' },
                 ]
-            };
-            case 17: return {
-                title: 'Você recebeu uma oferta de trabalho em Manhattan!',
-                opts: [
-                    { key:'OPT_A', label:'✈️ Aceitar a oferta',   tag:'US$ -580 (viagem)', delta:-580 },
-                    { key:'OPT_B', label:'🏠 Não aceitar',         tag:'Fica no Brasil',    delta:0    },
+            },
+            17: {
+                question: 'Você recebeu uma oferta de trabalho em Manhattan!',
+                options: [
+                    { key: 'OPT_A', label: '✈️ Aceitar a Oferta', tag: 'US$ -580 (viagem)',  color: '#86efac' },
+                    { key: 'OPT_B', label: '🏠 Não Aceitar',      tag: 'Ficar no Brasil',    color: '#fca5a5' },
                 ]
-            };
-            case 18: return {
-                title: 'Onde você vai morar em Nova York?',
-                opts: [
-                    { key:'OPT_A', label:'🏙️ Manhattan',  tag:'US$ -400', delta:-400 },
-                    { key:'OPT_B', label:'🌆 Queens',      tag:'US$ -200', delta:-200 },
+            },
+            18: {
+                question: 'Onde você vai morar em Nova York?',
+                options: [
+                    { key: 'OPT_A', label: '🗽 Manhattan',  tag: 'US$ -400', color: '#fde68a' },
+                    { key: 'OPT_B', label: '🌆 Queens',     tag: 'US$ -200', color: '#86efac' },
                 ]
-            };
-            case 21: return {
-                title: 'Sua impressora quebrou. O que você faz?',
-                opts: [
-                    { key:'OPT_A', label:'🖨️ Comprar uma HP',  tag:'US$ -60', delta:-60 },
-                    { key:'OPT_B', label:'🔧 Consertar',        tag:'US$ -30', delta:-30 },
+            },
+            21: {
+                question: 'Sua impressora quebrou. O que você vai fazer?',
+                options: [
+                    { key: 'OPT_A', label: '🖨️ Comprar uma HP',  tag: 'US$ -60', color: '#fde68a' },
+                    { key: 'OPT_B', label: '🔧 Consertar',        tag: 'US$ -30', color: '#86efac' },
                 ]
-            };
-            case 23: return {
-                title: 'Assistir o Jogo do Brasil (Copa 2026):',
-                opts: [
-                    { key:'OPT_A', label:'⚽ Ir no Jogo do Brasil', tag:'US$ -1000', delta:-1000 },
-                    { key:'OPT_B', label:'📺 Não ir',                tag:'US$ 0',     delta:0     },
+            },
+            23: {
+                question: 'Copa do Mundo 2026: O Brasil está na fase final!',
+                options: [
+                    { key: 'OPT_A', label: '🎟️ Ir no Jogo do Brasil', tag: 'US$ -1000', color: '#fde68a' },
+                    { key: 'OPT_B', label: '📺 Não Ir',                tag: 'US$ 0',     color: '#86efac' },
                 ]
-            };
-            default: return null;
-        }
+            },
+        };
+        return events[month] || null;
     }
- 
+
     const CITY_IMAGES = [];
     let lastMonth = 0;
- 
-    function getPhaseIndex(month) { return Math.min(month - 1, 23); }
- 
-    // ── TRANSIÇÃO DE MÊS ──────────────────────────────────────────────────
+
+    function getPhaseIndex(month) {
+        return Math.min(month - 1, 23);
+    }
+
+    // ── PÓS-CAPA: navega para tela de história antes do jogo ──
+    // Armazena qual tela de jogo abrir após a história
+    let _pendingGameScreen = null;
+
+    function showStoryThen(callback) {
+        _pendingGameScreen = callback;
+        switchScreen('screen-story');
+    }
+
+    function goFromStoryToGame() {
+        if (_pendingGameScreen) {
+            _pendingGameScreen();
+            _pendingGameScreen = null;
+        }
+    }
+
+    // ── MONTH TRANSITION ──────────────────────────────────────────────────
     function playMonthTransition(newMonth, onComplete) {
         const overlay = document.getElementById('month-transition-overlay');
-        const phase = PHASES[getPhaseIndex(newMonth)];
+        const phaseIdx = getPhaseIndex(newMonth);
+        const phase = PHASES[phaseIdx];
+
         document.getElementById('mto-month-num').textContent = `MÊS ${newMonth}`;
         document.getElementById('mto-phase-label').textContent = phase.label;
         document.getElementById('mto-motto').textContent = phase.motto;
-        document.getElementById('mto-city-strip').innerHTML = '';
-        overlay.classList.remove('phase-close','phase-show');
+
+        const strip = document.getElementById('mto-city-strip');
+        strip.innerHTML = '';
+
+        overlay.classList.remove('phase-close', 'phase-show');
         overlay.style.display = '';
         overlay.classList.add('active');
-        requestAnimationFrame(() => overlay.classList.add('phase-close'));
-        setTimeout(() => { overlay.classList.add('phase-show'); updateGamePhase(newMonth); if (onComplete) onComplete(); }, 500);
-        setTimeout(() => overlay.classList.remove('phase-close'), 1600);
-        setTimeout(() => { overlay.classList.remove('phase-show'); setTimeout(() => { overlay.classList.remove('active'); overlay.style.display = 'none'; }, 400); }, 2000);
+
+        requestAnimationFrame(() => { overlay.classList.add('phase-close'); });
+
+        setTimeout(() => {
+            overlay.classList.add('phase-show');
+            updateGamePhase(newMonth);
+            if (onComplete) onComplete();
+        }, 500);
+
+        setTimeout(() => { overlay.classList.remove('phase-close'); }, 1600);
+
+        setTimeout(() => {
+            overlay.classList.remove('phase-show');
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                overlay.style.display = 'none';
+            }, 400);
+        }, 2000);
     }
- 
+
     function updateGamePhase(month) {
-        const phase = PHASES[getPhaseIndex(month)];
-        const gs = document.getElementById('screen-game');
-        PHASES.forEach(p => gs.classList.remove(p.bgClass));
-        gs.classList.add(phase.bgClass);
+        const phaseIdx = getPhaseIndex(month);
+        const phase = PHASES[phaseIdx];
+        const gameScreen = document.getElementById('screen-game');
+
+        PHASES.forEach(p => gameScreen.classList.remove(p.bgClass));
+        gameScreen.classList.add(phase.bgClass);
+
         const badge = document.getElementById('game-phase-badge');
-        if (badge) { badge.textContent = phase.label.split('·')[0].trim(); badge.style.color = phase.accentColor; badge.style.borderColor = phase.accentColor + '55'; }
+        if (badge) {
+            badge.textContent = phase.label.split('·')[0].trim();
+            badge.style.color = phase.accentColor;
+            badge.style.borderColor = phase.accentColor + '55';
+        }
+
         const ring = document.getElementById('game-month-ring');
-        if (ring) { ring.style.borderColor = phase.accentColor; ring.style.color = phase.accentColor; ring.style.boxShadow = `0 0 20px ${phase.accentColor}44`; }
+        if (ring) {
+            ring.style.borderColor = phase.accentColor;
+            ring.style.color = phase.accentColor;
+            ring.style.boxShadow = `0 0 20px ${phase.accentColor}44`;
+        }
     }
- 
-    // ── TROCA DE TELA ─────────────────────────────────────────────────────
+
+    // ── SCREEN SWITCH ────────────────────────────────────────────────────
     function switchScreen(screenId) {
         document.querySelectorAll('[id^="screen-"]').forEach(s => s.classList.add('hidden'));
         const el = document.getElementById(screenId);
@@ -588,195 +1096,155 @@
         el.classList.add('anim-slide-in');
         setTimeout(() => el.classList.remove('anim-slide-in'), 600);
     }
- 
+
     // ── STATE ─────────────────────────────────────────────────────────────
     let _soloState = null;
     let currentRoomName = '';
- 
-    function getRoomState() { if (isSolo) return _soloState; return null; }
-    function saveRoomState(state) { if (isSolo) { _soloState = state; } else { saveRoomStateFirebase(state); } }
- 
-    // ── SOLO ──────────────────────────────────────────────────────────────
+
+    function getRoomState() {
+        if (isSolo) return _soloState;
+        return null;
+    }
+    function saveRoomState(state) {
+        if (isSolo) { _soloState = state; }
+        else { saveRoomStateFirebase(state); }
+    }
+
+    // ── MODO SOLO ─────────────────────────────────────────────────────────
     function actionStartSolo() {
         const pName = document.getElementById('solo-player-name').value.trim();
         if (!pName) return alert('Digite seu codinome!');
-        isSolo = true; myRole = 'leader'; myPlayerName = pName;
-        const roomState = { name:'Solo', password:'', status:'game', currentMonth:1, players:{}, count:1, crisis:false, solo:true };
-        roomState.players[pName] = { money:1000, currentChoice:null, ready:false, active:true, history:[1000], acceptedManhattan:false };
+        isSolo = true;
+        myRole = 'leader';
+        myPlayerName = pName;
+
+        const roomState = {
+            name: 'Solo', password: '', status: 'game', currentMonth: 1,
+            players: {}, count: 1, crisis: false, solo: true
+        };
+        roomState.players[pName] = {
+            money: 1000, currentChoice: null, ready: false, active: true, history: [1000],
+            boughtBooks: false, failedSemester: false, acceptedJob: false, jobPaidOut: false
+        };
         _soloState = roomState;
-        // Mostra intro antes do jogo
-        _afterIntroFn = () => {
-            document.getElementById('game-player-identity').innerText = `Trader: ${pName}`;
+
+        document.getElementById('game-player-identity').innerText = `Trader: ${pName}`;
+
+        // Mostra a tela de história antes do jogo
+        showStoryThen(() => {
             renderGameScreen(roomState);
             switchScreen('screen-game');
             updateGamePhase(1);
             lastMonth = 1;
-        };
-        switchScreen('screen-intro');
+        });
     }
- 
+
     // ── CRIAR SALA ────────────────────────────────────────────────────────
     function actionCreateRoom() {
         const name = document.getElementById('create-room-name').value.trim();
         const pass = document.getElementById('create-room-pass').value;
         if (!name) return alert('Dê um nome à sala!');
-        myRole = 'leader'; myPlayerName = name + '_LIDER'; currentRoomName = name;
-        const roomState = { name, password:pass, status:'lobby', currentMonth:1, players:{}, count:0, crisis:false, solo:false };
-        // Salva no Firebase e mostra intro — se Firebase falhar, alerta
-        try {
-            saveRoomStateFirebase(roomState);
-        } catch(e) {
-            return alert('Erro ao criar sala: ' + e.message);
-        }
-        document.getElementById('lobby-room-title').innerText = name;
-        document.getElementById('lobby-leader-controls').classList.remove('hidden');
-        _afterIntroFn = () => { switchScreen('screen-lobby'); startFirebaseListener(name); };
-        switchScreen('screen-intro');
+        myRole = 'leader';
+        myPlayerName = name + '_LIDER';
+        currentRoomName = name;
+        const roomState = {
+            name, password: pass, status: 'lobby', currentMonth: 1,
+            players: {}, count: 0, crisis: false, solo: false
+        };
+        saveRoomStateFirebase(roomState).then(() => {
+            document.getElementById('lobby-room-title').innerText = name;
+            document.getElementById('lobby-leader-controls').classList.remove('hidden');
+            switchScreen('screen-lobby');
+            startFirebaseListener(name);
+        }).catch(err => alert('Erro ao criar sala: ' + err.message));
     }
- 
+
     // ── ENTRAR NA SALA ────────────────────────────────────────────────────
     function actionJoinRoom() {
         const pName = document.getElementById('join-player-name').value.trim();
         const rName = document.getElementById('join-room-name').value.trim();
         const rPass = document.getElementById('join-room-pass').value;
         if (!pName || !rName) return alert('Preencha todos os campos!');
+
         getRoomRef(rName).once('value').then(snap => {
             const state = snap.val();
             if (!state) return alert('Sala não encontrada!');
             if (state.password !== rPass) return alert('Senha incorreta!');
             if (state.count >= 5) return alert('A sala já atingiu o limite de 5 jogadores!');
-            myRole = 'player'; myPlayerName = pName; currentRoomName = rName;
+
+            myRole = 'player';
+            myPlayerName = pName;
+            currentRoomName = rName;
+
             const players = state.players || {};
-            players[pName] = { money:1000, currentChoice:null, ready:false, active:true, history:[1000], acceptedManhattan:false };
+            players[pName] = {
+                money: 1000, currentChoice: null, ready: false, active: true, history: [1000],
+                boughtBooks: false, failedSemester: false, acceptedJob: false, jobPaidOut: false
+            };
             const count = Object.keys(players).length;
-            getRoomRef(rName).update({ players, count });
-            document.getElementById('lobby-room-title').innerText = rName;
-            document.getElementById('game-player-identity').innerText = `Trader: ${pName}`;
-            _afterIntroFn = () => { switchScreen('screen-lobby'); startFirebaseListener(rName); };
-            switchScreen('screen-intro');
+
+            getRoomRef(rName).update({ players, count }).then(() => {
+                document.getElementById('lobby-room-title').innerText = rName;
+                document.getElementById('game-player-identity').innerText = `Trader: ${pName}`;
+                switchScreen('screen-lobby');
+                startFirebaseListener(rName);
+            });
         }).catch(err => alert('Erro ao entrar na sala: ' + err.message));
     }
- 
-    // ── LISTENER FIREBASE ─────────────────────────────────────────────────
+
+    // ── FIREBASE LISTENER ─────────────────────────────────────────────────
     function startFirebaseListener(roomName) {
         listenRoomState(roomName, state => {
             if (!state) return;
+
             if (state.status === 'lobby') {
                 document.getElementById('lobby-count').innerText = state.count || 0;
-                const ul = document.getElementById('lobby-player-list');
-                ul.innerHTML = Object.keys(state.players || {}).map(p =>
+                const listUi = document.getElementById('lobby-player-list');
+                listUi.innerHTML = Object.keys(state.players || {}).map(p =>
                     `<li style="padding:0.4rem 0;border-bottom:1px solid rgba(201,168,76,0.1);color:#86efac;font-size:0.9rem;">⚡ ${p}</li>`
                 ).join('');
             }
+
             if (state.status === 'game') {
                 if (myRole === 'leader') {
-                    if (document.getElementById('screen-leader-dashboard').classList.contains('hidden')) switchScreen('screen-leader-dashboard');
+                    if (document.getElementById('screen-leader-dashboard').classList.contains('hidden')) {
+                        switchScreen('screen-leader-dashboard');
+                    }
                     renderLeaderDashboard(state);
                 } else if (myRole === 'player') {
-                    if (state.players) Object.keys(state.players).forEach(p => { state.players[p].history = normalizeHistory(state.players[p].history); });
+                    if (state.players) {
+                        Object.keys(state.players).forEach(p => {
+                            state.players[p].history = normalizeHistory(state.players[p].history);
+                        });
+                    }
                     renderGameScreen(state);
                 }
             }
+
             if (state.status === 'end') {
-                if (state.players) Object.keys(state.players).forEach(p => { state.players[p].history = normalizeHistory(state.players[p].history); });
+                if (state.players) {
+                    Object.keys(state.players).forEach(p => {
+                        state.players[p].history = normalizeHistory(state.players[p].history);
+                    });
+                }
                 renderFinalPodium(state);
             }
         });
     }
- 
+
     function actionStartGame() {
         getRoomRef(currentRoomName).once('value').then(snap => {
             const state = snap.val();
             if (!state || state.count === 0) return alert('Aguarde pelo menos um jogador entrar!');
-            getRoomRef(currentRoomName).update({ status:'game', leaderName:myPlayerName });
+            getRoomRef(currentRoomName).update({ status: 'game', leaderName: myPlayerName });
             switchScreen('screen-leader-dashboard');
         });
     }
- 
-    // ── RENDERIZAR TELA DO JOGO ───────────────────────────────────────────
-    function renderGameScreen(state) {
-        if (document.getElementById('screen-game').classList.contains('hidden')) switchScreen('screen-game');
-        const me = state.players && state.players[myPlayerName];
-        if (!me) return;
-        const month = state.currentMonth;
- 
-        document.getElementById('game-current-month').innerText = `MÊS ${month} / ${TOTAL_MONTHS}`;
-        document.getElementById('game-month-ring').innerText = month;
- 
-        const moneyEl = document.getElementById('ui-current-money');
-        moneyEl.innerText = `US$ ${parseFloat(me.money).toFixed(2)}`;
-        moneyEl.classList.remove('money-pop');
-        void moneyEl.offsetWidth;
-        moneyEl.classList.add('money-pop');
- 
-        const stdOpts   = document.getElementById('standard-options');
-        const crisisOpts= document.getElementById('crisis-options');
-        const crisisAlert=document.getElementById('crisis-alert');
-        const qTitle    = document.getElementById('investment-question-title');
- 
-        const special = getSpecialMonth(month);
- 
-        if (state.crisis) {
-            stdOpts.style.display = 'none';
-            crisisOpts.style.display = 'flex';
-            crisisAlert.style.display = '';
-            qTitle.innerText = 'Crise Extrema! O mercado está derretendo:';
-        } else if (special) {
-            // Mês especial: mostrar opções narrativas no painel standard
-            crisisOpts.style.display = 'none';
-            crisisAlert.style.display = 'none';
-            stdOpts.style.display = 'flex';
-            qTitle.innerText = special.title;
-            const keys = ['a','b','c','d'];
-            special.opts.forEach((opt, i) => {
-                const lbl = document.getElementById(`btn-opt-${keys[i]}-label`);
-                const tag = document.getElementById(`btn-opt-${keys[i]}-tag`);
-                const btn = document.getElementById(`btn-opt-${keys[i]}`);
-                if (lbl) lbl.textContent = opt.label;
-                if (tag) tag.textContent = opt.tag;
-                if (btn) btn.style.display = '';
-            });
-            // Esconder botões extras não usados
-            for (let i = special.opts.length; i < 4; i++) {
-                const btn = document.getElementById(`btn-opt-${keys[i]}`);
-                if (btn) btn.style.display = 'none';
-            }
-        } else {
-            stdOpts.style.display = 'flex';
-            crisisOpts.style.display = 'none';
-            crisisAlert.style.display = 'none';
-            qTitle.innerText = 'Onde alocar seus US$ 100 deste mês?';
-            const opts = getPhaseOptions(month);
-            const keys = ['a','b','c','d'];
-            opts.forEach((opt, i) => {
-                const lbl = document.getElementById(`btn-opt-${keys[i]}-label`);
-                const tag = document.getElementById(`btn-opt-${keys[i]}-tag`);
-                const btn = document.getElementById(`btn-opt-${keys[i]}`);
-                if (lbl) lbl.textContent = opt.label;
-                if (tag) tag.textContent = opt.tag;
-                if (btn) btn.style.display = '';
-            });
-        }
- 
-        if (me.ready) {
-            stdOpts.style.pointerEvents = 'none'; stdOpts.style.opacity = '0.3';
-            crisisOpts.style.pointerEvents = 'none'; crisisOpts.style.opacity = '0.3';
-            if (isSolo) setTimeout(actionProcessMonth, 600);
-            else document.getElementById('wait-message').style.display = '';
-        } else {
-            stdOpts.style.pointerEvents = ''; stdOpts.style.opacity = '';
-            crisisOpts.style.pointerEvents = ''; crisisOpts.style.opacity = '';
-            document.getElementById('wait-message').style.display = 'none';
-        }
- 
-        renderPictographicChart(me.history, month);
-    }
- 
-    // ── LEADER DASHBOARD ──────────────────────────────────────────────────
+
     function renderLeaderDashboard(state) {
         document.getElementById('leader-month-display').innerText = state.currentMonth;
-        const cc = document.getElementById('leader-player-cards');
-        cc.innerHTML = '';
+        const cardsContainer = document.getElementById('leader-player-cards');
+        cardsContainer.innerHTML = '';
         const playerKeys = Object.keys(state.players || {});
         let allReady = playerKeys.length > 0;
         playerKeys.forEach(pName => {
@@ -784,13 +1252,123 @@
             if (!player.ready) allReady = false;
             const card = document.createElement('div');
             card.style.cssText = `padding:1rem;border-radius:10px;border:1px solid ${player.ready ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.08)'};background:${player.ready ? 'rgba(34,197,94,0.06)' : 'rgba(255,255,255,0.03)'};transition:all 0.3s;`;
-            card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><span style="font-weight:700;font-size:1rem;">${pName}</span><span style="font-size:0.65rem;padding:0.2rem 0.5rem;border-radius:20px;font-weight:700;background:${player.ready ? 'rgba(34,197,94,0.2)' : 'rgba(251,191,36,0.15)'};color:${player.ready ? '#86efac' : '#fde68a'};">${player.ready ? 'STOP ✓' : 'PENSANDO...'}</span></div><p style="font-size:0.8rem;color:rgba(255,255,255,0.4);">US$ ${parseFloat(player.money).toFixed(2)}</p>`;
-            cc.appendChild(card);
+            card.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                    <span style="font-weight:700;font-size:1rem;">${pName}</span>
+                    <span style="font-size:0.65rem;padding:0.2rem 0.5rem;border-radius:20px;font-weight:700;background:${player.ready ? 'rgba(34,197,94,0.2)' : 'rgba(251,191,36,0.15)'};color:${player.ready ? '#86efac' : '#fde68a'};">${player.ready ? 'STOP ✓' : 'PENSANDO...'}</span>
+                </div>
+                <p style="font-size:0.8rem;color:rgba(255,255,255,0.4);">$ ${parseFloat(player.money).toFixed(2)}</p>
+            `;
+            cardsContainer.appendChild(card);
         });
-        document.getElementById('btn-next-month').style.display = allReady ? '' : 'none';
+        const nextBtn = document.getElementById('btn-next-month');
+        nextBtn.style.display = allReady ? '' : 'none';
     }
- 
-    // ── SUBMETER ESCOLHA ──────────────────────────────────────────────────
+
+    // Renderiza o painel de opções conforme o mês (normal ou especial)
+    function renderGameScreen(state) {
+        if (document.getElementById('screen-game').classList.contains('hidden')) {
+            switchScreen('screen-game');
+        }
+
+        const me = state.players && state.players[myPlayerName];
+        if (!me) return;
+        const currentMonth = state.currentMonth;
+
+        document.getElementById('game-current-month').innerText = `MÊS ${currentMonth} / ${TOTAL_MONTHS}`;
+        document.getElementById('game-month-ring').innerText = currentMonth;
+
+        const moneyEl = document.getElementById('ui-current-money');
+        moneyEl.innerText = `$ ${parseFloat(me.money).toFixed(2)}`;
+        moneyEl.classList.remove('money-pop');
+        void moneyEl.offsetWidth;
+        moneyEl.classList.add('money-pop');
+
+        const standardOptions = document.getElementById('standard-options');
+        const crisisOptions   = document.getElementById('crisis-options');
+        const crisisAlert     = document.getElementById('crisis-alert');
+        const qTitle          = document.getElementById('investment-question-title');
+
+        const special = getSpecialEvent(currentMonth);
+
+        if (state.crisis) {
+            // Crise (mês 11)
+            standardOptions.style.display = 'none';
+            crisisOptions.style.display = 'flex';
+            crisisAlert.style.display = '';
+            qTitle.innerText = 'Crise Extrema! O mercado está derretendo:';
+        } else if (special) {
+            // Evento especial
+            crisisOptions.style.display = 'none';
+            crisisAlert.style.display = 'none';
+            qTitle.innerText = special.question;
+
+            // Reconstrói botões dinamicamente
+            standardOptions.innerHTML = '';
+            standardOptions.style.display = 'flex';
+            special.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.id = 'dyn-' + opt.key;
+                btn.style.cssText = `background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;`;
+                btn.innerHTML = `<span>${opt.label}</span><span style="font-size:0.7rem;color:${opt.color};">${opt.tag}</span>`;
+                btn.addEventListener('mouseenter', () => { btn.style.background = 'rgba(255,255,255,0.09)'; btn.style.borderColor = opt.color; });
+                btn.addEventListener('mouseleave', () => { btn.style.background = 'rgba(255,255,255,0.04)'; btn.style.borderColor = 'rgba(255,255,255,0.12)'; });
+                btn.addEventListener('click', () => submitTurn(opt.key));
+                standardOptions.appendChild(btn);
+            });
+        } else {
+            // Mês normal — restaura os 4 botões padrão
+            crisisOptions.style.display = 'none';
+            crisisAlert.style.display = 'none';
+            qTitle.innerText = 'Onde alocar seus $ 100 deste mês?';
+
+            standardOptions.innerHTML = `
+                <button onclick="submitTurn('OPT_A')" id="btn-opt-a" style="background:rgba(255,255,255,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(201,168,76,0.1)';this.style.borderColor='rgba(201,168,76,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(201,168,76,0.2)'">
+                    <span id="btn-opt-a-label">…</span><span id="btn-opt-a-tag" style="font-size:0.7rem;color:#86efac;"></span>
+                </button>
+                <button onclick="submitTurn('OPT_B')" id="btn-opt-b" style="background:rgba(255,255,255,0.04);border:1px solid rgba(139,92,246,0.25);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(139,92,246,0.1)';this.style.borderColor='rgba(139,92,246,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(139,92,246,0.25)'">
+                    <span id="btn-opt-b-label">…</span><span id="btn-opt-b-tag" style="font-size:0.7rem;color:#c4b5fd;"></span>
+                </button>
+                <button onclick="submitTurn('OPT_C')" id="btn-opt-c" style="background:rgba(255,255,255,0.04);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(251,191,36,0.08)';this.style.borderColor='rgba(251,191,36,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(251,191,36,0.2)'">
+                    <span id="btn-opt-c-label">…</span><span id="btn-opt-c-tag" style="font-size:0.7rem;color:#fde68a;"></span>
+                </button>
+                <button onclick="submitTurn('OPT_D')" id="btn-opt-d" style="background:rgba(255,255,255,0.04);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:0.75rem 1rem;color:#fff;cursor:pointer;text-align:left;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center;font-family:'Rajdhani',sans-serif;font-size:0.95rem;" onmouseover="this.style.background='rgba(239,68,68,0.1)';this.style.borderColor='rgba(239,68,68,0.5)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(239,68,68,0.2)'">
+                    <span id="btn-opt-d-label">…</span><span id="btn-opt-d-tag" style="font-size:0.7rem;color:#fca5a5;"></span>
+                </button>
+            `;
+            standardOptions.style.display = 'flex';
+
+            const opts = getPhaseOptions(currentMonth);
+            opts.forEach((opt, i) => {
+                const keys = ['a','b','c','d'];
+                const labelEl = document.getElementById(`btn-opt-${keys[i]}-label`);
+                const tagEl   = document.getElementById(`btn-opt-${keys[i]}-tag`);
+                if (labelEl) labelEl.textContent = opt.label;
+                if (tagEl)   tagEl.textContent   = opt.tag;
+            });
+        }
+
+        if (me.ready) {
+            standardOptions.style.pointerEvents = 'none';
+            standardOptions.style.opacity = '0.3';
+            crisisOptions.style.pointerEvents = 'none';
+            crisisOptions.style.opacity = '0.3';
+            if (isSolo) {
+                setTimeout(actionProcessMonth, 600);
+            } else {
+                document.getElementById('wait-message').style.display = '';
+            }
+        } else {
+            standardOptions.style.pointerEvents = '';
+            standardOptions.style.opacity = '';
+            crisisOptions.style.pointerEvents = '';
+            crisisOptions.style.opacity = '';
+            document.getElementById('wait-message').style.display = 'none';
+        }
+
+        renderPictographicChart(me.history, currentMonth);
+    }
+
     function submitTurn(choice) {
         if (isSolo) {
             let state = getRoomState();
@@ -805,14 +1383,17 @@
             getRoomRef(currentRoomName).update(update);
         }
     }
- 
-    // ── PROCESSAR MÊS ─────────────────────────────────────────────────────
+
     function actionProcessMonth() {
         if (isSolo) {
             let state = getRoomState();
             _processMonthLogic(state);
-            if (state.status === 'end') { renderFinalPodium(state); }
-            else { playMonthTransition(state.currentMonth, () => renderGameScreen(state)); lastMonth = state.currentMonth; }
+            if (state.status === 'end') {
+                renderFinalPodium(state);
+            } else {
+                playMonthTransition(state.currentMonth, () => { renderGameScreen(state); });
+                lastMonth = state.currentMonth;
+            }
         } else {
             getRoomRef(currentRoomName).once('value').then(snap => {
                 const state = snap.val();
@@ -822,7 +1403,7 @@
             });
         }
     }
- 
+
     function normalizeHistory(h) {
         if (Array.isArray(h)) return h;
         if (!h) return [1000];
@@ -831,53 +1412,132 @@
         for (let i = 0; i < len; i++) arr.push(h[i] !== undefined ? h[i] : 1000);
         return arr;
     }
- 
-    // ── LÓGICA DO MÊS ─────────────────────────────────────────────────────
+
+    // ── LÓGICA CENTRAL DE PROCESSAMENTO DO MÊS ──────────────────────────
     function _processMonthLogic(state) {
-        if (state.currentMonth === 11) state.crisis = true;
-        else if (state.currentMonth === 12) state.crisis = false;
- 
+        const month = state.currentMonth;
+
+        // Crise mês 11-12 (inalterado)
+        if (month === 11) state.crisis = true;
+        else if (month === 12) state.crisis = false;
+
         Object.keys(state.players).forEach(pName => {
             let p = state.players[pName];
             let capital = parseFloat(p.money);
             p.history = normalizeHistory(p.history);
-            if (!p.acceptedManhattan) p.acceptedManhattan = false;
- 
-            const month = state.currentMonth;
+
+            // Garante flags
+            if (p.boughtBooks   === undefined) p.boughtBooks   = false;
+            if (p.failedSemester=== undefined) p.failedSemester= false;
+            if (p.acceptedJob   === undefined) p.acceptedJob   = false;
+            if (p.jobPaidOut    === undefined) p.jobPaidOut    = false;
+
             const choice = p.currentChoice;
-            const special = getSpecialMonth(month);
- 
-            if (state.crisis) {
-                // Mês 11 = crise: manter ganha 50% a mais no próximo mês; retirar perde 30%
+
+            if (month === 12) {
+                // Crise (inalterado)
                 capital = choice === 'RETIRAR' ? capital * 0.70 : capital * 1.50;
-            } else if (special) {
-                // Mês especial: aplica delta fixo + aporte normal de 100
-                capital += 100; // aporte mensal sempre
-                const chosen = special.opts.find(o => o.key === choice);
-                if (chosen) {
-                    capital += chosen.delta;
- 
-                    // Mês 2: quem reprovar (OPT_B) perde 500 no mês 7
-                    if (month === 2 && choice === 'OPT_B') p.willLoseOnMonth7 = true;
- 
-                    // Mês 17: registrar se aceitou Manhattan para ganhar no mês 19
-                    if (month === 17 && choice === 'OPT_A') p.acceptedManhattan = true;
+
+            } else if (month === 2) {
+                // Decisão universitária
+                capital += 100; // auxílio mensal
+                if (choice === 'OPT_A') {
+                    // Comprar livros: perde $200
+                    capital -= 200;
+                    p.boughtBooks = true;
+                } else if (choice === 'OPT_B') {
+                    // Reprovar: sem custo agora, penalidade no mês 7
+                    p.failedSemester = true;
                 }
-            } else {
-                // Mês normal com rendimento percentual
+
+            } else if (month === 5) {
+                // Transporte
                 capital += 100;
- 
-                // Mês 7: quem reprovou no mês 2 perde 500 agora
-                if (month === 7 && p.willLoseOnMonth7) {
+                if (choice === 'OPT_A') {
+                    capital -= 100; // Uber
+                }
+                // Ir a pé: sem custo
+
+            } else if (month === 7) {
+                // Mês normal com penalidade para quem reprovou no mês 2
+                capital += 100;
+                const opts = getPhaseOptions(month);
+                const chosen = opts.find(o => o.key === choice);
+                if (chosen) {
+                    if (chosen.yield < 0) capital += capital * chosen.yield;
+                    else capital = capital * (1 + chosen.yield);
+                }
+                if (p.failedSemester) {
                     capital -= 500;
-                    p.willLoseOnMonth7 = false;
+                    p.failedSemester = false; // penalidade aplicada
                 }
- 
-                // Mês 19: quem aceitou oferta de Manhattan recebe US$ 3000
-                if (month === 19 && p.acceptedManhattan) {
-                    capital += 3000;
+
+            } else if (month === 9) {
+                // Expulsão de casa
+                capital += 100;
+                if (choice === 'OPT_A') capital -= 230; // Boa Viagem
+                else if (choice === 'OPT_B') capital -= 30;  // Ibura
+
+            } else if (month === 10) {
+                // Volta para casa com condição
+                capital += 100;
+                if (choice === 'OPT_A') {
+                    capital += 100; // Trabalhar e estudar: +$100 extra
                 }
- 
+                // Não investir: sem rendimento extra, mas sem perda adicional
+
+            } else if (month === 14) {
+                // Notebook
+                capital += 100;
+                if (choice === 'OPT_A') capital -= 500; // Apple
+                else if (choice === 'OPT_B') capital -= 250; // Samsung
+
+            } else if (month === 17) {
+                // Oferta de trabalho
+                capital += 100;
+                if (choice === 'OPT_A') {
+                    capital -= 580; // custo da viagem
+                    p.acceptedJob = true;
+                } else {
+                    p.acceptedJob = false;
+                }
+
+            } else if (month === 18) {
+                // Moradia em NY (só se aceitou oferta)
+                capital += 100;
+                if (p.acceptedJob) {
+                    if (choice === 'OPT_A') capital -= 400; // Manhattan
+                    else if (choice === 'OPT_B') capital -= 200; // Queens
+                }
+
+            } else if (month === 19) {
+                // Mês normal + bônus para quem aceitou a oferta
+                capital += 100;
+                const opts = getPhaseOptions(month);
+                const chosen = opts.find(o => o.key === choice);
+                if (chosen) {
+                    if (chosen.yield < 0) capital += capital * chosen.yield;
+                    else capital = capital * (1 + chosen.yield);
+                }
+                if (p.acceptedJob && !p.jobPaidOut) {
+                    capital += 3000; // bônus NY
+                    p.jobPaidOut = true;
+                }
+
+            } else if (month === 21) {
+                // Impressora
+                capital += 100;
+                if (choice === 'OPT_A') capital -= 60; // HP
+                else if (choice === 'OPT_B') capital -= 30; // Consertar
+
+            } else if (month === 23) {
+                // Copa 2026
+                capital += 100;
+                if (choice === 'OPT_A') capital -= 1000; // Ir no jogo
+
+            } else {
+                // Meses normais (inclui mês 11 de crise normal pré-flag)
+                capital += 100;
                 const opts = getPhaseOptions(month);
                 const chosen = opts.find(o => o.key === choice);
                 if (chosen) {
@@ -885,58 +1545,77 @@
                     else capital = capital * (1 + chosen.yield);
                 }
             }
- 
+
             p.money = capital;
             p.history.push(Math.round(capital));
             p.currentChoice = null;
             p.ready = false;
         });
- 
-        if (state.currentMonth >= TOTAL_MONTHS) state.status = 'end';
-        else state.currentMonth++;
+
+        const nextMonth = month + 1;
+        if (month >= TOTAL_MONTHS) {
+            state.status = 'end';
+        } else {
+            state.currentMonth = nextMonth;
+        }
     }
- 
-    // ── GRÁFICO ───────────────────────────────────────────────────────────
+
     function renderPictographicChart(history, currentMonth) {
         const chartUi = document.getElementById('crypto-chart');
         chartUi.innerHTML = '';
         history = normalizeHistory(history);
         const maxVal = Math.max(...history, 1500);
         const minVal = Math.min(...history, 500);
-        const phase = PHASES[getPhaseIndex(currentMonth || 1)];
+        const phaseIdx = getPhaseIndex(currentMonth || 1);
+        const phase = PHASES[phaseIdx];
+
         history.forEach((val, idx) => {
             const isNewest = idx === history.length - 1;
             const bar = document.createElement('div');
+            bar.style.cssText = `flex:1;border-radius:4px 4px 0 0;position:relative;cursor:pointer;transition:opacity 0.2s;min-width:4px;`;
             const pct = ((val - (minVal * 0.8)) / (maxVal - (minVal * 0.8))) * 100;
-            bar.style.cssText = `flex:1;border-radius:4px 4px 0 0;position:relative;cursor:pointer;transition:opacity 0.2s;min-width:4px;height:${Math.max(pct,5)}%;`;
-            bar.style.background = isNewest ? `linear-gradient(to top,${phase.accentColor}99,${phase.accentColor})` : 'linear-gradient(to top,rgba(255,255,255,0.1),rgba(255,255,255,0.22))';
+            bar.style.height = `${Math.max(pct, 5)}%`;
+            const gradient = isNewest
+                ? `linear-gradient(to top, ${phase.accentColor}99, ${phase.accentColor})`
+                : `linear-gradient(to top, rgba(255,255,255,0.1), rgba(255,255,255,0.22))`;
+            bar.style.background = gradient;
             if (isNewest) bar.style.boxShadow = `0 0 12px ${phase.accentColor}88`;
             bar.classList.add('chart-bar-enter');
-            bar.innerHTML = `<span style="position:absolute;bottom:105%;left:50%;transform:translateX(-50%);background:#1c1c28;font-size:9px;color:#fff;padding:2px 5px;border-radius:4px;opacity:0;transition:opacity 0.2s;white-space:nowrap;z-index:50;border:1px solid rgba(201,168,76,0.3);">Mês ${idx}: US$ ${val}</span>`;
+            bar.innerHTML = `<span style="position:absolute;bottom:105%;left:50%;transform:translateX(-50%);background:#1c1c28;font-size:9px;color:#fff;padding:2px 5px;border-radius:4px;opacity:0;transition:opacity 0.2s;white-space:nowrap;z-index:50;border:1px solid rgba(201,168,76,0.3);">Mês ${idx}: $ ${val}</span>`;
             bar.addEventListener('mouseenter', () => bar.querySelector('span').style.opacity = '1');
             bar.addEventListener('mouseleave', () => bar.querySelector('span').style.opacity = '0');
             chartUi.appendChild(bar);
         });
     }
- 
-    // ── PÓDIO FINAL ───────────────────────────────────────────────────────
+
     function renderFinalPodium(state) {
         switchScreen('screen-podium');
         const container = document.getElementById('podium-container');
         container.innerHTML = `<p style="text-align:center;color:var(--gold);animation:pulse 1.5s infinite;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;">Contabilizando rendimentos e apurando o pódio...</p>`;
-        const ranking = Object.keys(state.players).map(pName => ({ name:pName, score:state.players[pName].money })).sort((a,b) => b.score - a.score);
+
+        const ranking = Object.keys(state.players).map(pName => ({
+            name: pName, score: state.players[pName].money
+        })).sort((a, b) => b.score - a.score);
+
         setTimeout(() => {
             container.innerHTML = '';
             ranking.forEach((player, index) => {
                 const row = document.createElement('div');
-                const medals = ['🥇','🥈','🥉','🏅','🏅'];
+                const medals = ['🥇', '🥈', '🥉', '🏅', '🏅'];
+                const medal = medals[index] || '🏅';
                 const styles = [
                     'background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.5);color:#fde68a;',
                     'background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.3);color:#cbd5e1;',
                     'background:rgba(180,83,9,0.1);border:1px solid rgba(180,83,9,0.35);color:#fbbf24;',
                 ];
-                row.style.cssText = `display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-radius:10px;${styles[index] || 'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#94a3b8;'}animation:fadeUp 0.5s ease ${index*0.15}s both;`;
-                row.innerHTML = `<div style="display:flex;align-items:center;gap:0.75rem;"><span style="font-size:1.5rem;">${medals[index]||'🏅'}</span><span style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;">${index+1}º — ${player.name}</span></div><span style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;">US$ ${parseFloat(player.score).toFixed(2)}</span>`;
+                row.style.cssText = `display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;border-radius:10px;${styles[index] || 'background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#94a3b8;'}animation:fadeUp 0.5s ease ${index * 0.15}s both;`;
+                row.innerHTML = `
+                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                        <span style="font-size:1.5rem;">${medal}</span>
+                        <span style="font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;">${index + 1}º — ${player.name}</span>
+                    </div>
+                    <span style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;">$ ${parseFloat(player.score).toFixed(2)}</span>
+                `;
                 container.appendChild(row);
             });
         }, 2200);
