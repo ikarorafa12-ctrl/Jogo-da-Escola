@@ -7,9 +7,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Rajdhani:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Firebase carregado de forma síncrona (sem defer/async) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <script>
+        // Firebase já carregado acima de forma síncrona — seguro inicializar aqui
         const firebaseConfig = {
             apiKey: "AIzaSyDsx8c8MgqLqETHGb7NzPI3_LuZc0POYB4",
             authDomain: "jogos-de-escolas.firebaseapp.com",
@@ -17,11 +19,16 @@
             projectId: "jogos-de-escolas",
             storageBucket: "jogos-de-escolas.firebasestorage.app",
             messagingSenderId: "399379585625",
-            appId: "1:399379585625:web:09a22749338bd392466f48",
-            measurementId: "G-3N475E1RJ7"
+            appId: "1:399379585625:web:09a22749338bd392466f48"
         };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+ 
+        let db;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+        } catch(e) {
+            console.error('Firebase init error:', e);
+        }
  
         function getRoomRef(roomName) {
             return db.ref('rooms/' + roomName.replace(/[.#$[\]]/g, '_'));
@@ -615,13 +622,16 @@
         if (!name) return alert('Dê um nome à sala!');
         myRole = 'leader'; myPlayerName = name + '_LIDER'; currentRoomName = name;
         const roomState = { name, password:pass, status:'lobby', currentMonth:1, players:{}, count:0, crisis:false, solo:false };
-        saveRoomStateFirebase(roomState).then(() => {
-            document.getElementById('lobby-room-title').innerText = name;
-            document.getElementById('lobby-leader-controls').classList.remove('hidden');
-            // Mostra intro antes do lobby
-            _afterIntroFn = () => { switchScreen('screen-lobby'); startFirebaseListener(name); };
-            switchScreen('screen-intro');
-        }).catch(err => alert('Erro ao criar sala: ' + err.message));
+        // Salva no Firebase e mostra intro — se Firebase falhar, alerta
+        try {
+            saveRoomStateFirebase(roomState);
+        } catch(e) {
+            return alert('Erro ao criar sala: ' + e.message);
+        }
+        document.getElementById('lobby-room-title').innerText = name;
+        document.getElementById('lobby-leader-controls').classList.remove('hidden');
+        _afterIntroFn = () => { switchScreen('screen-lobby'); startFirebaseListener(name); };
+        switchScreen('screen-intro');
     }
  
     // ── ENTRAR NA SALA ────────────────────────────────────────────────────
@@ -639,12 +649,11 @@
             const players = state.players || {};
             players[pName] = { money:1000, currentChoice:null, ready:false, active:true, history:[1000], acceptedManhattan:false };
             const count = Object.keys(players).length;
-            getRoomRef(rName).update({ players, count }).then(() => {
-                document.getElementById('lobby-room-title').innerText = rName;
-                document.getElementById('game-player-identity').innerText = `Trader: ${pName}`;
-                _afterIntroFn = () => { switchScreen('screen-lobby'); startFirebaseListener(rName); };
-                switchScreen('screen-intro');
-            });
+            getRoomRef(rName).update({ players, count });
+            document.getElementById('lobby-room-title').innerText = rName;
+            document.getElementById('game-player-identity').innerText = `Trader: ${pName}`;
+            _afterIntroFn = () => { switchScreen('screen-lobby'); startFirebaseListener(rName); };
+            switchScreen('screen-intro');
         }).catch(err => alert('Erro ao entrar na sala: ' + err.message));
     }
  
